@@ -1,4 +1,4 @@
-baseurl = "/"
+baseurl = "http://amritpatel.rbind.io//"
 languageCode = "en-us"
 title = "Amrit's Blog"
 theme = "hugo-lithium"
@@ -21,7 +21,7 @@ enableEmoji = true
     url = "https://twitter.com/im_apatel"
 
 [params]
-    description = "A website built through Hugo and blogdown."
+    description = "Amrit's blog: teaching, programming, design, travel."
 
     # options for highlight.js (version, additional languages, and theme)
     highlightjsVersion = "9.12.0"
