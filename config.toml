@@ -1,10 +1,11 @@
 baseurl = "/"
 languageCode = "en-us"
-title = "A Hugo website"
+title = "Amrit's Blog"
 theme = "hugo-lithium"
 googleAnalytics = ""
 disqusShortname = ""
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+enableEmoji = true
 
 [permalinks]
     post = "/:year/:month/:day/:slug/"
@@ -14,10 +15,10 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
     url = "/about/"
 [[menu.main]]
     name = "GitHub"
-    url = "https://github.com/rstudio/blogdown"
+    url = "https://github.com/AmritPatel"
 [[menu.main]]
     name = "Twitter"
-    url = "https://twitter.com/rstudio"
+    url = "https://twitter.com/im_apatel"
 
 [params]
     description = "A website built through Hugo and blogdown."
