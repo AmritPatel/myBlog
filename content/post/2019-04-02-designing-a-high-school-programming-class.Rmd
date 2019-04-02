@@ -1,0 +1,13 @@
+---
+title: Designing a High School Programming Class
+author: Amrit Patel
+date: '2019-04-02'
+categories:
+  - R
+  - teaching
+tags:
+  - R Markdown
+slug: designing-a-high-school-programming-class
+---
+
+Content coming.

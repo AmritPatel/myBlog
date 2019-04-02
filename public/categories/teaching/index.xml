@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Teaching on A Hugo website</title>
+    <link>/categories/teaching/</link>
+    <description>Recent content in Teaching on A Hugo website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 02 Apr 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/teaching/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Designing a High School Programming Class</title>
+      <link>/2019/04/02/designing-a-high-school-programming-class/</link>
+      <pubDate>Tue, 02 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/04/02/designing-a-high-school-programming-class/</guid>
+      <description>Content coming.</description>
+    </item>
+    
+  </channel>
+</rss>
