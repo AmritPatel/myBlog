@@ -10,4 +10,35 @@ tags:
 slug: designing-a-high-school-programming-class
 ---
 
-Content coming.
+Goals: 
+
+- Make and host an open source website.
+
+- Final Project: Create a website post incorporating what you've learned.
+
+1. Learn RStudio. Checkout https://rstudio.cloud/?
+2. Learn R Markdown.
+2a. Learn about R chunks.
+2b. Write an essay.
+3. Make an R Presentation incorporating 10 R Markdown features.
+3a. What makes a good presentation?
+3b. Output to various formats (i.e., HTML, PDF, Word). Practice Exercise: Write an assignment for another class in R Markdown and submit it.
+4. Using R Markdown, make a blog post on any subject.
+5. Introduce libraries.
+6. Learn `blogdown`.
+7. Setup the default blogdown website.
+8. Add a page to your site.
+8a. Assignment to choose a website 
+ theme (for fun).
+9. Learn to add basic elements (e.g., images, GIFs, hyperlinks, embedded video).
+10. Introduce git (basics only to allow for website hosting).
+11. Discuss open source.
+12. Learn GitHub
+12a. Build ggplot2 book @ https://github.com/hadley/ggplot2-book
+13. Host website on GitHub.
+14. Learn R basics (use Swirl?).
+14a. Check out https://rstudio.cloud/?
+15. Learn dplyr (basics enough for ggplot).
+16. Learn ggplot (maybe show cool things like library(animation) or library(manipulate)).
+16a. What makes a good plot?
+17. Solve some data analysis problem.
