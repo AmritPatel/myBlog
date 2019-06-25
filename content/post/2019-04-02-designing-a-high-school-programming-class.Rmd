@@ -16,10 +16,6 @@ Goals:
 
 - Final Project: Create a website post incorporating what you've learned.
 
-1. Learn RStudio. Checkout https://rstudio.cloud/?
-2. Learn R Markdown.
-2a. Learn about R chunks.
-2b. Write an essay.
 3. Make an R Presentation incorporating 10 R Markdown features.
 3a. What makes a good presentation?
 3b. Output to various formats (i.e., HTML, PDF, Word). Practice Exercise: Write an assignment for another class in R Markdown and submit it.
@@ -42,3 +38,50 @@ Goals:
 16. Learn ggplot (maybe show cool things like library(animation) or library(manipulate)).
 16a. What makes a good plot?
 17. Solve some data analysis problem.
+
+### Week 1 - Introduction
+
+1. Class intro + syllabus review; demo via presentation on GitHub hosted website.
+2. Get to know students (skill level and interests). What is programming? Why learn it? [Review top languages](https://spectrum.ieee.org/static/interactive-the-top-programming-languages-2018). What do you want your website to be about?
+3. Download RStudio.[^1] 
+4. Demo features; show how to make a presentation; go over [rules of markdown](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf). Assignment: Each student make a slide on norms.
+5. Work on norm slides. Assemble slides. I will host on my GitHub. Future assignment to have students request changes.
+
+[^1]: Checkout https://rstudio.cloud/?
+
+Week 2 - R Markdown
+
+1. Learn about R chunks.
+2. Write an essay.
+
+Week 3
+
+Week 4
+
+Week 5
+
+Week 6
+
+Week 7
+
+Week 8
+
+Week 9
+
+Week 10
+
+Week 11
+
+Week 12
+
+Week 13
+
+Week 14
+
+Week 15
+
+Week 16
+
+Week 17
+
+Week 18

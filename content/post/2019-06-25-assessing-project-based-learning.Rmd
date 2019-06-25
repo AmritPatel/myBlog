@@ -1,0 +1,83 @@
+---
+title: Assessing Project Based Learning
+author: Amrit Patel
+date: '2019-06-25'
+slug: assessing-project-based-learning
+categories:
+  - teaching
+tags: []
+---
+
+## Summary of the Student Project
+
+A "customer" is requesting a blog assessing the state of Kathmandu air pollution. Students teams will design, create, and publish a website based on research and original data analysis for a customer by integrating 21st century technology development skills.
+
+During this project students will demonstrate mastery of the following competencies[^1] [[rubric]](http://www.quickrubric.com/r#/qr/amritpatel/website-project):
+
+  1. Presentation *(of website)*
+    + Motivation for website
+    + Design and building experience
+    + Discuss features
+    + Discuss feedback received/given
+    + Used Rmarkdown-based presentation hosted on GitHub Pages
+  1. Revisions *(via GitHub)*
+    + Teams assess each other by providing student feedback through GitHub's social features[^2]
+    + Edit/proofread others' work commenting and providing constructive suggestions for changes
+    + Teams incorporate changes as desired and can justify why they were or were not incorporated
+  1. Publishing *(to GitHub)*
+    + Register a new domain for website (setup Netlify w/ GitHub)
+    + Build and deploy (when changes to website are made)
+  1. Creating *(a website)*
+    + Create original data analysis using `tidyverse` package
+    + Create a new project in RStudio using `blogdown` package
+    + Incorporates (and improves upon as needed) previously completed and submitted coursework
+  1. Designing *(a website)*
+    + Create an effective project outline.
+    + Divides responsibilities amongst team:
+        - Project manager
+        - Marketing
+        - User experience
+        - Technical    
+  1. Programming *(can use the Rmarkdown and R languages appropriately and effectively)*
+    + Basic formatting techniques (e.g., bold/italics, headings, footnotes)
+    + Code blocks to show R code
+    + Citations
+    
+[^1]: The competencies are shown in reverse chronological order because they were developed using the [backward planning](https://www.opencolleges.edu.au/informed/features/reverse-planning-can-help-students-reach-goals/) strategy.
+[^2]: Teacher will also provide constructive feedback.
+
+## Student Monitoring and Feedback
+
+Since GitHub is a service that is open to the public by default, this will allow access to both students and teachers to monitor and provide feedback. This is also a unique opportunity for students to learn how to conduct themselves in a public forum.
+
+Teams will suggest changes to other teams' projects via GitHub "pull requests".
+
+![***Pull Requests***](https://help.github.com/assets/images/help/repository/repo-tabs-pull-requests.png)
+
+The teams will communicate and provide feedback with each other using GitHub's advanced commenting features such as inline commenting.
+
+![***Inline Commenting***](https://help.github.com/assets/images/help/commits/hover-comment-icon.gif)
+
+Teams will be expected to consider each others' feedback, responding back to all suggestions exlpaining why teams agree or disagree with suggestions.
+
+![***Giving/Receiving Feedback***](https://help.github.com/assets/images/help/pull_requests/conversation.png)
+
+Using GitHub as the platform to publish student projects, several things are accomplished.
+
+### For Students
+
+  - Authentic learning is promoted by using a real-world design environment.[^3]
+  - Students showcase a self-inspiring portfolio of work![^4]
+  - Students learn to give and receive feedback.
+  - Students develop [meta-cognitive skills](https://lincs.ed.gov/state-resources/federal-initiatives/teal/guide/metacognitive) through feedback sessions.
+  
+### For Teachers
+
+  - Can freely monitor and provide direct feedback to students.
+  - Student work can be directly assessed.
+  
+[^3]: *Real-world* developers actually use [GitHub for *real-world* projects](https://github.com/explore)!
+[^4]: Excellent student work could even serve as a demonstration to a future prospective employer exemplifying the ability to develop a functional product while working on a collaborative design team! 
+
+
+ 

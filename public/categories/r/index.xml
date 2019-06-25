@@ -2,33 +2,33 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>R on Amrit&#39;s Blog</title>
-    <link>http://amritpatel.rbind.io/categories/r/</link>
+    <link>/categories/r/</link>
     <description>Recent content in R on Amrit&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 02 Apr 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://amritpatel.rbind.io/categories/r/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/categories/r/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Designing a High School Programming Class</title>
-      <link>http://amritpatel.rbind.io/2019/04/02/designing-a-high-school-programming-class/</link>
+      <link>/2019/04/02/designing-a-high-school-programming-class/</link>
       <pubDate>Tue, 02 Apr 2019 00:00:00 +0000</pubDate>
       
-      <guid>http://amritpatel.rbind.io/2019/04/02/designing-a-high-school-programming-class/</guid>
+      <guid>/2019/04/02/designing-a-high-school-programming-class/</guid>
       <description>Goals:
  Make and host an open source website.
  Final Project: Create a website post incorporating what you’ve learned.
-  Learn RStudio. Checkout https://rstudio.cloud/? Learn R Markdown. 2a. Learn about R chunks. 2b. Write an essay. Make an R Presentation incorporating 10 R Markdown features. 3a. What makes a good presentation? 3b. Output to various formats (i.e., HTML, PDF, Word). Practice Exercise: Write an assignment for another class in R Markdown and submit it.</description>
+  Make an R Presentation incorporating 10 R Markdown features. 3a. What makes a good presentation? 3b. Output to various formats (i.e., HTML, PDF, Word). Practice Exercise: Write an assignment for another class in R Markdown and submit it. Using R Markdown, make a blog post on any subject.</description>
     </item>
     
     <item>
       <title>Hello R Markdown</title>
-      <link>http://amritpatel.rbind.io/2015/07/23/hello-r-markdown/</link>
+      <link>/2015/07/23/hello-r-markdown/</link>
       <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
       
-      <guid>http://amritpatel.rbind.io/2015/07/23/hello-r-markdown/</guid>
+      <guid>/2015/07/23/hello-r-markdown/</guid>
       <description>R Markdown This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
 You can embed an R code chunk like this:
 summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.98 ## 3rd Qu.</description>
