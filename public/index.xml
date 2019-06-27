@@ -6,10 +6,21 @@
     <description>Recent content on Amrit&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 25 Jun 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 27 Jun 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Using Assessment Data to Inform Instruction</title>
+      <link>/2019/06/27/using-assessment-data-to-inform-instruction/</link>
+      <pubDate>Thu, 27 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/06/27/using-assessment-data-to-inform-instruction/</guid>
+      <description>The following figure is a simple illustration of how students can be grouped based on abilities using sample assessment data. Assessment scores have been averaged for each student with 1-\(\sigma\) standard deviations shown as a way to measure student score consistency.
+Figure 1. Student grouping based on performance.
+Paired with the figure above, the figure below can be used to quickly identify trends for a given student by looking at performance on various assignment categories (i.</description>
+    </item>
     
     <item>
       <title>Assessing Project Based Learning</title>

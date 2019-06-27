@@ -1,0 +1,84 @@
+---
+title: Using Assessment Data to Inform Instruction
+author: Amrit Patel
+date: '2019-06-27'
+slug: using-assessment-data-to-inform-instruction
+categories:
+  - teaching
+  - R
+tags: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, message = F, warning = F)
+```
+
+The following figure is a simple illustration of how students can be grouped based on abilities using [sample assessment data](https://raw.githubusercontent.com/AmritPatel/myBlog/master/content/resources/algebra1Period3.csv). Assessment scores have been averaged for each student with 1-$\sigma$ standard deviations shown as a way to measure student score consistency.
+
+```{r, fig.width = 9, rows.print=23}
+library(tidyverse)
+
+scores <- # Format student scores for plotting
+  tbl_df(read.csv("~/myBlog/content/resources/algebra1Period3.csv")) %>%
+  gather(key = "assignment", value = "score", -studentID) %>%
+  arrange(studentID)
+
+scores$studentID <- as.character(scores$studentID) # studentID needs to be 'character' vs. 'integer'  for color labeling
+
+means <- # Calculate the mean and standard deviation of the scores so we can disinguish groups
+scores %>% 
+  group_by(studentID) %>%
+  summarise(mean = mean(score), sigma = sqrt(var(score))) %>%
+  arrange(mean) 
+
+# means %>% rmarkdown::paged_table() # This command gives us a pretty table when rendered in HTML
+
+library(Hmisc)
+
+ggplot(means, aes(studentID, mean, color=cut2(mean, g=4))) + # cut2 used to group 'mean' data into quantiles
+  geom_point() + # Scatterplot used so standard deviation can be plotted with 'mean' data
+  geom_errorbar(aes(ymin=mean-sigma, ymax=mean+sigma), width=.2, position=position_dodge(0.05)) +
+  theme(legend.position = "bottom") # move the legend to the bottom to allow for wider x-axis
+```
+***Figure 1. Student grouping based on performance.***
+
+Paired with the figure above, the figure below can be used to quickly identify trends for a given student by looking at performance on various assignment categories (i.e., homework, projects, quizzes, reviews, and tests). Comparing scores on homework and projects versus performance on summative assessments can be a useful indicator of student engagement or determination. For example, Student 2271 performed well on the test and test review, but didn't do as well on homework and the project -- this student may be bored or disengaged. Another example is Student 2562, who performed well on homework and the project, but not as well on the test and test review -- this student might be determined to do well by completing individual assignments, but may be struggling to tie these individual concepts together.
+
+```{r, fig.height=10}
+#ggplot(scores, aes(score, fill=studentID)) + geom_histogram()
+#ggplot(scores, aes(score, fill=studentID)) + geom_histogram() + facet_grid(assignment ~ .)
+
+# Plotting data by assignment for each student to see more detail
+ggplot(scores, aes(score, fill=assignment)) + geom_histogram() + facet_grid(studentID ~ .)
+```
+***Figure 2. Individual student performance by assignment type.***
+
+## Creating Mixed Student Groups of Varying Abilities and Talents for a Particular Lesson
+
+For a future lesson involving groups, I would use the data from Figure 1 to create groups with a variety of abilities allowing stronger students to help out students not performing as well or who are disengaged. I would do this by having an approximatley equal number of students from each of the 4 quantiles,[^1] indicated in Figure 1, in a group. Increasing group diversity may also have a positive impact on idea creation by avoiding "groupthink", which is a positive attribute to this strategy.
+
+[^1]: Quantiles conveniently breakup a large group into smaller "similar" groups assigning equal numbers to each of those smaller groups.
+
+```{r}
+library("htmltools")
+library("vembedr")
+embed_url("https://youtu.be/2p-uY_i-wvc")
+```
+
+## Examples of Computer Programming Activities 
+
+Learning computer programming can be daunting for beginners as there are many rules and conventions to learn. However, there are useful strategies to implement for all types of learners!
+
+### For Remediation
+
+The `swirl`[^2] package's power comes from its ability allow individual students to teach and/or practice programming and data science *interactively* and *at one's own pace*.
+
+[^2]: For the R programming language -- this is the language that I will teach in my class.
+
+### For Special Needs Students
+
+[Scratch](https://scratch.mit.edu/about/) from MIT Media Lab for students with [ADHD](https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder) -- a stimulating and immersive way to teach programming.
+
+### Acceleration Activities for Gifted/Talented Students
+
+Use programming skills to design an [interactive visualization](https://www.r-graph-gallery.com/interactive-charts/) to answer a question, using a real-world dataset, that is important to the student.
