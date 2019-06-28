@@ -73,7 +73,7 @@ Learning computer programming can be daunting for beginners as there are many ru
 
 The [`swirl`](https://swirlstats.com/)[^2] package's power comes from its ability allow individual students to practice programming and/or data science *interactively* and *at one's own pace*.
 
-[^2]: For the R programming language -- this is the language that I will teach in my class.
+[^2]: For the [R programming language](https://www.r-project.org/about.html) -- this is the language that I will teach in my class.
 
 ### For Special Needs Students
 
