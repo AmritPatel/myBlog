@@ -1,0 +1,37 @@
+---
+title: Pre-Assessment for Differentiation
+author: Amrit Patel
+date: '2019-07-08'
+slug: pre-assessment-for-differentiation
+categories:
+  - teaching
+tags: []
+---
+
+With today's students, technology and computers have surrounded them and often been an influential part of their lives. Some may have had free access to tinker around with computers of various sorts (e.g., cell phones, tablets, personal computer) and have shown a great deal of interest while others may not have had the same access or shown the same level of interest.
+
+For these reasons, before the *Introduction to Computer Programming* unit, I have chosen to first gauge students' familiarity working with a personal computer (or laptop) system -- specifically with the ability to download, install, and open the [integrated development environment (IDE)](https://en.wikipedia.org/wiki/Integrated_development_environment) that we will be using extensively throughout the computer programming class. Additionally, I will ask students to install a [library](https://en.wikipedia.org/wiki/Library_(computing)) ([`swirl`](https://swirlstats.com/)), load it, execute a function from it, and then follow the instructions. Using a flipped classroom, I could create an instructional video lesson via [Edpuzzle](https://edpuzzle.com/) where I *outline* the above steps. A homework assignment could be to watch the video in preparation for the next days' class where each student will be asked to complete as many steps as possible within the class period where I will be able to observe and note each student's progress. 
+
+This type of pre-assessment will allow me to sort students into 3 groups: novice, intermediate, and advanced. I will be able to assess:
+
+- Novice skills such as typing, internet navigation, software installation and execution
+
+- Intermediate skills such as navigating a new environment (the IDE), and installing and loading a library
+
+- Advanced skills such as executing a library function, following on-screen instructions, and making significant progress with exercises
+
+A [flowchart](https://mermaidjs.github.io/mermaid-live-editor/#/view/eyJjb2RlIjoiZ3JhcGggVERcbkFbQ29tcHV0ZXIgcHJvZ3JhbW1pbmcgYmFzaWNzXSAtLT58SW5zdHJ1Y3Rpb25hbCB2aWRlbyB2aWEgRWRwdXp6bGUgb3V0bGluaW5nIHN0ZXBzIG9uIGhvdyB0byBiZSBhYmxlIHRvIHJ1biAnc3dpcmwnfCBCKFN0dWRlbnRzIGF0dGVtcHQgdG8gcnVuICdzd2lybCcpXG5CIC0tPiBDe1NvcnQgcHJlLWFzc2Vzc21lbnQgcmVzdWx0c31cbkMgLS0-fE5vdmljZXwgRFtDYW4gZG93bmxvYWQvaW5zdGFsbC9ydW4gSURFXVxuQyAtLT58SW50ZXJtZWRpYXRlfCBFW0NhbiBkb3dubG9hZC9pbnN0YWxsL3J1biBsaWJyYXJ5XVxuQyAtLT58QWR2YW5jZWR8IEZbTWFrZXMgc2lnbmlmaWNhbnQgcHJvZ3Jlc3Mgdy8gJ3N3aXJsJyBleGVyY2lzZXNdXG5ELS0-fE5lZWRzIHR5cGluZyBhbmQgSURFIGhlbHB8R1tJbnRlcmFjdGl2ZSBnYW1lcyBhbmQgdmlkZW8gdHV0b3JpYWxzXVxuRS0tPnxOZWVkcyBJREUgaGVscHxIW1ZpZGVvIHR1dG9yaWFsXVxuRy0tPkZcbkgtLT5GXG4iLCJtZXJtYWlkIjp7InRoZW1lIjoiZGVmYXVsdCJ9fQ) was created to summarize this process.
+
+## Tracking Student Learning
+
+Since the main focus of the introductory unit is to become familiar with the basics of the R programming language, each group will be assessed by monitoring progress with completion of exercises in Module 1, "R Programming", Submodule 1, "Basic Building Blocks", of the `swirl` library.
+
+General lessons on basic computer programming concepts will be complementary to `swirl` exercise completion (specific to the R language) to begin the scaffolding toward more advanced concepts early on.
+
+Advanced students would be expected to work independently on this submodule and can move along to other submodules if Submodule 1 is completed early.
+
+Intermediate students can watch video tutorials to help them better understand what an IDE is and how it functions to better orient them in this new environment.
+
+Novice students may struggle with a variety of issues such as typing proficiency or understanding how to install applications on the computing system (e.g., maybe they have a Windows computer at home but the school uses Apple computers). For these students, they could play fun games to better their typing skills or improve familiarity with the keyboard. Video tutorials would also be helpful to get them to a level where they are able to begin the `swirl` exercises.
+
+The status of each students' progress will be monitored as they complete `swirl` Submodule 1 with appropriate interventions as necessary to guide toward the core curriculum.
