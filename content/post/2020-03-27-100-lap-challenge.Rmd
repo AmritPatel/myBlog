@@ -1,0 +1,12 @@
+---
+title: 100 Lap Challenge
+author: Amrit Patel
+date: '2020-03-27'
+slug: 100-lap-challenge
+categories:
+  - R
+tags:
+  - R Markdown
+---
+
+# Heading 1
