@@ -249,11 +249,11 @@ ggplot(dayData, aes(Date, avg, color = variable)) +
 ## Running economy over time.
 
 ```{r}
-historical <- tbl_df(read.csv("~/Downloads/Vadhana Running - Historical.csv", stringsAsFactors = F))
+historical <- tbl_df(read.csv("~/Downloads/Vadhana Running - Historical Full.csv", stringsAsFactors = F))
 
 rpi <- 
   historical %>%
-    filter(Activity.Type == "Running") %>%
+    filter(Activity.Type != "Treadmill Running") %>%
     select(Date, Title, Distance, Kcals = Calories, Time, Avg.HR, Cadence = Avg.Run.Cadence, Avg.Pace, Elev.Gain, Elev.Loss, Temp = Min.Temp)
 
 rpi <- rpi[-c(4), ]
@@ -275,22 +275,47 @@ RHR <- 60
 # Efficiency = 1 / Work Per Mile * 100,000
 
 # Determine RPI (from: https://fellrnr.com/wiki/Running_Economy)
-rpi <- rpi %>% mutate(Time = Time.Hour * 3600 + Time.Min * 60 + Time.Sec,
+rpi <- rpi %>% mutate(Avg.Pace = Avg.Pace.Min + Avg.Pace.Sec / 60,
+                      Time = Time.Hour * 3600 + Time.Min * 60 + Time.Sec,
                       RPI = 1 / (((Avg.HR - RHR) * (Time / 60)) / Distance) * 100000)
+
+rpi$Avg.Pace <- as.numeric(rpi$Avg.Pace)
+rpi$Elev.Gain <- as.numeric(rpi$Elev.Gain)
+rpi$Elev.Gain <- as.numeric(rpi$Elev.Loss)
 ```
+
 ```{r}
 library(plotly)
 p <- 
-  ggplot(rpi, aes(Date, RPI, color = Temp,
+  ggplot(rpi, aes(Date, RPI,
                   label = Title,
                   label2 = Distance,
                   label3 = Avg.HR,
-                  label4 = Cadence)) +
+                  label4 = Cadence,
+                  label5 = Temp)) +
     geom_point() +
-    geom_smooth(method = lm) # formula = y ~ splines::bs(x, 3)
+    geom_smooth() # formula = y ~ splines::bs(x, 3)
 
 ggplotly(p)
 ```
 
+```{r, warning = F}
+multiRPI <- 
+  melt(rpi, id.vars = c("Date", "Title", "RPI")) %>%
+    filter(variable == "Distance" | 
+           variable == "Avg.HR" |
+           variable == "Cadence" |
+           variable == "Avg.Pace" |
+           variable == "Elev.Gain" |
+           variable == "Temp"
+          )
+
+multiRPI$value <- as.numeric(multiRPI$value)
+
+ggplot(multiRPI, aes(value, RPI)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  facet_wrap(variable ~ ., scales = "free")
+```
 
 
