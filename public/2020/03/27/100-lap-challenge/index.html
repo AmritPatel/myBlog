@@ -22,6 +22,11 @@
 
 
 
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
 <link rel="stylesheet" href="/css/fonts.css" media="all">
 <link rel="stylesheet" href="/css/main.css" media="all">
 
@@ -57,7 +62,7 @@
 
   <article class="article">
     
-    <span class="article-duration">1 min read</span>
+    <span class="article-duration">4 min read</span>
     
 
     <h1 class="article-title">100 Lap Challenge</h1>
@@ -70,8 +75,206 @@
       
 
 
-<div id="heading-1" class="section level1">
-<h1>Heading 1</h1>
+<div id="data-prep" class="section level2">
+<h2>Data Prep</h2>
+<div id="define-function-to-re-format-data-for-plotting." class="section level3">
+<h3>Define function to re-format data for plotting.</h3>
+<pre class="r"><code>library(tidyverse)
+
+getData &lt;- function(fname, Date) {
+  day &lt;- tbl_df(read.csv(fname, stringsAsFactors = F))
+  day &lt;- day %&gt;% slice(-n():-n())
+  day$Laps &lt;- as.numeric(day$Laps)
+  
+  day &lt;- day %&gt;% separate(Avg.Pace, c(&quot;Avg.Pace.Min&quot;, &quot;Avg.Pace.Sec&quot;))
+  day$Avg.Pace.Min &lt;- as.numeric(day$Avg.Pace.Min)
+  day$Avg.Pace.Sec &lt;- as.numeric(day$Avg.Pace.Sec)
+  
+  day &lt;- day %&gt;% separate(Time, c(&quot;Time.Min&quot;, &quot;Time.Sec&quot;))
+  day$Time.Min &lt;- as.numeric(day$Time.Min)
+  day$Time.Sec &lt;- as.numeric(day$Time.Sec)
+  
+  day &lt;- 
+    day %&gt;% 
+    mutate(Distance = 0.075) %&gt;%
+    select(Laps,
+           Time.Min,
+           Time.Sec,
+           Distance,
+           Avg.HR,
+           Max.HR,
+           Cadence = Avg.Run.Cadence,
+           Kcals = Calories,
+           Temp = Avg.Temperature,
+           )
+}</code></pre>
+</div>
+<div id="day-1" class="section level3">
+<h3>Day 1</h3>
+<p>Fix laps where I forgot to hit the “lap” button (i.e., combined splits).</p>
+<pre class="r"><code>day1 &lt;- getData(&quot;~/Downloads/Vadhana Running - 2020-03-24.csv&quot;) %&gt;% mutate(Date = &quot;2020-03-24&quot;)
+
+day1.1 &lt;- day1 %&gt;% slice(1:9)
+day1.2 &lt;- day1 %&gt;% slice(10)
+
+day1.2 &lt;- 
+  bind_rows(day1.2, day1.2) %&gt;%
+  mutate(Time.Sec = Time.Min * 60 / 2 + Time.Sec / 2, Time.Min = 0, Kcals = Kcals / 2)
+
+day1.2$Laps[2] &lt;- 11
+
+day1.3 &lt;- 
+  day1 %&gt;%
+  slice(11:n()) %&gt;%
+  mutate(Laps = Laps + 1)
+
+day1 &lt;- bind_rows(day1.1, day1.2, day1.3)</code></pre>
+<p>Correct average pace based on more accurate estimate of lap distance.</p>
+<pre class="r"><code>day1 &lt;- 
+  day1 %&gt;%
+  mutate(Avg.Pace = Time.Sec / 60 / Distance) %&gt;%
+  select(-Time.Min) %&gt;% rename(Time = Time.Sec)</code></pre>
+</div>
+<div id="day-2" class="section level3">
+<h3>Day 2</h3>
+<p>Again, fix laps where I forgot to hit the “lap” button (i.e., combined splits).</p>
+<pre class="r"><code>day2 &lt;- getData(&quot;~/Downloads/Vadhana Running - 2020-03-25.csv&quot;) %&gt;% mutate(Date = &quot;2020-03-25&quot;)
+
+day2.1 &lt;- day2 %&gt;% slice(1:31)
+day2.2 &lt;- day2 %&gt;% slice(32)
+
+day2.2 &lt;- 
+  bind_rows(day2.2, day2.2) %&gt;%
+  mutate(Time.Sec = Time.Min * 60 / 2 + Time.Sec / 2, Time.Min = 0, Kcals = Kcals / 2)
+
+day2.2$Laps[2] &lt;- 33
+
+day2.3 &lt;- 
+  day2 %&gt;%
+  slice(33:n()) %&gt;%
+  mutate(Laps = Laps + 1)
+
+day2 &lt;- bind_rows(day2.1, day2.2, day2.3)</code></pre>
+<p>Correct average pace based on more accurate estimate of lap distance.</p>
+<pre class="r"><code>day2 &lt;- 
+  day2 %&gt;%
+  mutate(Avg.Pace = Time.Sec / 60 / Distance) %&gt;%
+  select(-Time.Min) %&gt;% rename(Time = Time.Sec)</code></pre>
+</div>
+<div id="day-3" class="section level3">
+<h3>Day 3</h3>
+<pre class="r"><code>day3 &lt;- getData(&quot;~/Downloads/Vadhana Running - 2020-03-27.csv&quot;) %&gt;% mutate(Date = &quot;2020-03-27&quot;)
+
+day3 &lt;- 
+  day3 %&gt;%
+  mutate(Avg.Pace = Time.Sec / 60 / Distance) %&gt;%
+  select(-Time.Min) %&gt;% rename(Time = Time.Sec)</code></pre>
+</div>
+</div>
+<div id="exploratory-data-analysis" class="section level2">
+<h2>Exploratory Data Analysis</h2>
+<pre class="r"><code>library(reshape2)
+
+runData &lt;- bind_rows(day1, day2, day3)
+
+# Total Beats = (Average Heart Rate – Resting Heart Rate) * Time in Minutes
+RHR &lt;- 60
+# Work Per Mile = Total Beats / Distance in Miles
+# Efficiency = 1 / Work Per Mile * 100,000
+
+# Determine RPI (from: https://fellrnr.com/wiki/Running_Economy)
+runData &lt;- runData %&gt;% mutate(RPI = 1 / (((Avg.HR - RHR) * (Time / 60)) / Distance) * 100000)
+
+runData$Date &lt;- as.Date(runData$Date)
+
+pltRunData &lt;- melt(runData, id.vars = c(&quot;Date&quot;, &quot;Laps&quot;)) %&gt;% filter(variable != &quot;Distance&quot;)
+
+meanData &lt;- pltRunData %&gt;%
+  group_by(Date, variable) %&gt;%
+  summarize(avg = mean(value)) %&gt;%
+  left_join(pltRunData %&gt;% group_by(variable) %&gt;%
+  summarize(ypos = 0.95*max(value))) %&gt;%
+  filter(variable != &quot;Distance&quot;)
+
+ggplot(pltRunData, aes(x=Laps, y=value)) +
+  geom_hline(data=meanData, aes(yintercept = avg), colour=&quot;red&quot;, lty=3) +
+  geom_text(data=meanData,
+            aes(label=round(avg,1), x=62, y=ypos),
+            colour=&quot;red&quot;,
+            hjust=1,
+            size=3) +
+  xlim(c(1,65)) +
+  geom_line() + 
+  facet_grid(variable ~ Date, scales = &quot;free_y&quot;) </code></pre>
+<p><img src="/post/2020-03-27-100-lap-challenge_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>lessPlt &lt;- pltRunData %&gt;% filter(variable == &quot;Avg.HR&quot; |
+                                 variable == &quot;Avg.Pace&quot; |
+                                 variable == &quot;Cadence&quot; |
+                                 variable == &quot;Temp&quot; |
+                                 variable == &quot;RPI&quot;   
+                                )
+
+lessMean &lt;- meanData %&gt;% filter(variable == &quot;Avg.HR&quot; |
+                                variable == &quot;Avg.Pace&quot; |
+                                variable == &quot;Cadence&quot; |
+                                variable == &quot;Temp&quot; |
+                                variable == &quot;RPI&quot;
+                               ) 
+
+ggplot(lessPlt, aes(x=Laps, y=value)) +
+  geom_hline(data=lessMean, aes(yintercept = avg), colour=&quot;red&quot;, lty=3) +
+  geom_text(data=lessMean,
+            aes(label=round(avg,1), x=62, y=ypos),
+            colour=&quot;red&quot;,
+            hjust=1,
+            size=3) +
+  xlim(c(1,65)) +
+  geom_line() + 
+  facet_grid(variable ~ Date, scales = &quot;free_y&quot;) </code></pre>
+<p><img src="/post/2020-03-27-100-lap-challenge_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>lessPlt$Date &lt;- as.factor(lessPlt$Date)
+
+ggplot(lessPlt, aes(x=Laps, y=value, color=Date)) +
+  xlim(c(1,65)) +
+  geom_line() +  
+  facet_grid(variable ~ ., scales = &quot;free_y&quot;) </code></pre>
+<p><img src="/post/2020-03-27-100-lap-challenge_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>There seems to be a relationship between cadence and RPI, cadence and pace, and heart rate and temperature!</p>
+<pre class="r"><code>dayData &lt;- meanData %&gt;% filter(variable != &quot;Max.HR&quot;, variable != &quot;Time&quot;, variable != &quot;Kcals&quot;)
+
+ggplot(dayData, aes(avg, fill = variable)) +
+  geom_bar() +
+  facet_grid(Date ~ variable, scales = &quot;free&quot;)</code></pre>
+<p><img src="/post/2020-03-27-100-lap-challenge_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(dayData, aes(avg, fill=variable)) +
+  geom_bar() +
+  facet_grid(Date ~ variable, scales = &quot;free&quot;) +
+  theme(legend.position=&quot;none&quot;)</code></pre>
+<p><img src="/post/2020-03-27-100-lap-challenge_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(dayData, aes(Date, avg, color = variable)) +
+  geom_point() +
+  facet_grid(variable ~ ., scales = &quot;free&quot;) +
+  theme(legend.position=&quot;none&quot;)</code></pre>
+<p><img src="/post/2020-03-27-100-lap-challenge_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(dayData, aes(Date, avg, color = variable)) +
+  geom_point() +
+  facet_grid(variable ~ ., scales = &quot;free&quot;) +
+  geom_smooth() +
+  theme(legend.position=&quot;none&quot;)</code></pre>
+<p><img src="/post/2020-03-27-100-lap-challenge_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(dayData, aes(Date, avg, color = variable)) +
+  geom_point() +
+  facet_grid(variable ~ ., scales = &quot;free&quot;) +
+  geom_smooth(method = lm, se = TRUE) +
+  theme(legend.position=&quot;none&quot;)</code></pre>
+<p><img src="/post/2020-03-27-100-lap-challenge_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>So, in short, slow down, and increase the cadence – especially as the outside tempeature increases! When this happens, average heart rate decreases, you can delay the onset of fatigue, and run longer!</p>
+<pre class="r"><code>ggplot(dayData, aes(Date, avg, color = variable)) +
+  geom_point() +
+  facet_grid(variable ~ ., scales = &quot;free&quot;) +
+  geom_smooth(method = lm, se = FALSE) +
+  theme(legend.position=&quot;none&quot;)</code></pre>
+<p><img src="/post/2020-03-27-100-lap-challenge_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 
     </div>
@@ -96,7 +299,22 @@
     </div>
     
 
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
     
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
 
     
   </body>
