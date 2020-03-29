@@ -7,6 +7,7 @@ categories:
   - teaching
   - R
 tags: []
+draft: true
 ---
 
 ```{r setup, include=FALSE}
@@ -19,7 +20,7 @@ The following figure is a simple illustration of how students can be grouped bas
 library(tidyverse)
 
 scores <- # Format student scores for plotting
-  tbl_df(read.csv("~/myBlog/content/resources/algebra1Period3.csv")) %>%
+  tbl_df(read.csv("~/GitHub/myBlog/content/resources/algebra1Period3.csv")) %>%
   gather(key = "assignment", value = "score", -studentID) %>%
   arrange(studentID)
 

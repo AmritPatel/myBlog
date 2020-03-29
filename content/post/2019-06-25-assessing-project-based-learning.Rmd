@@ -6,6 +6,7 @@ slug: assessing-project-based-learning
 categories:
   - teaching
 tags: []
+draft: true
 ---
 
 ## Summary of the Student Project
