@@ -6,10 +6,30 @@
     <description>Recent content in regression on Amrit&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 23 Jul 2015 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Sun, 29 Mar 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/regression/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Running economy over time.</title>
+      <link>/2020/03/29/running-economy-over-time/</link>
+      <pubDate>Sun, 29 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/03/29/running-economy-over-time/</guid>
+      <description>Running economy over time. library(tidyverse) historical &amp;lt;- tbl_df(read.csv(&amp;quot;~/Downloads/Vadhana Running - Historical Full.csv&amp;quot;, stringsAsFactors = F)) rpi &amp;lt;- historical %&amp;gt;% filter(Activity.Type != &amp;quot;Treadmill Running&amp;quot;) %&amp;gt;% select(Date, Title, Distance, Kcals = Calories, Time, Avg.HR, Cadence = Avg.Run.Cadence, Avg.Pace, Elev.Gain, Elev.Loss, Temp = Min.Temp) rpi &amp;lt;- rpi[-c(4), ] rpi$Date &amp;lt;- as.Date(rpi$Date) rpi &amp;lt;- rpi %&amp;gt;% separate(Avg.Pace, c(&amp;quot;Avg.Pace.Min&amp;quot;, &amp;quot;Avg.Pace.Sec&amp;quot;)) ## Warning: Expected 2 pieces. Additional pieces discarded in 1 rows [344].</description>
+    </item>
+    
+    <item>
+      <title>100 lap challenge.</title>
+      <link>/2020/03/27/100-lap-challenge/</link>
+      <pubDate>Fri, 27 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/03/27/100-lap-challenge/</guid>
+      <description>Having recently hunkered down in Bangkok for the foreseeable future,1 in an apartment building with a closed gym,2 I wondered what kind of exercise routine I could establish.
+Playing with my son in the courtyard a couple days in, I somehow got the idea of jogging a few laps around the makeshift track formed by the walking pathway – despite a heat index over 100 degree F!
+Having not run in months3, I took the opportunity to challenge myself to keep going.</description>
+    </item>
     
     <item>
       <title>Hello R Markdown</title>

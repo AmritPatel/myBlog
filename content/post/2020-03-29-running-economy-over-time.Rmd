@@ -1,0 +1,87 @@
+---
+title: Running economy over time.
+author: Amrit Patel
+date: '2020-03-29'
+slug: running-economy-over-time
+categories:
+  - R
+tags:
+  - R Markdown
+  - regression
+---
+
+## Running economy over time.
+
+```{r, message = F, warning = T}
+library(tidyverse)
+
+historical <- tbl_df(read.csv("~/Downloads/Vadhana Running - Historical Full.csv", stringsAsFactors = F))
+
+rpi <- 
+  historical %>%
+    filter(Activity.Type != "Treadmill Running") %>%
+    select(Date, Title, Distance, Kcals = Calories, Time, Avg.HR, Cadence = Avg.Run.Cadence, Avg.Pace, Elev.Gain, Elev.Loss, Temp = Min.Temp)
+
+rpi <- rpi[-c(4), ]
+
+rpi$Date <- as.Date(rpi$Date)
+
+rpi <- rpi %>% separate(Avg.Pace, c("Avg.Pace.Min", "Avg.Pace.Sec"))
+rpi$Avg.Pace.Min <- as.numeric(rpi$Avg.Pace.Min)
+rpi$Avg.Pace.Sec <- as.numeric(rpi$Avg.Pace.Sec)
+  
+rpi <- rpi %>% separate(Time, c("Time.Hour", "Time.Min", "Time.Sec"))
+rpi$Time.Hour <- as.numeric(rpi$Time.Hour)
+rpi$Time.Min <- as.numeric(rpi$Time.Min)
+rpi$Time.Sec <- as.numeric(rpi$Time.Sec)
+
+# Total Beats = (Average Heart Rate – Resting Heart Rate) * Time in Minutes
+RHR <- 60
+# Work Per Mile = Total Beats / Distance in Miles
+# Efficiency = 1 / Work Per Mile * 100,000
+
+# Determine RPI (from: https://fellrnr.com/wiki/Running_Economy)
+rpi <- rpi %>% mutate(Avg.Pace = Avg.Pace.Min + Avg.Pace.Sec / 60,
+                      Time = Time.Hour * 3600 + Time.Min * 60 + Time.Sec,
+                      RPI = 1 / (((Avg.HR - RHR) * (Time / 60)) / Distance) * 100000)
+
+rpi$Avg.Pace <- as.numeric(rpi$Avg.Pace)
+rpi$Elev.Gain <- as.numeric(rpi$Elev.Gain)
+rpi$Elev.Gain <- as.numeric(rpi$Elev.Loss)
+```
+
+```{r, message = F, warning = T}
+library(plotly)
+p <- 
+  ggplot(rpi, aes(Date, RPI,
+                  label = Title,
+                  label2 = Distance,
+                  label3 = Avg.HR,
+                  label4 = Cadence,
+                  label5 = Temp)) +
+    geom_point()  +
+    geom_smooth() # formula = y ~ splines::bs(x, 3)
+
+ggplotly(p)
+```
+
+```{r, warning = F, message = F}
+library(reshape2)
+
+multiRPI <- 
+  melt(rpi, id.vars = c("Date", "Title", "RPI")) %>%
+    filter(variable == "Distance" | 
+           variable == "Avg.HR" |
+           variable == "Cadence" |
+           variable == "Avg.Pace" |
+           variable == "Elev.Gain" |
+           variable == "Temp"
+          )
+
+multiRPI$value <- as.numeric(multiRPI$value)
+
+ggplot(multiRPI, aes(value, RPI)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  facet_wrap(variable ~ ., scales = "free")
+```

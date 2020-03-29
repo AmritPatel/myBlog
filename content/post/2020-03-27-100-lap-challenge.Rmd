@@ -1,5 +1,5 @@
 ---
-title: 100 Lap Challenge
+title: 100 lap challenge.
 author: Amrit Patel
 date: '2020-03-27'
 slug: 100-lap-challenge
@@ -7,31 +7,91 @@ categories:
   - R
 tags:
   - R Markdown
+  - regression
 ---
 
+Having recently hunkered down in Bangkok for the foreseeable future,[^1] in an apartment building with a closed gym,[^2] I wondered what kind of exercise routine I could establish.
+
+[^1]: Thanks, COVID-19!
+[^2]: Thanks, again!
+
+Playing with my son in the courtyard a couple days in, I somehow got the idea of jogging a few laps around the makeshift track formed by the walking pathway -- despite a heat index over 100 degree F! 
+
+Having not run in months[^3], I took the opportunity to challenge myself to keep going. I forgot how running could create of flood of ideas and I suddenly thought:
+
+> "Why not try and run 100 laps!"
+
+[^3]: And not consistently in almost a year.
+
+Using the lap function on my smart training watch, I started logging each lap as I turned the same corner over and over.
+
+By the end of the episode I had logged 50 laps -- just as I started to feel a bit dizzy and tingly from the extreme heat.
+
+I wondered what the data would reveal about my running fitness given that I hadn't run consistently in almost a year.
+
+I was shocked to see that the data showed I was running a pace of about 11 minutes per mile, when I used to do similar runs (albeit in less extreme heat) comfortably between 7 and 8 minutes per mile (min/mi).
+
+That just didn't sound right to me so I took a look at the lap distance and noticed the very small number. Each lap was showing as about 0.06 mi. Well, it was a very small lap, so it was definitely plausible. But, based on my extensive running history, the pace that the data was showing just didn't feel right so I decided to investigate further.
+
+<iframe src='https://connect.garmin.com/modern/activity/embed/4689996567' title='Vadhana Running' width='465' height='500' frameborder='0'></iframe>
+
+See the big red blob in the image above? That shows the inaccuracy of the GPS on my watch for this specific location (nearby a large building) and short distance.
+
+Feeling a little defeated, I remembered that I had the [Smart Tools](https://play.google.com/store/apps/details?id=kr.aboy.tools&hl=en_US) distance tool on my phone, which allows convenient measurement of long distances from any height using simple trigonometry.[^4]
+
+[^4]: All that is needed is a right triangle with one side known (phone height) and one other angle.
+
+First I measured the long side of the track with the app. Don't mind my finger blocking the camera when I took the screen shot!
+
+![Long side of "track".](/Users/amrit/GitHub/myBlog/content/resources/2020-03-27-100-lap-challenge/measure_20200327_163625.png) 
+
+Converting 171 feet to miles gives about 0.032 miles; with 2 sides this comes to about 0.064 miles.
+
+And, then the short side.
+
+![Short side of "track".](/Users/amrit/GitHub/myBlog/content/resources/2020-03-27-100-lap-challenge/measure_20200327_163713.png) 
+
+Converting 19 feet to miles gives about 0.004 miles; with 2 sides this comes to about 0.008 miles.
+
+Adding the long and short sides yields about 0.072, which I rounded to 0.075 miles to account for what I believed to be a slight underestimate based on the start/end points I selected when measuring.
+
+With this distance correction, my pace is closer to `r 11 * 0.06 / 0.075` min/mi instead of 11 min/mi. Now that sounds more like it! 
+
 ## Data prep.
+
+Now that I got the lap distance sorted, I can take a closer look at my in-run data. The Garmin Connect website allows a lot of the data to be exported as comma separated values, or CSV format.
 
 ### Define function to re-format data for plotting.
 
 ```{r, message = F}
+# Import nice library for a variety of data manipulation and visualization.
 library(tidyverse)
 
+# Basic importing, re-formatting and distance correction.
 getData <- function(fname, Date) {
-  day <- tbl_df(read.csv(fname, stringsAsFactors = F))
-  day <- day %>% slice(-n():-n())
-  day$Laps <- as.numeric(day$Laps)
   
+  day <- tbl_df(read.csv(fname, stringsAsFactors = F))
+  # Remove last entry, which gives summary.
+  day <- day %>% slice(-n():-n())
+  day$Laps <- as.numeric(day$Laps) 
+  
+  # Cool function allows splitting pace in mm:ss format
+  # by automatically detecting the ":" separator. This
+  # is to convert pace to a single plottable number. 
   day <- day %>% separate(Avg.Pace, c("Avg.Pace.Min", "Avg.Pace.Sec"))
   day$Avg.Pace.Min <- as.numeric(day$Avg.Pace.Min)
   day$Avg.Pace.Sec <- as.numeric(day$Avg.Pace.Sec)
   
+  # Re-format lap time into a single number for plotting. 
   day <- day %>% separate(Time, c("Time.Min", "Time.Sec"))
   day$Time.Min <- as.numeric(day$Time.Min)
   day$Time.Sec <- as.numeric(day$Time.Sec)
   
   day <- 
     day %>% 
+    # Distance correction.
     mutate(Distance = 0.075) %>%
+    # Only keep data of interest.
     select(Laps,
            Time.Min,
            Time.Sec,
@@ -47,45 +107,59 @@ getData <- function(fname, Date) {
 
 ### Day 1.
 
-Fix laps where I forgot to hit the "lap" button (i.e., combined splits).
+Now lets fix laps where I forgot to hit the "lap" button (i.e., accidentally combined splits). In this case, I only forgot one time, so the fix is pretty easy (but still annoying).
 
 ```{r, warning = F}
+# Call data import function defined previously.
 day1 <- getData("~/Downloads/Vadhana Running - 2020-03-24.csv") %>% mutate(Date = "2020-03-24")
 
+# Split up data into 3 sections: fine-fix-fine.
+
+# 'day1.1' is fine.
 day1.1 <- day1 %>% slice(1:9)
+
+# Split 10th lap into 2.
 day1.2 <- day1 %>% slice(10)
 
 day1.2 <- 
+  # Create a double entry.
   bind_rows(day1.2, day1.2) %>%
+  # Divide the lap time into 2 equal times and re-assign.
+  # Same for calories burned.
   mutate(Time.Sec = Time.Min * 60 / 2 + Time.Sec / 2, Time.Min = 0, Kcals = Kcals / 2)
 
+# Lap 10 -> Lap 10 + Lap 11 
 day1.2$Laps[2] <- 11
 
+# 'day1.3' is fine.
 day1.3 <- 
   day1 %>%
   slice(11:n()) %>%
+  # Shift lap numbers by due to fixing Lap 10.
   mutate(Laps = Laps + 1)
 
-day1 <- bind_rows(day1.1, day1.2, day1.3)
-```
-
-Correct average pace based on more accurate estimate of lap distance.
-
-```{r}
+# Recombine the sections, then fix the pace
+# and convert to single plottable number.
 day1 <- 
-  day1 %>%
+  bind_rows(day1.1, day1.2, day1.3) %>%
   mutate(Avg.Pace = Time.Sec / 60 / Distance) %>%
   select(-Time.Min) %>% rename(Time = Time.Sec)
+
+day1 %>% select(Date, everything())
 ```
+
+Now the data is almost ready to be plotted. But wait, there's more! That week, I ended up trying the 100 lap challenge a couple more times. So then I thought it might be interesting to see how the data compares across the 3 runs. 
 
 ### Day 2.
 
-Again, fix laps where I forgot to hit the "lap" button (i.e., combined splits).
+Again, I had to fix a lap where I forgot to hit the "lap" button. The process is essentially the same, so the code below is not really commented.
 
 ```{r, warning = F}
 day2 <- getData("~/Downloads/Vadhana Running - 2020-03-25.csv") %>% mutate(Date = "2020-03-25")
 
 day2.1 <- day2 %>% slice(1:31)
+
+# This time it was Lap 32!
 day2.2 <- day2 %>% slice(32)
 
 day2.2 <- 
@@ -99,17 +173,15 @@ day2.3 <-
   slice(33:n()) %>%
   mutate(Laps = Laps + 1)
 
-day2 <- bind_rows(day2.1, day2.2, day2.3)
-```
-
-Correct average pace based on more accurate estimate of lap distance.
-
-```{r}
 day2 <- 
-  day2 %>%
+  bind_rows(day2.1, day2.2, day2.3) %>%
   mutate(Avg.Pace = Time.Sec / 60 / Distance) %>%
   select(-Time.Min) %>% rename(Time = Time.Sec)
+
+day2 %>% select(Date, everything())
 ```
+
+No lap messups fo Day 3! A much simpler data import process.
 
 ### Day 3.
 
@@ -120,30 +192,76 @@ day3 <-
   day3 %>%
   mutate(Avg.Pace = Time.Sec / 60 / Distance) %>%
   select(-Time.Min) %>% rename(Time = Time.Sec)
+
+day3 %>% select(Date, everything())
+```
+
+### Calculating "Running Economy"
+
+It is a really nice feature that Garmin Connect allows easy exporting of your run data. BUT, they don't give you everything. Things that I think would be useful like humidity, wind speed, elevation (i.e., height, not gain/loss), and performance metrics like ["performance condition"](https://support.garmin.com/en-US/?faq=A28UA4k16v1qjjGuvSFgo8).
+
+Specifically, I am interested in comparing my performance condition across the 3 runs.
+
+I thought of a wiki about running I came across a while back that I've found to be very informative.[^5] I remembered a specific post on ["running economy"](https://fellrnr.com/wiki/Running_Economy), which is simply "how far and fast you can run with a given amount of energy." I went back to take a look and a formula was given based on average heart rate, resting heart rate (RHR), lap time, and lap distance.[^7] Conveniently, Garmin allows export of all of these fields.[^6]
+
+The formula:[^8] 
+```
+Total Beats = (Average Heart Rate – Resting Heart Rate) * Time in Minutes
+Work Per Mile = Total Beats / Distance in Miles
+Efficiency = 1 / Work Per Mile * 100,000
+```
+
+[^5]: I found [the site](http://fellrnr.com/wiki/Main_Page) looking through the description notes of the [OneRunData data field](https://apps.garmin.com/en-US/apps/08760e1e-16c7-4a61-ab0c-6c4a9b632b3f) available for my running watch.
+
+[^6]: Except RHR, but this can be easily estimated.
+
+[^7]: It was also nice to see the site reference a scientific study that came up with essentially the same formula (see [DOI 10.3389/fpsyg.2019.03026](http://dx.doi.org/10.3389/fpsyg.2019.03026)).
+
+[^8]: Formula as-listed on https://fellrnr.com/wiki/Running_Economy.
+
+With formula in hand, I added a new variable to the dataset called "RPI" for running performance index, which is meant to be a simple heuristic measure of running economy that would at least allow for comparison between runs.
+
+```{r, message = F}
+# Older library allowing for "unpivoting" the data.
+library(reshape2)
+
+# Combine all days into a single dataset.
+runData <- bind_rows(day1, day2, day3)
+
+# Assign RHR.
+# Based on previous 7 days read off of watch.
+RHR <- 60
+
+# Calculate RPI
+# (from: https://fellrnr.com/wiki/Running_Economy).
+runData <- 
+  runData %>%
+  mutate(RPI = 1 / (((Avg.HR - RHR) * (Time / 60)) / Distance) * 100000)
+
+runData$Date <- as.Date(runData$Date)
+
+runData %>% select(Date, everything())
 ```
 
 ## Exploratory data analysis.
 
+In this section, I take a look at several different ways of viewing the combined dataset looking for something interesting. I start with the raw data -- a look at the behavior of all unsmoothed variables as a function of lap.
+
 ```{r, message = F}
-library(reshape2)
+# Change the data from "wide" to "long'
+# to make plotting easier.
+pltRunData <- 
+  melt(runData, id.vars = c("Date", "Laps")) %>%
+  filter(variable != "Distance")
 
-runData <- bind_rows(day1, day2, day3)
-
-# Total Beats = (Average Heart Rate – Resting Heart Rate) * Time in Minutes
-RHR <- 60
-# Work Per Mile = Total Beats / Distance in Miles
-# Efficiency = 1 / Work Per Mile * 100,000
-
-# Determine RPI (from: https://fellrnr.com/wiki/Running_Economy)
-runData <- runData %>% mutate(RPI = 1 / (((Avg.HR - RHR) * (Time / 60)) / Distance) * 100000)
-
-runData$Date <- as.Date(runData$Date)
-
-pltRunData <- melt(runData, id.vars = c("Date", "Laps")) %>% filter(variable != "Distance")
-
+# Create a dataset of variable means
+# to add to plot.
 meanData <- pltRunData %>%
+  # Mean data
   group_by(Date, variable) %>%
   summarize(avg = mean(value)) %>%
+  # Add a column for mean value
+  # plot position (y-coordinate)
   left_join(pltRunData %>% group_by(variable) %>%
   summarize(ypos = 0.95*max(value))) %>%
   filter(variable != "Distance")
@@ -159,6 +277,14 @@ ggplot(pltRunData, aes(x=Laps, y=value)) +
   geom_line() + 
   facet_grid(variable ~ Date, scales = "free_y") 
 ```
+
+Get rid of the less interesting variables. Now, we are left with a core set of interesting information. In particular, looking at RPI, it looks like Day 3 shows the highest efficiency on average. This matches how I remember feeling that day as I felt I could have kept going for quite a bit more before I really started to overheat.
+
+The average cadence for Day 3 is also noticeably higher on average than the other days. This is not surprising because higher cadences are known to correlate with higher performance. My average pace also dropped steadily from the beginning to the end of the run on Day 3. Again, this is likely attributable to the increasing cadence over the same period. 
+
+It is also interesting to note that my average heart rate was the lowest on Day 3 across all days. Compared to Day 1 where it was the highest, I also had the fastest pace. So, the tradeoff between speed and endurance is clearly seen in the data and I can attest it was definitely felt! 
+
+The data also shows that the temperature on Day 2 was a bit lower than the other days, and I remember noting to myself on Day 2 that it felt significantly cooler than Day 1. I imagine this was the reason I was able to run 64 laps before starting to feel fatigued.
 
 ```{r}
 lessPlt <- pltRunData %>% filter(variable == "Avg.HR" |
@@ -187,6 +313,8 @@ ggplot(lessPlt, aes(x=Laps, y=value)) +
   facet_grid(variable ~ Date, scales = "free_y") 
 ```
 
+Now including each day's data on the same plot is tried for easier comparison. However, I don't like that the legend is needed to figure out the corresponding day. The viewer has to constantly flip back and forth between the plot and the legend and makes it cumbersome to interpret as opposed to the preceding plot, which is organized chronologically on the x-axis and can be read more naturally allowing for quicker/easier comparisons; also, adding the mean values provides an additional useful reference when comparing similar trends across days.
+
 ```{r}
 lessPlt$Date <- as.factor(lessPlt$Date)
 
@@ -196,22 +324,20 @@ ggplot(lessPlt, aes(x=Laps, y=value, color=Date)) +
   facet_grid(variable ~ ., scales = "free_y") 
 ```
 
-There seems to be a relationship between cadence and RPI, cadence and pace, and heart rate and temperature!
+Another view is tried looking at only mean data across days.
+
+A relationship between cadence and RPI, cadence and pace, and heart rate and temperature can be easily seen.
 
 ```{r}
 dayData <- meanData %>% filter(variable != "Max.HR", variable != "Time", variable != "Kcals")
 
-ggplot(dayData, aes(avg, fill = variable)) +
-  geom_bar() +
-  facet_grid(Date ~ variable, scales = "free")
-```
-
-```{r}
 ggplot(dayData, aes(avg, fill=variable)) +
   geom_bar() +
   facet_grid(Date ~ variable, scales = "free") +
   theme(legend.position="none")
 ```
+
+The mean data with a scatterplot.
 
 ```{r}
 ggplot(dayData, aes(Date, avg, color = variable)) +
@@ -219,6 +345,8 @@ ggplot(dayData, aes(Date, avg, color = variable)) +
   facet_grid(variable ~ ., scales = "free") +
   theme(legend.position="none")
 ```
+
+The above plot is sparse and hard to interpret, so I changed it to a line graph. Note the absence of a point for 'Mar 26' indicating that data is being interpolated at this point -- this is too subtle for my liking.
 
 ```{r, warning = F, message = F}
 ggplot(dayData, aes(Date, avg, color = variable)) +
@@ -228,6 +356,8 @@ ggplot(dayData, aes(Date, avg, color = variable)) +
   theme(legend.position="none")
 ```
 
+It's changed back to scatterplot, but this time with a line of best fit, or regression line, added.
+
 ```{r}
 ggplot(dayData, aes(Date, avg, color = variable)) +
   geom_point() +
@@ -236,7 +366,9 @@ ggplot(dayData, aes(Date, avg, color = variable)) +
   theme(legend.position="none")
 ```
 
-So, in short, slow down, and increase the cadence -- especially as the outside tempeature increases! When this happens, average heart rate decreases, you can delay the onset of fatigue, and run longer!
+The error bands added by default don't add much value so they are removed leaving the final version based on mean data below.
+
+The following plot and the one above of the reduced set of unsmoothed variables as a function of lap are the most interesting to me as they allow for a clear visual of several trends and easy comparisons between them.
 
 ```{r}
 ggplot(dayData, aes(Date, avg, color = variable)) +
@@ -246,76 +378,6 @@ ggplot(dayData, aes(Date, avg, color = variable)) +
   theme(legend.position="none")
 ```
 
-## Running economy over time.
+So, in short, on an extremely hot day in Bankok, slow down, and increase the cadence. When this happens, average heart rate decreases, you can delay the onset of fatigue, and run longer!
 
-```{r}
-historical <- tbl_df(read.csv("~/Downloads/Vadhana Running - Historical Full.csv", stringsAsFactors = F))
-
-rpi <- 
-  historical %>%
-    filter(Activity.Type != "Treadmill Running") %>%
-    select(Date, Title, Distance, Kcals = Calories, Time, Avg.HR, Cadence = Avg.Run.Cadence, Avg.Pace, Elev.Gain, Elev.Loss, Temp = Min.Temp)
-
-rpi <- rpi[-c(4), ]
-
-rpi$Date <- as.Date(rpi$Date)
-
-rpi <- rpi %>% separate(Avg.Pace, c("Avg.Pace.Min", "Avg.Pace.Sec"))
-rpi$Avg.Pace.Min <- as.numeric(rpi$Avg.Pace.Min)
-rpi$Avg.Pace.Sec <- as.numeric(rpi$Avg.Pace.Sec)
-  
-rpi <- rpi %>% separate(Time, c("Time.Hour", "Time.Min", "Time.Sec"))
-rpi$Time.Hour <- as.numeric(rpi$Time.Hour)
-rpi$Time.Min <- as.numeric(rpi$Time.Min)
-rpi$Time.Sec <- as.numeric(rpi$Time.Sec)
-
-# Total Beats = (Average Heart Rate – Resting Heart Rate) * Time in Minutes
-RHR <- 60
-# Work Per Mile = Total Beats / Distance in Miles
-# Efficiency = 1 / Work Per Mile * 100,000
-
-# Determine RPI (from: https://fellrnr.com/wiki/Running_Economy)
-rpi <- rpi %>% mutate(Avg.Pace = Avg.Pace.Min + Avg.Pace.Sec / 60,
-                      Time = Time.Hour * 3600 + Time.Min * 60 + Time.Sec,
-                      RPI = 1 / (((Avg.HR - RHR) * (Time / 60)) / Distance) * 100000)
-
-rpi$Avg.Pace <- as.numeric(rpi$Avg.Pace)
-rpi$Elev.Gain <- as.numeric(rpi$Elev.Gain)
-rpi$Elev.Gain <- as.numeric(rpi$Elev.Loss)
-```
-
-```{r}
-library(plotly)
-p <- 
-  ggplot(rpi, aes(Date, RPI,
-                  label = Title,
-                  label2 = Distance,
-                  label3 = Avg.HR,
-                  label4 = Cadence,
-                  label5 = Temp)) +
-    geom_point() +
-    geom_smooth() # formula = y ~ splines::bs(x, 3)
-
-ggplotly(p)
-```
-
-```{r, warning = F}
-multiRPI <- 
-  melt(rpi, id.vars = c("Date", "Title", "RPI")) %>%
-    filter(variable == "Distance" | 
-           variable == "Avg.HR" |
-           variable == "Cadence" |
-           variable == "Avg.Pace" |
-           variable == "Elev.Gain" |
-           variable == "Temp"
-          )
-
-multiRPI$value <- as.numeric(multiRPI$value)
-
-ggplot(multiRPI, aes(value, RPI)) +
-  geom_point() +
-  geom_smooth(method = lm) +
-  facet_wrap(variable ~ ., scales = "free")
-```
-
-
+I'm still set on completing 100 laps without stopping before I leave this place. Hopefully, I will take my own advice when I try again tomorrow.
