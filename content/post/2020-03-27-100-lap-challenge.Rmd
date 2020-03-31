@@ -12,7 +12,7 @@ tags:
 
 Having recently hunkered down in Bangkok for the foreseeable future,[^1] in an apartment building with a closed gym,[^2] I wondered what kind of exercise routine I could establish.
 
-[^1]: Thanks, COVID-19!
+[^1]: Thanks, [COVID-19](https://www.washingtonpost.com/health/three-months-into-the-pandemic-here-is-what-we-know-about-the-coronavirus/2020/03/28/6646f502-6eab-11ea-b148-e4ce3fbd85b5_story.html)!
 [^2]: Thanks, again!
 
 Playing with my son in the courtyard a couple days in, I somehow got the idea of jogging a few laps around the makeshift track formed by the walking pathway -- despite a heat index over 100 degree F! 
@@ -43,13 +43,13 @@ Feeling a little defeated, I remembered that I had the [Smart Tools](https://pla
 
 First I measured the long side of the track with the app. Don't mind my finger blocking the camera when I took the screen shot!
 
-![Long side of "track".](/Users/amrit/GitHub/myBlog/content/resources/2020-03-27-100-lap-challenge/measure_20200327_163625.png) 
+![*Long side of "track".*](/post/2020-03-27-100-lap-challenge_files/measure_20200327_163625.png){width=80% height=80%}
 
 Converting 171 feet to miles gives about 0.032 miles; with 2 sides this comes to about 0.064 miles.
 
 And, then the short side.
 
-![Short side of "track".](/Users/amrit/GitHub/myBlog/content/resources/2020-03-27-100-lap-challenge/measure_20200327_163713.png) 
+![*Short side of "track".*](/post/2020-03-27-100-lap-challenge_files/measure_20200327_163713.png){width=80% height=80%}
 
 Converting 19 feet to miles gives about 0.004 miles; with 2 sides this comes to about 0.008 miles.
 
@@ -61,6 +61,8 @@ With this distance correction, my pace is closer to `r 11 * 0.06 / 0.075` min/mi
 
 Now that I got the lap distance sorted, I can take a closer look at my in-run data. The Garmin Connect website allows a lot of the data to be exported as comma separated values, or CSV format.
 
+I organized all of the raw data in [a Google Sheet](https://docs.google.com/spreadsheets/d/1SwHuRvKulaGl13F2ahc6eFFYBWguhsL7kgZT-41MeoA/edit?usp=sharing).
+
 ### Define function to re-format data for plotting.
 
 ```{r, message = F}
@@ -68,7 +70,7 @@ Now that I got the lap distance sorted, I can take a closer look at my in-run da
 library(tidyverse)
 
 # Basic importing, re-formatting and distance correction.
-getData <- function(fname, Date) {
+getData <- function(fname) {
   
   day <- tbl_df(read.csv(fname, stringsAsFactors = F))
   # Remove last entry, which gives summary.
@@ -278,13 +280,7 @@ ggplot(pltRunData, aes(x=Laps, y=value)) +
   facet_grid(variable ~ Date, scales = "free_y") 
 ```
 
-Get rid of the less interesting variables. Now, we are left with a core set of interesting information. In particular, looking at RPI, it looks like Day 3 shows the highest efficiency on average. This matches how I remember feeling that day as I felt I could have kept going for quite a bit more before I really started to overheat.
-
-The average cadence for Day 3 is also noticeably higher on average than the other days. This is not surprising because higher cadences are known to correlate with higher performance. My average pace also dropped steadily from the beginning to the end of the run on Day 3. Again, this is likely attributable to the increasing cadence over the same period. 
-
-It is also interesting to note that my average heart rate was the lowest on Day 3 across all days. Compared to Day 1 where it was the highest, I also had the fastest pace. So, the tradeoff between speed and endurance is clearly seen in the data and I can attest it was definitely felt! 
-
-The data also shows that the temperature on Day 2 was a bit lower than the other days, and I remember noting to myself on Day 2 that it felt significantly cooler than Day 1. I imagine this was the reason I was able to run 64 laps before starting to feel fatigued.
+Let's get rid of the less interesting variables.
 
 ```{r}
 lessPlt <- pltRunData %>% filter(variable == "Avg.HR" |
@@ -313,7 +309,15 @@ ggplot(lessPlt, aes(x=Laps, y=value)) +
   facet_grid(variable ~ Date, scales = "free_y") 
 ```
 
-Now including each day's data on the same plot is tried for easier comparison. However, I don't like that the legend is needed to figure out the corresponding day. The viewer has to constantly flip back and forth between the plot and the legend and makes it cumbersome to interpret as opposed to the preceding plot, which is organized chronologically on the x-axis and can be read more naturally allowing for quicker/easier comparisons; also, adding the mean values provides an additional useful reference when comparing similar trends across days.
+Now, we are left with a core set of interesting information. In particular, looking at RPI, it looks like Day 3 shows the highest efficiency on average. This matches how I remember feeling that day as I felt I could have kept going for quite a bit more before I really started to overheat.
+
+The average cadence for Day 3 is also noticeably higher on average than the other days. This is not surprising because higher cadences are known to correlate with higher performance. My average pace also dropped steadily from the beginning to the end of the run on Day 3. Again, this is likely attributable to the increasing cadence over the same period. 
+
+It is also interesting to note that my average heart rate was the lowest on Day 3 across all days. Compared to Day 1 where it was the highest, I also had the fastest pace. So, the tradeoff between speed and endurance is clearly seen in the data and I can attest it was definitely felt! 
+
+The data also shows that the temperature on Day 2 was a bit lower than the other days, and I remember noting to myself on Day 2 that it felt significantly cooler than Day 1. I imagine this was the reason I was able to run 64 laps before starting to feel fatigued.
+
+Now including each day's data on the same plot is tried for easier comparison.
 
 ```{r}
 lessPlt$Date <- as.factor(lessPlt$Date)
@@ -324,9 +328,9 @@ ggplot(lessPlt, aes(x=Laps, y=value, color=Date)) +
   facet_grid(variable ~ ., scales = "free_y") 
 ```
 
-Another view is tried looking at only mean data across days.
+However, I don't like that the legend is needed to figure out the corresponding day. The viewer has to constantly flip back and forth between the plot and the legend and makes it cumbersome to interpret as opposed to the preceding plot, which is organized chronologically on the x-axis and can be read more naturally allowing for quicker/easier comparisons; also, adding the mean values provides an additional useful reference when comparing similar trends across days.
 
-A relationship between cadence and RPI, cadence and pace, and heart rate and temperature can be easily seen.
+Another view is tried looking at only mean data across days.
 
 ```{r}
 dayData <- meanData %>% filter(variable != "Max.HR", variable != "Time", variable != "Kcals")
@@ -336,6 +340,8 @@ ggplot(dayData, aes(avg, fill=variable)) +
   facet_grid(Date ~ variable, scales = "free") +
   theme(legend.position="none")
 ```
+
+A relationship between cadence and RPI, cadence and pace, and heart rate and temperature can be easily seen.
 
 The mean data with a scatterplot.
 

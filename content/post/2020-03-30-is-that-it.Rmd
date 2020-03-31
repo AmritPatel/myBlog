@@ -1,0 +1,72 @@
+---
+title: Is that it?
+author: Amrit Patel
+date: '2020-03-30'
+slug: is-that-it
+categories:
+  - R
+tags:
+  - R Markdown
+  - regression
+  - plot
+draft: true
+---
+
+```{r, message = F}
+source("~/GitHub/myBlog/content/resources/2020-03-27-100-lap-challenge/100LapChallengePrepare.R")
+```
+
+```{r, warning = F}
+day4 <- getData("~/Downloads/Vadhana Running - 2020-03-30.csv") %>% mutate(Date = "2020-03-30")
+
+day4 <- 
+  day4 %>%
+  mutate(Avg.Pace = Time.Sec / 60 / Distance) %>%
+  select(-Time.Min) %>% rename(Time = Time.Sec)
+
+# day4 %>% select(Date, everything())
+```
+
+```{r, message = F}
+source("~/GitHub/myBlog/content/resources/2020-03-27-100-lap-challenge/100LapChallengeCombine.R")
+
+```
+
+```{r, message = F}
+source("~/GitHub/myBlog/content/resources/2020-03-27-100-lap-challenge/100LapChallengeForPlot.R")
+```
+
+Something's up with Lap 50.
+
+```{r}
+lessPlt %>%
+  group_by(Date, variable) %>%
+  filter(Date =="2020-03-30", variable == "RPI") %>%
+  arrange(desc(value)) %>% top_n(5, value)
+
+lessPlt %>%
+  group_by(Date, variable) %>% 
+  filter(Date =="2020-03-30", variable == "Avg.Pace") %>%
+  arrange(value) %>%
+  slice(1:5)
+```
+
+Let's remove it.
+
+```{r}
+lessPlt <- lessPlt %>% filter(Date !="2020-03-30" || Laps != "50")
+```
+
+
+```{r}
+ggplot(lessPlt, aes(x=Laps, y=value)) +
+  geom_hline(data=lessMean, aes(yintercept = avg), colour="red", lty=3) +
+  geom_text(data=lessMean,
+            aes(label=round(avg,1), x=62, y=ypos),
+            colour="red",
+            hjust=1,
+            size=3) +
+  xlim(c(1,65)) +
+  geom_line() + 
+  facet_grid(variable ~ Date, scales = "free_y") 
+```

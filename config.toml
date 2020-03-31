@@ -1,9 +1,9 @@
-baseurl = "http://amritpatel.rbind.io/"
+baseurl = "http://amritpatel.netlify.io/"
 languageCode = "en-us"
 title = "Amrit's Blog"
 theme = "hugo-lithium"
 googleAnalytics = ""
-disqusShortname = ""
+disqusShortname = "amrits-blog"
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 enableEmoji = true
 

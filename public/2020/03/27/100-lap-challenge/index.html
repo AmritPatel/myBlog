@@ -92,14 +92,14 @@
 <p>Feeling a little defeated, I remembered that I had the <a href="https://play.google.com/store/apps/details?id=kr.aboy.tools&amp;hl=en_US">Smart Tools</a> distance tool on my phone, which allows convenient measurement of long distances from any height using simple trigonometry.<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a></p>
 <p>First I measured the long side of the track with the app. Don’t mind my finger blocking the camera when I took the screen shot!</p>
 <div class="figure">
-<img src="/Users/amrit/GitHub/myBlog/content/resources/2020-03-27-100-lap-challenge/measure_20200327_163625.png" alt="Long side of “track”." />
-<p class="caption">Long side of “track”.</p>
+<img src="/post/2020-03-27-100-lap-challenge_files/measure_20200327_163625.png" alt="Long side of “track”." style="width:80.0%;height:80.0%" />
+<p class="caption"><em>Long side of “track”.</em></p>
 </div>
 <p>Converting 171 feet to miles gives about 0.032 miles; with 2 sides this comes to about 0.064 miles.</p>
 <p>And, then the short side.</p>
 <div class="figure">
-<img src="/Users/amrit/GitHub/myBlog/content/resources/2020-03-27-100-lap-challenge/measure_20200327_163713.png" alt="Short side of “track”." />
-<p class="caption">Short side of “track”.</p>
+<img src="/post/2020-03-27-100-lap-challenge_files/measure_20200327_163713.png" alt="Short side of “track”." style="width:80.0%;height:80.0%" />
+<p class="caption"><em>Short side of “track”.</em></p>
 </div>
 <p>Converting 19 feet to miles gives about 0.004 miles; with 2 sides this comes to about 0.008 miles.</p>
 <p>Adding the long and short sides yields about 0.072, which I rounded to 0.075 miles to account for what I believed to be a slight underestimate based on the start/end points I selected when measuring.</p>
@@ -107,13 +107,14 @@
 <div id="data-prep." class="section level2">
 <h2>Data prep.</h2>
 <p>Now that I got the lap distance sorted, I can take a closer look at my in-run data. The Garmin Connect website allows a lot of the data to be exported as comma separated values, or CSV format.</p>
+<p>I organized all of the raw data in <a href="https://docs.google.com/spreadsheets/d/1SwHuRvKulaGl13F2ahc6eFFYBWguhsL7kgZT-41MeoA/edit?usp=sharing">a Google Sheet</a>.</p>
 <div id="define-function-to-re-format-data-for-plotting." class="section level3">
 <h3>Define function to re-format data for plotting.</h3>
 <pre class="r"><code># Import nice library for a variety of data manipulation and visualization.
 library(tidyverse)
 
 # Basic importing, re-formatting and distance correction.
-getData &lt;- function(fname, Date) {
+getData &lt;- function(fname) {
   
   day &lt;- tbl_df(read.csv(fname, stringsAsFactors = F))
   # Remove last entry, which gives summary.
@@ -349,10 +350,7 @@ ggplot(pltRunData, aes(x=Laps, y=value)) +
   geom_line() + 
   facet_grid(variable ~ Date, scales = &quot;free_y&quot;) </code></pre>
 <p><img src="/post/2020-03-27-100-lap-challenge_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<p>Get rid of the less interesting variables. Now, we are left with a core set of interesting information. In particular, looking at RPI, it looks like Day 3 shows the highest efficiency on average. This matches how I remember feeling that day as I felt I could have kept going for quite a bit more before I really started to overheat.</p>
-<p>The average cadence for Day 3 is also noticeably higher on average than the other days. This is not surprising because higher cadences are known to correlate with higher performance. My average pace also dropped steadily from the beginning to the end of the run on Day 3. Again, this is likely attributable to the increasing cadence over the same period.</p>
-<p>It is also interesting to note that my average heart rate was the lowest on Day 3 across all days. Compared to Day 1 where it was the highest, I also had the fastest pace. So, the tradeoff between speed and endurance is clearly seen in the data and I can attest it was definitely felt!</p>
-<p>The data also shows that the temperature on Day 2 was a bit lower than the other days, and I remember noting to myself on Day 2 that it felt significantly cooler than Day 1. I imagine this was the reason I was able to run 64 laps before starting to feel fatigued.</p>
+<p>Let’s get rid of the less interesting variables.</p>
 <pre class="r"><code>lessPlt &lt;- pltRunData %&gt;% filter(variable == &quot;Avg.HR&quot; |
                                  variable == &quot;Avg.Pace&quot; |
                                  variable == &quot;Cadence&quot; |
@@ -378,7 +376,11 @@ ggplot(lessPlt, aes(x=Laps, y=value)) +
   geom_line() + 
   facet_grid(variable ~ Date, scales = &quot;free_y&quot;) </code></pre>
 <p><img src="/post/2020-03-27-100-lap-challenge_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<p>Now including each day’s data on the same plot is tried for easier comparison. However, I don’t like that the legend is needed to figure out the corresponding day. The viewer has to constantly flip back and forth between the plot and the legend and makes it cumbersome to interpret as opposed to the preceding plot, which is organized chronologically on the x-axis and can be read more naturally allowing for quicker/easier comparisons; also, adding the mean values provides an additional useful reference when comparing similar trends across days.</p>
+<p>Now, we are left with a core set of interesting information. In particular, looking at RPI, it looks like Day 3 shows the highest efficiency on average. This matches how I remember feeling that day as I felt I could have kept going for quite a bit more before I really started to overheat.</p>
+<p>The average cadence for Day 3 is also noticeably higher on average than the other days. This is not surprising because higher cadences are known to correlate with higher performance. My average pace also dropped steadily from the beginning to the end of the run on Day 3. Again, this is likely attributable to the increasing cadence over the same period.</p>
+<p>It is also interesting to note that my average heart rate was the lowest on Day 3 across all days. Compared to Day 1 where it was the highest, I also had the fastest pace. So, the tradeoff between speed and endurance is clearly seen in the data and I can attest it was definitely felt!</p>
+<p>The data also shows that the temperature on Day 2 was a bit lower than the other days, and I remember noting to myself on Day 2 that it felt significantly cooler than Day 1. I imagine this was the reason I was able to run 64 laps before starting to feel fatigued.</p>
+<p>Now including each day’s data on the same plot is tried for easier comparison.</p>
 <pre class="r"><code>lessPlt$Date &lt;- as.factor(lessPlt$Date)
 
 ggplot(lessPlt, aes(x=Laps, y=value, color=Date)) +
@@ -386,8 +388,8 @@ ggplot(lessPlt, aes(x=Laps, y=value, color=Date)) +
   geom_line() +  
   facet_grid(variable ~ ., scales = &quot;free_y&quot;) </code></pre>
 <p><img src="/post/2020-03-27-100-lap-challenge_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>However, I don’t like that the legend is needed to figure out the corresponding day. The viewer has to constantly flip back and forth between the plot and the legend and makes it cumbersome to interpret as opposed to the preceding plot, which is organized chronologically on the x-axis and can be read more naturally allowing for quicker/easier comparisons; also, adding the mean values provides an additional useful reference when comparing similar trends across days.</p>
 <p>Another view is tried looking at only mean data across days.</p>
-<p>A relationship between cadence and RPI, cadence and pace, and heart rate and temperature can be easily seen.</p>
 <pre class="r"><code>dayData &lt;- meanData %&gt;% filter(variable != &quot;Max.HR&quot;, variable != &quot;Time&quot;, variable != &quot;Kcals&quot;)
 
 ggplot(dayData, aes(avg, fill=variable)) +
@@ -395,6 +397,7 @@ ggplot(dayData, aes(avg, fill=variable)) +
   facet_grid(Date ~ variable, scales = &quot;free&quot;) +
   theme(legend.position=&quot;none&quot;)</code></pre>
 <p><img src="/post/2020-03-27-100-lap-challenge_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>A relationship between cadence and RPI, cadence and pace, and heart rate and temperature can be easily seen.</p>
 <p>The mean data with a scatterplot.</p>
 <pre class="r"><code>ggplot(dayData, aes(Date, avg, color = variable)) +
   geom_point() +
@@ -429,7 +432,7 @@ ggplot(dayData, aes(avg, fill=variable)) +
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>Thanks, COVID-19!<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn1"><p>Thanks, <a href="https://www.washingtonpost.com/health/three-months-into-the-pandemic-here-is-what-we-know-about-the-coronavirus/2020/03/28/6646f502-6eab-11ea-b148-e4ce3fbd85b5_story.html">COVID-19</a>!<a href="#fnref1" class="footnote-back">↩</a></p></li>
 <li id="fn2"><p>Thanks, again!<a href="#fnref2" class="footnote-back">↩</a></p></li>
 <li id="fn3"><p>And not consistently in almost a year.<a href="#fnref3" class="footnote-back">↩</a></p></li>
 <li id="fn4"><p>All that is needed is a right triangle with one side known (phone height) and one other angle.<a href="#fnref4" class="footnote-back">↩</a></p></li>
@@ -444,6 +447,28 @@ ggplot(dayData, aes(avg, fill=variable)) +
   </article>
 
   
+<section id="comments">
+  <div id="disqus_thread"></div>
+  <script>
+  var disqus_config = function () {
+  
+  };
+  (function() {
+    var inIFrame = function() {
+      var iframe = true;
+      try { iframe = window.self !== window.top; } catch (e) {}
+      return iframe;
+    };
+    if (inIFrame()) return;
+    var d = document, s = d.createElement('script');
+    s.src = '//amrits-blog.disqus.com/embed.js'; s.async = true;
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
 
 
 </main>
