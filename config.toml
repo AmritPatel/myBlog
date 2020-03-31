@@ -1,4 +1,4 @@
-baseurl = "http://amritpatel.netlify.io/"
+baseurl = "http://amritpatel.netlify.com/"
 languageCode = "en-us"
 title = "Amrit's Blog"
 theme = "hugo-lithium"
@@ -13,6 +13,12 @@ enableEmoji = true
 [[menu.main]]
     name = "About"
     url = "/about/"
+ [[menu.main]]
+    name = "Tags"
+    url = "/tags"
+ [[menu.main]]
+    name = "Categories"
+    url = "/categories"
 [[menu.main]]
     name = "GitHub"
     url = "https://github.com/AmritPatel"
@@ -21,7 +27,7 @@ enableEmoji = true
     url = "https://twitter.com/im_apatel"
 
 [params]
-    description = "Amrit's blog: teaching, programming, design, travel."
+    description = "Amrit's blog: teaching, programming, and design."
 
     # options for highlight.js (version, additional languages, and theme)
     highlightjsVersion = "9.12.0"
