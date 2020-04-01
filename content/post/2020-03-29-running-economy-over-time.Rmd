@@ -8,13 +8,13 @@ categories:
 tags:
   - R Markdown
   - regression
-  
-draft: true
 ---
 
-## Running economy over time.
+After implementing the running performance index (RPI) in my [previous post](https://amritpatel.rbind.io/2020/03/27/100-lap-challenge/), I was curious to know what my RPI was using [*ALL* the data I had available](https://docs.google.com/spreadsheets/d/1SwHuRvKulaGl13F2ahc6eFFYBWguhsL7kgZT-41MeoA/edit#gid=1295392789), which I found goes back to *2009*! 
 
-```{r, message = F, warning = T}
+Using more or less the same process as documented in the previous post, I import all of my available running data for runs that were greater than or equal to 3 miles and that were *not* run on a treadmill. This should be more representative of my typical running conditions. 
+
+```{r, message = F, warning = F}
 library(tidyverse)
 
 historical <- tbl_df(read.csv("~/Downloads/Vadhana Running - Historical Full.csv", stringsAsFactors = F))
@@ -24,14 +24,18 @@ rpi <-
     filter(Activity.Type != "Treadmill Running") %>%
     select(Date, Title, Distance, Kcals = Calories, Time, Avg.HR, Cadence = Avg.Run.Cadence, Avg.Pace, Elev.Gain, Elev.Loss, Temp = Min.Temp)
 
-rpi <- rpi[-c(4), ]
+rpi <- rpi[-c(4), ] # Remove erroneous data.
 
 rpi$Date <- as.Date(rpi$Date)
 
+# Cool function allows splitting pace in mm:ss format
+# by automatically detecting the ":" separator. This
+# is to convert pace to a single plottable number.
 rpi <- rpi %>% separate(Avg.Pace, c("Avg.Pace.Min", "Avg.Pace.Sec"))
 rpi$Avg.Pace.Min <- as.numeric(rpi$Avg.Pace.Min)
 rpi$Avg.Pace.Sec <- as.numeric(rpi$Avg.Pace.Sec)
   
+# Re-format lap time into a single number for plotting.
 rpi <- rpi %>% separate(Time, c("Time.Hour", "Time.Min", "Time.Sec"))
 rpi$Time.Hour <- as.numeric(rpi$Time.Hour)
 rpi$Time.Min <- as.numeric(rpi$Time.Min)
@@ -52,6 +56,8 @@ rpi$Elev.Gain <- as.numeric(rpi$Elev.Gain)
 rpi$Elev.Gain <- as.numeric(rpi$Elev.Loss)
 ```
 
+Using the [plotly](https://plotly-r.com/index.html) package for R, the static, and typically overcrowded plot can very easily be converted into an interactive plot by simply passing the `ggplot` plot object to `ggplotly()` from the `plotly` library as shown below. 
+
 ```{r, message = F, warning = T}
 library(plotly)
 p <- 
@@ -67,23 +73,153 @@ p <-
 ggplotly(p)
 ```
 
-```{r, warning = F, message = F}
-library(reshape2)
+What is really nifty is that by adding some labels within the `ggplot` plot aesthetics section, corresponding variable values can be shown using the tooltip on mousover!
 
-multiRPI <- 
-  melt(rpi, id.vars = c("Date", "Title", "RPI")) %>%
-    filter(variable == "Distance" | 
-           variable == "Avg.HR" |
-           variable == "Cadence" |
-           variable == "Avg.Pace" |
-           variable == "Elev.Gain" |
-           variable == "Temp"
-          )
+I also like that I can zoom in on different portions of the plot (e.g., the 3 obvious clusters of years) to inspect the various runs closer (and for a trip down memory lane!).
 
-multiRPI$value <- as.numeric(multiRPI$value)
+What is interesting to me is that the 1st cluster starting around 2010 is when I was training for my 1st marathon. There is a clear upward trend in RPI over time here as I was training and logging lots of miles.
 
-ggplot(multiRPI, aes(value, RPI)) +
-  geom_point() +
-  geom_smooth(method = lm) +
-  facet_wrap(variable ~ ., scales = "free")
+There is another noticeable upward trend in the 2nd cluster around 2015, when I was training for my 2nd marathon.
+
+What I don't notice near the 3rd cluster starting around 2017 is a point corresponding to my 2016 marathon. Well, where is it? Upon inspection of the associated error message above, I see that 79 data points have been removed as they contained "non-finite" values. Let's start by inspecting the RPI data and checking for missing data (i.e., NAs).
+
+```{r}
+rpi %>% filter(is.na(RPI)) %>% summarize(n())
 ```
+
+Yep, there are 79 NA values for RPI. This must mean that one of the inputs to the RPI calculation is missing. My 1st guess would be that the average heart rate data is missing because before I upgraded my running watch to the current version with an internal heart rate monitor, I had a chest strap that I had to wear for heart rate data. And, there were many times I didn't wear it either due to a dead battery, it not working, or not bothering to put it on. Let's check this guess.
+
+```{r}
+rpi %>% filter(is.na(Avg.HR)) %>% summarize(n())
+```
+
+Yep, 79 NA values for average heart rate. Soooo, there goes a bunch of points being removed from the plot.
+
+How to address this?
+
+Maybe we can [impute](https://www.wikiwand.com/en/Imputation_(statistics)) the data just for fun![^1]
+
+[^1]: ***WARNING***: Data imputation has a really high chance of introducing significant biases into our dataset! This can mess up the conclusions we draw from the data. Depending on the importance of the dataset being analyzed, extreme caution may be warranted!
+
+Let's see if there are any obvious relationships to some other variables tracked during runs to see if we can use [multiple linear regression](https://www.statmethods.net/stats/regression.html) to infer what RPI might be under certain conditions on average.
+
+Since values for all variables aren't available due to availability based on running watch type, only average pace and distance variables can be used as these are the only variables shared between watches.
+
+```{r, message = F}
+# Stepwise Regression
+library(MASS)
+
+fit <- lm(Avg.HR ~ Avg.Pace + Distance, data = rpi)
+step <- stepAIC(fit, direction="both")
+step$anova # display results
+```
+
+Now the coefficients from the regression are used to replace the 79 NAs.
+
+```{r, message = F}
+modRPI <- 
+  rpi %>%
+  mutate(Type = ifelse(is.na(Avg.HR) == TRUE, "Imputed", "Original"),
+         RPI  = ifelse(is.na(Avg.HR) == TRUE,
+                      step$coefficients[[3]][[1]] * Distance +
+                      step$coefficients[[2]][[1]] * Avg.Pace +
+                      step$coefficients[[1]][[1]],
+                      RPI
+                      )
+         )
+
+q <- 
+  ggplot(modRPI, aes(Date, RPI, color = Type,
+                     label = Title,
+                     label2 = Distance,
+                     label3 = Avg.HR,
+                     label4 = Cadence,
+                     label5 = Temp)) +
+    geom_point()  +
+    geom_smooth() # formula = y ~ splines::bs(x, 3)
+
+ggplotly(q)
+```
+
+Let's see if a local regression or locally estimated scatterplot smoothing (LOESS) fit would work better (this is the type of regression used on the original dataset).
+
+```{r, message = F}
+fit <- loess(Avg.HR ~ Avg.Pace + Distance, data = rpi)
+```
+
+```{r, message = F}
+modRPI <- 
+  rpi %>%
+  mutate(Type = ifelse(is.na(Avg.HR) == TRUE, "Imputed", "Original"),
+         RPI  = ifelse(is.na(Avg.HR) == TRUE,
+                      predict(fit, data.frame(Avg.Pace, Distance)) - 0, 
+                      RPI
+                      )
+         )
+
+r <- 
+  ggplot(modRPI, aes(Date, RPI, color = Type,
+                     label = Title,
+                     label2 = Distance,
+                     label3 = Avg.HR,
+                     label4 = Cadence,
+                     label5 = Temp)) +
+    geom_point()  +
+    geom_smooth(aes(group = 1)) # formula = y ~ splines::bs(x, 3)
+
+ggplotly(r)
+```
+
+Well, that doesn't look right either. It looks like the data is somehow biased high. Taking a super unscientific approach, I can try and eyeball a constant bias. It looks to be off by about 35 to me. Adding that correction, we get the following.
+
+```{r, message = F}
+modAndShiftRPI <- 
+  rpi %>%
+  mutate(Type = ifelse(is.na(Avg.HR) == TRUE, "Imputed", "Original"),
+         RPI  = ifelse(is.na(Avg.HR) == TRUE,
+                      predict(fit, data.frame(Avg.Pace, Distance)) - 35, 
+                      RPI
+                      )
+         )
+
+s <- 
+  ggplot(modAndShiftRPI, aes(Date, RPI, color = Type,
+                     label = Title,
+                     label2 = Distance,
+                     label3 = Avg.HR,
+                     label4 = Cadence,
+                     label5 = Temp)) +
+    geom_point()  +
+    geom_smooth(aes(group = 1)) # formula = y ~ splines::bs(x, 3)
+
+ggplotly(s)
+```
+
+To provide some comfort that this 35 RPI shift isn't completely bogus, I verified that similar neighboring runs on the plot were comparable.[^2]
+
+[^2]: For example: (1) imputed "Silver Spring Running" on 2015-12-27 compared to surrounding original "Silver Spring Running" runs, and (2) imputed "Bethesda Trolley Trail Run" on 2011-10-17 compared to its surrounding originals.
+
+This was a really fun analysis, mainly because ideas about how to process and analyze the data just occurred to me as I was plodding along and writing this post. I'm pretty happy where the plot ended up, and it's nice to have a clearly labeled interactive plot that I can share, re-visit, and easily add to in the future.
+
+By the way, in case you were wondering, there are `r nrow(modAndShiftRPI)` runs on display in that final plot spanning approximately 11 years.
+
+<!-- # ```{r, warning = F, message = F} -->
+<!-- # library(reshape2) -->
+<!-- #  -->
+<!-- # multiRPI <-  -->
+<!-- #   melt(rpi, id.vars = c("Date", "Title", "RPI")) %>% -->
+<!-- #     filter(variable == "Distance" |  -->
+<!-- #            variable == "Avg.HR" | -->
+<!-- #            variable == "Cadence" | -->
+<!-- #            variable == "Avg.Pace" | -->
+<!-- #            variable == "Elev.Gain" | -->
+<!-- #            variable == "Temp" -->
+<!-- #           ) -->
+<!-- #  -->
+<!-- # multiRPI$value <- as.numeric(multiRPI$value) -->
+<!-- #  -->
+<!-- # ggplot(multiRPI, aes(value, RPI)) + -->
+<!-- #   geom_point() + -->
+<!-- #   geom_smooth(method = lm) + -->
+<!-- #   facet_wrap(variable ~ ., scales = "free") -->
+<!-- # ``` -->

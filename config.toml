@@ -1,4 +1,4 @@
-baseurl = "http://amritpatel.netlify.com/"
+baseurl = "http://amritpatel.rbind.io/"
 languageCode = "en-us"
 title = "Amrit's Blog"
 theme = "hugo-lithium"
