@@ -22,9 +22,9 @@ enableEmoji = true
 [[menu.main]]
     name = "GitHub"
     url = "https://github.com/AmritPatel"
-[[menu.main]]
-    name = "Twitter"
-    url = "https://twitter.com/im_apatel"
+#[[menu.main]]
+#    name = "Twitter"
+#    url = "https://twitter.com/im_apatel"
 
 [params]
     description = "Amrit's blog: teaching, programming, and design."
