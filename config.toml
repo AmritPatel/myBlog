@@ -26,8 +26,6 @@ enableEmoji = true
 #    name = "Twitter"
 #    url = "https://twitter.com/im_apatel"
 
-test
-
 [params]
     description = "Amrit's blog: teaching, programming, and design."
 
