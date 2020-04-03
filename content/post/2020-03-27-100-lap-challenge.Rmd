@@ -200,7 +200,7 @@ day3 %>% select(Date, everything())
 
 ### Calculating "Running Economy"
 
-It is a really nice feature that Garmin Connect allows easy exporting of your run data. BUT, they don't give you everything. Things that I think would be useful like humidity, wind speed, elevation (i.e., height, not gain/loss), and performance metrics like ["performance condition"](https://support.garmin.com/en-US/?faq=A28UA4k16v1qjjGuvSFgo8).
+It is a really nice feature that Garmin Connect allows easy exporting of your run data. *But*, they don't give you everything. Things that I think would be useful like humidity, wind speed, elevation (i.e., height, not gain/loss), and performance metrics like ["performance condition"](https://support.garmin.com/en-US/?faq=A28UA4k16v1qjjGuvSFgo8).
 
 Specifically, I am interested in comparing my performance condition across the 3 runs.
 
