@@ -4,41 +4,61 @@
   
   <url>
     <loc>/categories/</loc>
-    <lastmod>2020-03-30T00:00:00+00:00</lastmod>
+    <lastmod>2020-06-13T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/2020/03/30/is-that-it/</loc>
-    <lastmod>2020-03-30T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/plot/</loc>
-    <lastmod>2020-03-30T00:00:00+00:00</lastmod>
+    <loc>/2020/06/13/heat-training/</loc>
+    <lastmod>2020-06-13T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/post/</loc>
-    <lastmod>2020-03-30T00:00:00+00:00</lastmod>
+    <lastmod>2020-06-13T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/r/</loc>
-    <lastmod>2020-03-30T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/r-markdown/</loc>
-    <lastmod>2020-03-30T00:00:00+00:00</lastmod>
+    <lastmod>2020-06-13T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/regression/</loc>
-    <lastmod>2020-03-30T00:00:00+00:00</lastmod>
+    <lastmod>2020-06-13T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/running/</loc>
+    <lastmod>2020-06-13T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/</loc>
+    <lastmod>2020-06-13T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/06/11/rpi-by-lap/</loc>
+    <lastmod>2020-06-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/04/19/converting-google-classroom-gradebook-to-standards-based-report-cards/</loc>
+    <lastmod>2020-04-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/correlation/</loc>
+    <lastmod>2020-04-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/teaching/</loc>
+    <lastmod>2020-04-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/03/30/is-that-it/</loc>
     <lastmod>2020-03-30T00:00:00+00:00</lastmod>
   </url>
   
@@ -58,11 +78,6 @@
   </url>
   
   <url>
-    <loc>/categories/teaching/</loc>
-    <lastmod>2019-07-08T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/2019/06/27/using-assessment-data-to-inform-instruction/</loc>
     <lastmod>2019-06-27T00:00:00+00:00</lastmod>
   </url>
@@ -74,6 +89,11 @@
   
   <url>
     <loc>/2019/04/02/designing-a-high-school-programming-class/</loc>
+    <lastmod>2019-04-02T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/r-markdown/</loc>
     <lastmod>2019-04-02T00:00:00+00:00</lastmod>
   </url>
   
@@ -98,8 +118,29 @@
   </url>
   
   <url>
+    <loc>/tags/plot/</loc>
+    <lastmod>2015-07-23T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/2015/01/01/lorem-ipsum/</loc>
     <lastmod>2015-01-01T13:09:13-06:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/resources/2020-06-13-heat-training/vadhana/src/python-fitparse/contributing/</loc>
+  </url>
+  
+  <url>
+    <loc>/resources/2020-06-13-heat-training/vadhana/src/python-fitparse/docs/</loc>
+  </url>
+  
+  <url>
+    <loc>/resources/2020-06-13-heat-training/vadhana/src/python-fitparse/readme/</loc>
+  </url>
+  
+  <url>
+    <loc>/resources/</loc>
   </url>
   
 </urlset>

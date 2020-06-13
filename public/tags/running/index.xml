@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>running on Amrit&#39;s Blog</title>
+    <link>/tags/running/</link>
+    <description>Recent content in running on Amrit&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 13 Jun 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/running/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Heat limited running pace.</title>
+      <link>/2020/06/13/heat-training/</link>
+      <pubDate>Sat, 13 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/06/13/heat-training/</guid>
+      <description>Plot heat limited running pace and a sample of my average running pace data vs. temperature and humidity. I obtained heat limiting pace data from fellrnr.com to see if my body would naturally self-limit pace based on intense heat.
+I wanted to spot check some of my running data taken during pretty intense heat in Bangkok while I was there during late Spring 2020.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>running on Amrit&#39;s Blog</title>
+    <link>/categories/running/</link>
+    <description>Recent content in running on Amrit&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 13 Jun 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/running/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Heat limited running pace.</title>
+      <link>/2020/06/13/heat-training/</link>
+      <pubDate>Sat, 13 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/06/13/heat-training/</guid>
+      <description>Plot heat limited running pace and a sample of my average running pace data vs. temperature and humidity. I obtained heat limiting pace data from fellrnr.com to see if my body would naturally self-limit pace based on intense heat.
+I wanted to spot check some of my running data taken during pretty intense heat in Bangkok while I was there during late Spring 2020.</description>
+    </item>
+    
+    <item>
+      <title>RPI by lap on the scorching Vadhana &#34;track&#34;.</title>
+      <link>/2020/06/11/rpi-by-lap/</link>
+      <pubDate>Thu, 11 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/06/11/rpi-by-lap/</guid>
+      <description>Pinning down lap-level running data. Having to login to the Garmin Connect website and manually download running data in .csv format is starting to get pretty annoying. Searching for a more automated solution, I found a post on Reddit that pointed me to a GitHub repo containing a convenient command-line utility that allows me to download all of my Garmin lap-level activity data directly to binary .fit files. It worked like a charm.</description>
+    </item>
+    
+    <item>
+      <title>Is that it?</title>
+      <link>/2020/03/30/is-that-it/</link>
+      <pubDate>Mon, 30 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/03/30/is-that-it/</guid>
+      <description>Just like that, the 100 lap challenge is over. On my next try, I completed 100 sweltering laps. What surprised me was how tired I was at the outset from not getting enough sleep the night before. I guess it really shows what you can do if you put your mind toward something.
+I noticed that something’s up with Lap 50 as the RPI is unusually high.
+## # A tibble: 5 x 4 ## # Groups: Date, variable [1] ## Date Laps variable value ## &amp;lt;date&amp;gt; &amp;lt;dbl&amp;gt; &amp;lt;fct&amp;gt; &amp;lt;dbl&amp;gt; ## 1 2020-03-30 50 RPI 238.</description>
+    </item>
+    
+    <item>
+      <title>Running economy over time.</title>
+      <link>/2020/03/29/running-economy-over-time/</link>
+      <pubDate>Sun, 29 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/03/29/running-economy-over-time/</guid>
+      <description>After implementing the running performance index (RPI) in my previous post, I was curious to know what my RPI was using ALL the data I had available, which I found goes back to 2009!
+Using more or less the same process as documented in the previous post, I import all of my available running data for runs that were greater than or equal to 3 miles and that were not run on a treadmill.</description>
+    </item>
+    
+    <item>
+      <title>100 lap challenge.</title>
+      <link>/2020/03/27/100-lap-challenge/</link>
+      <pubDate>Fri, 27 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/03/27/100-lap-challenge/</guid>
+      <description>Having recently hunkered down in Bangkok for the foreseeable future,1 in an apartment building with a closed gym,2 I wondered what kind of exercise routine I could establish.
+Playing with my son in the courtyard a couple days in, I somehow got the idea of jogging a few laps around the makeshift track formed by the walking pathway – despite a heat index over 100 degrees F!
+Having not run in months3, I took the opportunity to challenge myself to keep going.</description>
+    </item>
+    
+  </channel>
+</rss>

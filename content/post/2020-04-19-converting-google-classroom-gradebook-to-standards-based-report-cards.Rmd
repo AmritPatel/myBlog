@@ -1,0 +1,231 @@
+---
+title: Converting Google Classroom gradebook to standards based report cards.
+author: Amrit Patel
+date: '2020-04-19'
+slug: converting-google-classroom-gradebook-to-standards-based-report-cards
+categories:
+  - teaching
+tags:
+  - regression
+  - correlation
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = "center")
+```
+
+```{r}
+# Import function for converting and formatting Google Classroom grade data
+# from Google Sheet into standards based graedes.
+source("~/GitHub/sbg/sbg.R")
+
+# Google Classroom grade data from Google Sheet.
+fname1 <- "~/GitHub/sbg/Copy of Grades Applied Digital Skills G Block 2019-2020 S2 04-17-2020 - Sheet0.csv"
+# List of assignments by reportable.
+fname2 <- "~/GitHub/sbg/Reportables S2 2019 - SBG - G.csv"
+
+# Apply function.
+sbg <- sbg(fname1, fname2)
+```
+
+## Number of assignments by reportable.[^1]
+
+[^1]: Any unlabeled reportables in this report are for assignments in Google Classroom where no "Grade Category", or in this case no reportable, was assigned.
+
+```{r}
+library(knitr)
+library(kableExtra)
+
+kable(sbg %>%
+        group_by(reportable) %>%
+        dplyr::summarize(count = n_distinct(assignment)),
+      align = c("l", "c")) %>%
+  kable_styling(position = "center")
+```
+
+```{r, eval=F}
+## Student percentage score vs. mastery.
+
+# Total percentage score of assignments with reportables.
+
+# awr <- sbg %>% group_by(name) %>% filter(reportable != "") %>% summarize(pScore = mean(relScore, na.rm=T))
+
+# Total mastery based score of assignments
+
+# mbs <- 
+# sbg %>% 
+#   group_by(name) %>% summarize(mScore = mean(score, na.rm=T)) %>%
+#   mutate(mastery = case_when(
+#   mScore >= 3.5 ~ "Exceeding",
+#   mScore >= 2.5 ~ "Meeting",
+#   mScore >= 1.5 ~ "Approaching",
+#   mScore <  1.5 ~ "Beginning"))
+# 
+# masteryCorr <- left_join(awr, mbs)
+
+# ggplot(masteryCorr %>% mutate(mastery = fct_reorder(mastery, pScore)), aes(x = pScore, y = mastery)) +
+#   geom_point() +
+#   geom_label_repel(aes(label = name),
+#                   box.padding   = 0.35, 
+#                   point.padding = 0.5,
+#                   segment.color = 'grey50')
+# 
+# ggplot(masteryCorr %>% mutate(mastery = fct_reorder(mastery, pScore)), aes(mastery)) + geom_histogram(stat="count")
+```
+
+## Scores over time.
+
+```{r}
+ggplot(sbg %>% filter(reportable !=  ""), aes(x = date, y = score)) +
+  geom_point(aes(color=reportable)) +
+  geom_smooth(method="loess", se=F) +
+  facet_wrap(name ~ .) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Student average score and mastery by reportable.[^3]
+
+[^3]: Average numeric scores translate as follows: `if average >= 3.5, then "Exceeding"; if average >= 2.5, then "Meeting"; if average >= 1.5, then "Approaching"; else "Beginning"`.
+
+```{r}
+studentAvg <-
+  sbg %>%
+  dplyr::summarize(average = mean(score, na.rm=T)) %>%
+  mutate(mastery = case_when(
+  average >= 3.5 ~ "Exceeding",
+  average >= 2.5 ~ "Meeting",
+  average >= 1.5 ~ "Approaching",
+  average <  1.5 ~ "Beginning"))
+
+DT::datatable(studentAvg)
+```
+
+```{r, eval = F}
+ggplot(studentAvg, aes(average)) + geom_histogram() + facet_grid(. ~ reportable)
+```
+
+## Student average score and average mastery.[^2]
+
+[^2]: Mastery levels are indicated by color in graphs.
+
+```{r}
+# Total percentage score of assignments with reportables.
+awr <- sbg %>%
+  group_by(name) %>%
+  filter(reportable != "") %>%
+  dplyr::summarize(pScore = mean(relScore, na.rm=T)) %>%
+  mutate(mastery = case_when(
+    pScore >= 3.5/4 ~ "Exceeding",
+    pScore >= 2.5/4 ~ "Meeting",
+    pScore >= 1.5/4 ~ "Approaching",
+    pScore <  1.5/4 ~ "Beginning")) %>%
+  arrange(desc(pScore))
+```
+
+```{r}
+library(Hmisc)
+
+masteryBins <- cut2(awr$pScore, c(0.5/4, 1.5/4, 2.5/4, 3.5/4, 4.0/4))
+
+ggplot(awr %>% mutate(name = fct_reorder(name, pScore)), aes(pScore, name, color=masteryBins)) +
+  geom_point() +
+  geom_segment( aes(yend=name, xend=0))
+
+kable(awr, align = c("l", "c", "l")) %>%
+  kable_styling(position = "center")
+```
+
+## Relationship between student overall mastery level and student-facing Google Classroom average.
+
+How good of an indicator is Google Classroom average score (over all assignments) of overall level of mastery? If assignments are scored in Google Classroom, but are not tied to a reportable, a biased relationship will result.
+
+```{r}
+library(ggrepel)
+
+classroomAvg <-
+sbg %>%
+  group_by(name) %>%
+  dplyr::summarize(average = mean(score, na.rm=T)) %>%
+  arrange(desc(average)) %>%
+  mutate(mastery = case_when(
+    average >= 3.5 ~ "Exceeding",
+    average >= 2.5 ~ "Meeting",
+    average >= 1.5 ~ "Approaching",
+    average <  1.5 ~ "Beginning"),
+    average = average/4.0)
+
+masteryBins <- cut2(classroomAvg$average, c(0.5/4.0, 1.5/4.0, 2.5/4.0, 3.5/4.0, 4.0/4.0))
+
+ggplot(classroomAvg %>%
+         mutate(mastery = fct_reorder(mastery, average)), aes(average, mastery, color = masteryBins)) +
+  geom_point() +
+  geom_label_repel(aes(label = name),
+                  box.padding   = 0.35, 
+                  point.padding = 0.5,
+                  segment.color = 'grey50')
+```
+
+If there is a difference between student mastery level categorization in the above figure and the below figure, as indicated by color, then the average score reported in Google Classroom may lead the student into believing they are doing better or worse in the class than they are actually doing. Whether the bias is in the better or worse direction can be determined from looking at whether or not points in the below figure are above or below the dotted line.
+
+This provides a quick diagnostic to assess whether the scores available to students in Google Classroom are in line (or correlate) with the standards based grading framework used by the teacher.
+
+```{r}
+trueAvg <-
+  awr %>%
+  mutate(masteryTrue = case_when(
+    pScore >= 3.5/4.0 ~ "Exceeding",
+    pScore >= 2.5/4.0 ~ "Meeting",
+    pScore >= 1.5/4.0 ~ "Approaching",
+    pScore <  1.5/4.0 ~ "Beginning")) %>%
+  rename(trueAverage =  pScore)
+
+biasedAvg <-
+classroomAvg %>%
+  rename(masteryBiased = mastery) %>%
+  mutate(biasedAverage = average) %>%
+  select(-average)
+
+avgCorr <- left_join(trueAvg, biasedAvg)
+
+masteryBins <- cut2(avgCorr$trueAverage, c(0.5/4, 1.5/4, 2.5/4, 3.5/4, 4.0/4))
+
+ggplot(avgCorr, aes(trueAverage, biasedAverage, color = masteryBins)) + 
+  geom_point() +
+  geom_label_repel(aes(label = name),
+                  box.padding   = 0.35, 
+                  point.padding = 0.5,
+                  segment.color = 'grey50') +
+  geom_abline(slope = 1, intercept = 0, linetype = 5)
+
+# Below code doesn't always work since not all mastery levels will always have data. 
+#
+# ggplot(avgCorr %>%
+#          mutate(masteryBiased = fct_reorder(masteryBiased, biasedAverage) ,
+#                 masteryTrue   = fct_reorder(masteryTrue,   trueAverage  )),
+#          aes(masteryTrue, masteryBiased)) + 
+#          geom_point() +
+#          geom_label_repel(aes(label = name),
+#                   box.padding   = 0.35, 
+#                   point.padding = 0.5,
+#                   segment.color = 'grey50') +
+#          geom_abline(slope = 1.0, intercept = 0, linetype = 5)
+```
+
+## Class average mastery by reportable.
+
+```{r}
+nn <- plyr::ddply(studentAvg, "reportable", transform, avg_mean  = mean(average))
+
+ggplot(studentAvg, aes(average)) +
+  geom_histogram() +
+  geom_vline(aes(xintercept = avg_mean), data = nn, linetype = 5) +
+  facet_grid(reportable ~ .)
+```
+
+```{r}
+kable(nn %>%
+        select(reportable, average = avg_mean) %>%
+        distinct(reportable, average),
+      align = c("l", "c")) %>%
+  kable_styling(position = "center")
+```

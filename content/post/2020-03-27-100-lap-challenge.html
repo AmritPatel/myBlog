@@ -4,9 +4,8 @@ author: Amrit Patel
 date: '2020-03-27'
 slug: 100-lap-challenge
 categories:
-  - R
+  - running
 tags:
-  - R Markdown
   - regression
 ---
 
@@ -48,9 +47,9 @@ tags:
 <div id="define-function-to-re-format-data-for-plotting." class="section level3">
 <h3>Define function to re-format data for plotting.</h3>
 <pre class="r"><code># Import nice library for a variety of data manipulation and visualization.
-library(tidyverse)
-
-# Basic importing, re-formatting and distance correction.
+library(tidyverse)</code></pre>
+<pre><code>## Warning: package &#39;tibble&#39; was built under R version 3.6.2</code></pre>
+<pre class="r"><code># Basic importing, re-formatting and distance correction.
 getData &lt;- function(fname) {
   
   day &lt;- tbl_df(read.csv(fname, stringsAsFactors = F))
@@ -354,6 +353,7 @@ ggplot(dayData, aes(avg, fill=variable)) +
   facet_grid(variable ~ ., scales = &quot;free&quot;) +
   geom_smooth(method = lm, se = TRUE) +
   theme(legend.position=&quot;none&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
 <p><img src="/post/2020-03-27-100-lap-challenge_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p>The error bands added by default don’t add much value so they are removed leaving the final version based on mean data below.</p>
 <p>The following plot and the one above of the reduced set of unsmoothed variables as a function of lap are the most interesting to me as they allow for a clear visual of several trends and easy comparisons between them.</p>
@@ -362,6 +362,7 @@ ggplot(dayData, aes(avg, fill=variable)) +
   facet_grid(variable ~ ., scales = &quot;free&quot;) +
   geom_smooth(method = lm, se = FALSE) +
   theme(legend.position=&quot;none&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
 <p><img src="/post/2020-03-27-100-lap-challenge_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <p>So, in short, on an extremely hot day in Bankok, slow down, and increase the cadence. When this happens, average heart rate decreases, you can delay the onset of fatigue, and run longer!</p>
 <p>I’m still set on completing 100 laps without stopping before I leave this place. Hopefully, I will take my own advice when I try again tomorrow.</p>

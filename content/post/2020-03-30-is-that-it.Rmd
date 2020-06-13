@@ -4,13 +4,16 @@ author: Amrit Patel
 date: '2020-03-30'
 slug: is-that-it
 categories:
-  - R
+  - running
 tags:
-  - R Markdown
   - regression
-  - plot
-draft: true
 ---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = "center")
+```
+
+Just like that, the [100 lap challenge](https://amritpatel.rbind.io/2020/03/27/100-lap-challenge/) is over. On my next try, I completed 100 sweltering laps. What surprised me was how tired I was at the outset from not getting enough sleep the night before. I guess it really shows what you can do if you put your mind toward something.
 
 ```{r, message = F}
 source("~/GitHub/myBlog/content/resources/2020-03-27-100-lap-challenge/100LapChallengePrepare.R")
@@ -36,12 +39,12 @@ source("~/GitHub/myBlog/content/resources/2020-03-27-100-lap-challenge/100LapCha
 source("~/GitHub/myBlog/content/resources/2020-03-27-100-lap-challenge/100LapChallengeForPlot.R")
 ```
 
-Something's up with Lap 50.
+I noticed that something's up with Lap 50 as the RPI is unusually high.
 
 ```{r}
 lessPlt %>%
   group_by(Date, variable) %>%
-  filter(Date =="2020-03-30", variable == "RPI") %>%
+  filter(Date == "2020-03-30", variable == "RPI") %>%
   arrange(desc(value)) %>% top_n(5, value)
 
 lessPlt %>%
@@ -51,12 +54,29 @@ lessPlt %>%
   slice(1:5)
 ```
 
-Let's remove it.
+Let's remove it so as not to bias the average.
 
 ```{r}
-lessPlt <- lessPlt %>% filter(Date !="2020-03-30" || Laps != "50")
-```
+lessPlt <- lessPlt %>% filter(variable != "RPI" | Date != "2020-03-30" | Laps != "50")
 
+meanData <- pltRunData %>%
+  # Mean data
+  group_by(Date, variable) %>%
+  filter(variable != "RPI" | Date != "2020-03-30" | Laps != "50") %>%
+  summarise(avg = mean(value)) %>%
+  # Add a column for mean value
+  # plot position (y-coordinate)
+  left_join(pltRunData %>% group_by(variable) %>%
+              summarise(ypos = 0.95*max(value))) %>%
+  filter(variable != "Distance")
+
+lessMean <- meanData %>% filter(variable == "Avg.HR" |
+                                  variable == "Avg.Pace" |
+                                  variable == "Cadence" |
+                                  variable == "Temp" |
+                                  variable == "RPI"
+                                  )
+```
 
 ```{r}
 ggplot(lessPlt, aes(x=Laps, y=value)) +
@@ -66,7 +86,7 @@ ggplot(lessPlt, aes(x=Laps, y=value)) +
             colour="red",
             hjust=1,
             size=3) +
-  xlim(c(1,65)) +
+  #xlim(c(1,65)) +
   geom_line() + 
-  facet_grid(variable ~ Date, scales = "free_y") 
+  facet_grid(variable ~ Date, scales = "free")
 ```

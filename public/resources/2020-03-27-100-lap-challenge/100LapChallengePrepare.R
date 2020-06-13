@@ -1,4 +1,6 @@
-# Basic importing, re-formatting and distance correction.
+
+# Function 1: Basic importing, re-formatting and distance correction.
+
 getData <- function(fname) {
   library(tidyverse)
   day <- tbl_df(read.csv(fname, stringsAsFactors = F))
@@ -21,7 +23,7 @@ getData <- function(fname) {
   day <- 
     day %>% 
     # Distance correction.
-    mutate(Distance = 0.0701900899) %>%
+    mutate(Distance = 0.072) %>%
     # Only keep data of interest.
     select(Laps,
            Time.Min,
@@ -103,6 +105,81 @@ getData <- function(fname) {
     mutate(Avg.Pace = Time.Sec / 60 / Distance) %>%
     select(-Time.Min) %>% rename(Time = Time.Sec)
   
+# Function 2: Basic importing, re-formatting and distance correction (re-designed for range of csv data from "GarminDb" utility)
 
-
+getHLP <- function() {
   
+  library(tidyverse)
+  library(data.table)
+  
+  # Assign RHR.
+  # Based on average over dataset period.
+  RHR <- 58
+  
+  getData <- function(fname) {
+    run <- tbl_df(read.csv(fname, stringsAsFactors = F))
+    run <- run %>%
+      mutate(Laps = row_number(timestamp),
+             Time.Min = floor(total_elapsed_time / 60),
+             Time.Sec = total_elapsed_time - Time.Min  * 60,
+             Distance = total_distance / 1609,
+             # Distance correction.
+             Distance = ifelse(Distance < 0.08, 0.072, 2 * 0.072),
+             Avg.Pace = (Time.Min + Time.Sec / 60) / Distance,
+             Avg.HR = avg_heart_rate,
+             Max.HR = max_heart_rate,
+             RPI = 1 / (((Avg.HR - RHR) * (Time.Min + Time.Sec / 60)) / Distance) * 100000,
+             Cadence = (avg_running_cadence + avg_fractional_cadence) * 2,
+             Kcals = total_calories,
+             Temp = avg_temperature * 9 / 5 + 32,
+             Date = as.Date(timestamp)
+      ) %>%
+      select(Laps:Date)
+  }
+  
+  ###
+  
+  setwd("~/HealthData/FitFiles/vadhana")
+  
+  # lapply + glob passes all .csv files to previously defined data import and formatting function.
+  data <- lapply(Sys.glob("~/HealthData/FitFiles/vadhana/*.csv"), getData) 
+  
+  # Combine created list data into a single dataframe.
+  bkkRunningSumm20 <- rbindlist(data) %>% filter(Date != "2020-04-21" | Laps != 51)
+  
+  ###
+  
+  library(weathermetrics)
+  
+  humidity  <- 
+    tribble(
+      ~Date,	~humidity,
+      "2020-03-24",	54,
+      "2020-03-25", 61,
+      "2020-03-27", 57,
+      "2020-03-30", 57,
+      "2020-04-07", 68,
+      "2020-04-10", 54,
+      "2020-04-14", 68,
+      "2020-04-16", 67,
+      "2020-04-19", 57,
+      "2020-04-21", 51,
+      "2020-04-24", 57,
+      "2020-04-27", 70,
+      "2020-04-30", 71,
+      "2020-05-05", 70,
+      "2020-05-07", 55,
+      "2020-05-10", 58,
+      "2020-05-15", 54,
+      "2020-05-20", 56,
+      "2020-05-24", 65,
+      "2020-05-26", 67
+    )
+  
+  humidity$Date <- as.Date(humidity$Date)
+  
+  bkkRunningSumm20 <- 
+    left_join(bkkRunningSumm20, humidity) %>%
+    mutate(heatIndex = heat.index(Temp, rh=humidity))
+  
+}

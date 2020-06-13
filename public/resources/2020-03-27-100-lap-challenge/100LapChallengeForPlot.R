@@ -21,11 +21,11 @@ pltRunData <-
 meanData <- pltRunData %>%
   # Mean data
   group_by(Date, variable) %>%
-  summarize(avg = mean(value)) %>%
+  summarise(avg = mean(value)) %>%
   # Add a column for mean value
   # plot position (y-coordinate)
   left_join(pltRunData %>% group_by(variable) %>%
-              summarize(ypos = 0.95*max(value))) %>%
+              summarise(ypos = 0.95*max(value))) %>%
   filter(variable != "Distance")
 
 lessPlt <- pltRunData %>% filter(variable == "Avg.HR" |

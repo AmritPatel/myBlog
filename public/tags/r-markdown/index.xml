@@ -6,40 +6,10 @@
     <description>Recent content in R Markdown on Amrit&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 30 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 02 Apr 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/r-markdown/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Is that it?</title>
-      <link>/2020/03/30/is-that-it/</link>
-      <pubDate>Mon, 30 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/2020/03/30/is-that-it/</guid>
-      <description>source(&amp;quot;~/GitHub/myBlog/content/resources/2020-03-27-100-lap-challenge/100LapChallengePrepare.R&amp;quot;) ## Warning: Expected 2 pieces. Additional pieces discarded in 49 rows [1, 2, 3, 4, ## 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...]. ## Warning: Expected 2 pieces. Additional pieces discarded in 63 rows [1, 2, 3, 4, ## 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...]. ## Warning: Expected 2 pieces.</description>
-    </item>
-    
-    <item>
-      <title>Running economy over time.</title>
-      <link>/2020/03/29/running-economy-over-time/</link>
-      <pubDate>Sun, 29 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/2020/03/29/running-economy-over-time/</guid>
-      <description>After implementing the running performance index (RPI) in my previous post, I was curious to know what my RPI was using ALL the data I had available, which I found goes back to 2009!
-Using more or less the same process as documented in the previous post, I import all of my available running data for runs that were greater than or equal to 3 miles and that were not run on a treadmill.</description>
-    </item>
-    
-    <item>
-      <title>100 lap challenge.</title>
-      <link>/2020/03/27/100-lap-challenge/</link>
-      <pubDate>Fri, 27 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/2020/03/27/100-lap-challenge/</guid>
-      <description>Having recently hunkered down in Bangkok for the foreseeable future,1 in an apartment building with a closed gym,2 I wondered what kind of exercise routine I could establish.
-Playing with my son in the courtyard a couple days in, I somehow got the idea of jogging a few laps around the makeshift track formed by the walking pathway – despite a heat index over 100 degrees F!
-Having not run in months3, I took the opportunity to challenge myself to keep going.</description>
-    </item>
     
     <item>
       <title>Designing a High School Programming Class</title>

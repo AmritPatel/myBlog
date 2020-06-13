@@ -4,9 +4,8 @@ author: Amrit Patel
 date: '2020-03-29'
 slug: running-economy-over-time
 categories:
-  - R
+  - running
 tags:
-  - R Markdown
   - regression
 ---
 

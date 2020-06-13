@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.68.3" />
+
+
+<title>RPI by lap on the scorching Vadhana &#34;track&#34;. - Amrit&#39;s Blog</title>
+<meta property="og:title" content="RPI by lap on the scorching Vadhana &#34;track&#34;. - Amrit&#39;s Blog">
+
+
+  <link href='/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="/categories">Categories</a></li>
+    
+    <li><a href="https://github.com/AmritPatel">GitHub</a></li>
+    
+    <li><a href="/tags">Tags</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">3 min read</span>
+    
+
+    <h1 class="article-title">RPI by lap on the scorching Vadhana &#34;track&#34;.</h1>
+
+    
+    <span class="article-date">2020-06-11</span>
+    
+
+    <div class="article-content">
+      
+
+
+<div id="pinning-down-lap-level-running-data." class="section level1">
+<h1>Pinning down lap-level running data.</h1>
+<p>Having to login to the Garmin Connect website and manually download running data in <code>.csv</code> format is starting to get pretty annoying. Searching for a more automated solution, I found a <a href="https://www.reddit.com/r/Garmin/comments/f6v5ye/is_there_an_api_for_your_data_on_garmin_connect/">post on Reddit</a> that pointed me to a <a href="https://github.com/tcgoetz/GarminDB">GitHub repo</a> containing a convenient command-line utility that allows me to download all of my Garmin lap-level activity data directly to binary <code>.fit</code> files. It worked like a charm.</p>
+<p>There is also an activity-level SQLite database file available that links the <code>.fit</code> files named based on a unique <code>activity_ID</code> number to a descriptive activity name. In this case, I am trying to isolate all runs named “Vadhana Running” for this particular analysis, so the database is useful to screen activity IDs.</p>
+<p>The next problem was that the <code>.fit</code> data needed to be converted to <code>.csv</code> format. Luckily, I managed to find a <a href="https://maxcandocia.com/article/2017/Sep/22/converting-garmin-fit-to-csv/">blogger</a> describing a utility they built to do just this, which sent me to another <a href="https://github.com/mcandocia/examples/blob/master/convert_fit_to_csv/convert_fit_to_csv.py">GitHub repo</a> containing a <code>Python</code> script that gets the job done.</p>
+<p>After running the <code>Python</code> script on the running activities of interest on my computer locally outside of <code>R</code>, I was ready to import the data for plotting building on my <a href="https://amritpatel.rbind.io/2020/03/27/100-lap-challenge/">previous post</a>.</p>
+</div>
+<div id="calculating-heat-index." class="section level1">
+<h1>Calculating heat index.</h1>
+<p>In my next post, I want to take a look at heat limited running pace. For that analysis, I would like to experiment with using heat index data to develop a simple model relating heat index and heat limited running pace. And, for heat index data, I will need relative humidity data. Unfortunately, this is not included in the <code>.fit</code> files or other downloadable data files that I could find. But, this data is embedded in the map object on the Garmin Connect website. So I am able to manually add it in.</p>
+<p>Heat index is calculated using a function from the <code>weathermetrics</code> library that calculates the heat index based on the <a href="https://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml">NOAA algorithm</a>.</p>
+<pre class="r"><code>library(weathermetrics)
+
+humidity  &lt;- 
+  tribble(
+    ~Date,  ~humidity,
+    &quot;2020-03-24&quot;, 54,
+    &quot;2020-03-25&quot;, 61,
+    &quot;2020-03-27&quot;, 57,
+    &quot;2020-03-30&quot;, 57,
+    &quot;2020-04-07&quot;, 68,
+    &quot;2020-04-10&quot;, 54,
+    &quot;2020-04-14&quot;, 68,
+    &quot;2020-04-16&quot;, 67,
+    &quot;2020-04-19&quot;, 57,
+    &quot;2020-04-21&quot;, 51,
+    &quot;2020-04-24&quot;, 57,
+    &quot;2020-04-27&quot;, 70,
+    &quot;2020-04-30&quot;, 71,
+    &quot;2020-05-05&quot;, 70,
+    &quot;2020-05-07&quot;, 55,
+    &quot;2020-05-10&quot;, 58,
+    &quot;2020-05-15&quot;, 54,
+    &quot;2020-05-20&quot;, 56,
+    &quot;2020-05-24&quot;, 65,
+    &quot;2020-05-26&quot;, 67
+)
+
+humidity$Date &lt;- as.Date(humidity$Date)</code></pre>
+<p>And now lap data can be easily plotted by:</p>
+<ol style="list-style-type: decimal">
+<li>Running <code>download_create_dbs.sh</code><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> to generate a local database of all Garmin activity data and bypassing manual login to the Garmin Connect website.</li>
+<li>Simply converting any number of <code>.fit</code> files of interest to <code>.csv</code> format using <code>convert_fit_to_csv.py</code>.</li>
+<li>Performing a little automated post-processing in R to setup a dataframe with variables of interest.</li>
+</ol>
+<p>Plotting the lap data from all of the Vadhana runs is now simple by re-using the plotting code from a recent related post.</p>
+<p><img src="/post/2020-06-11-rpi-by-lap_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>And finally, a summary plot of all my Bangkok late Spring 2020 runs at the Vadhana fixed track I used as my training ground.</p>
+<p><img src="/post/2020-06-11-rpi-by-lap_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Or <code>download_update_dbs.sh</code> if the database has already been created.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+
+    </div>
+  </article>
+
+  
+<section id="comments">
+  <div id="disqus_thread"></div>
+  <script>
+  var disqus_config = function () {
+  
+  };
+  (function() {
+    var inIFrame = function() {
+      var iframe = true;
+      try { iframe = window.self !== window.top; } catch (e) {}
+      return iframe;
+    };
+    if (inIFrame()) return;
+    var d = document, s = d.createElement('script');
+    s.src = '//amrits-blog.disqus.com/embed.js'; s.async = true;
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-162702364-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  </body>
+</html>
+

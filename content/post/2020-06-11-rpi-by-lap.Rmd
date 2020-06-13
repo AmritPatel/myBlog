@@ -1,0 +1,202 @@
+---
+title: RPI by lap on the scorching Vadhana "track".
+author: Amrit Patel
+date: '2020-06-11'
+slug: rpi-by-lap
+categories:
+  - running
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = "center")
+```
+
+# Pinning down lap-level running data.
+
+Having to login to the Garmin Connect website and manually download running data in `.csv` format is starting to get pretty annoying. Searching for a more automated solution, I found a [post on Reddit](https://www.reddit.com/r/Garmin/comments/f6v5ye/is_there_an_api_for_your_data_on_garmin_connect/) that pointed me to a [GitHub repo](https://github.com/tcgoetz/GarminDB) containing a convenient command-line utility that allows me to download all of my Garmin lap-level activity data directly to binary `.fit` files. It worked like a charm.
+
+There is also an activity-level SQLite database file available that links the `.fit` files named based on a unique `activity_ID` number to a descriptive activity name. In this case, I am trying to isolate all runs named "Vadhana Running" for this particular analysis, so the database is useful to screen activity IDs. 
+
+```{r}
+library(DBI)
+library(RSQLite)
+
+con <- dbConnect(SQLite(), "/Users/amrit/HealthData/DBs/garmin_activities.db")
+
+# Get table
+runningActs <- dbReadTable(con, 'running_activities_view')
+
+# BKK Summer 2020 running activity IDs
+bkkSummer20 <- runningActs$activity_id[2:22]
+```
+
+The next problem was that the `.fit` data needed to be converted to `.csv` format. Luckily, I managed to find a [blogger](https://maxcandocia.com/article/2017/Sep/22/converting-garmin-fit-to-csv/) describing a utility they built to do just this, which sent me to another [GitHub repo](https://github.com/mcandocia/examples/blob/master/convert_fit_to_csv/convert_fit_to_csv.py) containing a `Python` script that gets the job done.
+
+```{r, eval=F}
+library(reticulate)
+
+# use_condaenv("r-reticulate")
+# py_install("fitparse", pip = TRUE)
+# py_install("pytz", pip = TRUE)
+# py_module_available("fitparse")
+# py_module_available("pytz")
+
+# This file converts Garmin .fit files to .csv files. Ran locally.
+
+py_run_file("/Users/amrit/HealthData/FitFiles/vadhana/convert_fit_to_csv.py", local = T)
+```
+
+After running the `Python` script on the running activities of interest on my computer locally outside of `R`, I was ready to import the data for plotting building on my [previous post](https://amritpatel.rbind.io/2020/03/27/100-lap-challenge/).
+
+```{r}
+library(tidyverse)
+library(data.table)
+
+# Assign RHR.
+# Based on average over dataset period.
+RHR <- 58
+
+# Basic importing, re-formatting and distance correction.
+getData <- function(fname) {
+  run <- tbl_df(read.csv(fname, stringsAsFactors = F))
+  run <- run %>%
+    mutate(Laps = row_number(timestamp),
+           Time.Min = floor(total_elapsed_time / 60),
+           Time.Sec = total_elapsed_time - Time.Min  * 60,
+           Distance = total_distance / 1609,
+           # Distance correction.
+           Distance = ifelse(Distance < 0.08, 0.072, 2 * 0.072),
+           Avg.Pace = (Time.Min + Time.Sec / 60) / Distance,
+           Avg.HR = avg_heart_rate,
+           Max.HR = max_heart_rate,
+           RPI = 1 / (((Avg.HR - RHR) * (Time.Min + Time.Sec / 60)) / Distance) * 100000,
+           Cadence = (avg_running_cadence + avg_fractional_cadence) * 2,
+           Kcals = total_calories,
+           Temp = avg_temperature * 9 / 5 + 32,
+           Date = as.Date(timestamp)
+           ) %>%
+    select(Laps:Date)
+}
+```
+
+```{r}
+setwd("~/HealthData/FitFiles/vadhana")
+
+# lapply + glob passes all .csv files to previously defined data import and formatting function.
+data <- lapply(Sys.glob("~/HealthData/FitFiles/vadhana/*.csv"), getData) 
+
+# Combine created list data into a single dataframe.
+bkkRunningSumm20 <- rbindlist(data) %>% filter(Date != "2020-04-21" | Laps != 51)
+```
+
+# Calculating heat index.
+
+In my next post, I want to take a look at heat limited running pace. For that analysis, I would like to experiment with using heat index data to develop a simple model relating heat index and heat limited running pace. And, for heat index data, I will need relative humidity data. Unfortunately, this is not included in the `.fit` files or other downloadable data files that I could find. But, this data is embedded in the map object on the Garmin Connect website. So I am able to manually add it in.
+
+Heat index is calculated using a function from the `weathermetrics` library that calculates the heat index based on the [NOAA algorithm](https://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml).
+
+```{r, echo = T}
+library(weathermetrics)
+
+humidity  <- 
+  tribble(
+    ~Date,	~humidity,
+    "2020-03-24", 54,
+    "2020-03-25", 61,
+    "2020-03-27", 57,
+    "2020-03-30", 57,
+    "2020-04-07", 68,
+    "2020-04-10", 54,
+    "2020-04-14", 68,
+    "2020-04-16", 67,
+    "2020-04-19", 57,
+    "2020-04-21", 51,
+    "2020-04-24", 57,
+    "2020-04-27", 70,
+    "2020-04-30", 71,
+    "2020-05-05", 70,
+    "2020-05-07", 55,
+    "2020-05-10", 58,
+    "2020-05-15", 54,
+    "2020-05-20", 56,
+    "2020-05-24", 65,
+    "2020-05-26", 67
+)
+
+humidity$Date <- as.Date(humidity$Date)
+```
+
+And now lap data can be easily plotted by:
+
+(1) Running `download_create_dbs.sh`[^1] to generate a local database of all Garmin activity data and bypassing manual login to the Garmin Connect website.
+(2) Simply converting any number of `.fit` files of interest to `.csv` format using `convert_fit_to_csv.py`.
+(3) Performing a little automated post-processing in R to setup a dataframe with variables of interest.
+
+[^1]: Or `download_update_dbs.sh` if the database has already been created.
+
+```{r}
+bkkRunningSumm20 <- 
+  left_join(bkkRunningSumm20, humidity) %>%
+  mutate(heatIndex = heat.index(Temp, rh=humidity))
+```
+
+Plotting the lap data from all of the Vadhana runs is now simple by re-using the plotting code from a recent related post.
+
+```{r, fig.width=7, fig.height=15}
+# Change the data from "wide" to "long'
+# to make plotting easier.
+pltRunData <- 
+  reshape2::melt(bkkRunningSumm20, id.vars = c("Date", "Laps"))
+
+# Create a dataset of variable means.
+meanData <- pltRunData %>%
+  # Mean data
+  group_by(Date, variable) %>%
+  summarise(avg = mean(value)) %>%
+  # Add a column for mean value
+  # plot position (y-coordinate)
+  left_join(pltRunData %>% group_by(variable) %>%
+  summarise(ypos = 0.95*max(value))) %>%
+  filter(variable == "Avg.HR" |
+         variable == "Avg.Pace" |
+         variable == "Cadence" |
+         variable == "heatIndex" |
+         variable == "RPI"
+         )
+
+lessPlt <- pltRunData %>% filter(variable == "Avg.HR" |
+                                 variable == "Avg.Pace" |
+                                 variable == "Cadence" |
+                                 variable == "heatIndex" |
+                                 variable == "RPI"   
+                                )
+
+lessMean <- meanData %>% filter(variable == "Avg.HR" |
+                                variable == "Avg.Pace" |
+                                variable == "Cadence" |
+                                variable == "heatIndex" |
+                                variable == "RPI"
+                               ) 
+
+ggplot(lessPlt, aes(x=Laps, y=value)) +
+  geom_hline(data=lessMean, aes(yintercept = avg), colour="red", lty=3) +
+  geom_text(data=lessMean,
+            aes(label=round(avg,1), x=62, y=ypos),
+            colour="red",
+            hjust=1,
+            size=3) +
+  xlim(c(1,65)) +
+  geom_line() + 
+  facet_grid(Date ~ variable, scales = "free") 
+```
+
+And finally, a summary plot of all my Bangkok late Spring 2020 runs at the Vadhana fixed track I used as my training ground.
+
+```{r}
+ggplot(meanData, aes(Date, avg, color = variable)) +
+  geom_point() +
+  geom_line() +
+  facet_grid(variable ~ ., scales = "free") +
+  #geom_smooth(method = lm, se = FALSE) +
+  theme(legend.position="none")
+```

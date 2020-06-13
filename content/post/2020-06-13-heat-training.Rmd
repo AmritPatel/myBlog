@@ -1,0 +1,326 @@
+---
+title: Heat limited running pace.
+author: Amrit Patel
+date: '2020-06-13'
+slug: heat-training
+categories:
+  - running
+tags:
+  - regression
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = "center")
+```
+
+# Plot heat limited running pace and a sample of my average running pace data vs. temperature and humidity.
+
+I obtained heat limiting pace data from [fellrnr.com](https://fellrnr.com/wiki/Heat_limited_running_pace) to see if my body would naturally self-limit pace based on intense heat.
+
+I wanted to spot check some of my running data taken during pretty intense heat in Bangkok while I was there during late Spring 2020. I was specifically looking for running performance dips in more extreme cases.
+
+First I wanted to identify points that fall below those in the 3D scatterplot below, which would indicate that I ran faster than what is recommeded for my body to prevent heat exhaustion.
+
+```{r}
+library(tidyverse)
+library(plotly)
+library(weathermetrics)
+
+# Heat limited data import and formatting.
+hlp <-
+  tbl_df(read.csv("~/GitHub/myBlog/content/resources/2020-06-13-heat-training/Heat limited pace comparison with BKK summer running data - Temp _ Humidity _ Pace.csv",
+                  stringsAsFactors = F)) %>% 
+  pivot_longer(-T.H, names_to = "humidity", values_to = "pace") %>%
+  rename(temp = T.H) %>%
+  mutate(type = "limit")
+
+hlp$humidity <- str_remove(hlp$humidity, "X")
+hlp$temp <- as.numeric(hlp$temp)
+hlp$humidity <- as.numeric(hlp$humidity)
+hlp$pace <- as.numeric(hlp$pace)
+
+# Sample of my running data from runs in BKK during Summer 2020.
+data  <- 
+  tribble(
+~temp,	~humidity,	~pace, ~type,
+91,	67,	8.45, "myData",
+90,	65,	8, "myData",
+94,	56,	8.583333333, "myData",
+95,	54,	9.266666667, "myData",
+91,	70,	8.55, "myData",
+88,	70,	8.466666667, "myData",
+92,	57,	8.533333333, "myData",
+97,	51,	8.433333333, "myData"
+)
+
+# Combine datasets.
+plotData <- bind_rows(hlp, data)
+
+# 3D scatterplot of data.
+fig <- plot_ly(type = 'scatter3d',
+        x = plotData$temp, 
+        y = plotData$humidity,
+        z = plotData$pace,
+        color = plotData$type,
+        text = paste("Make: ", plotData$type,
+               "<br>Temp: ", plotData$temp,
+               "<br>Humidity: ", plotData$humidity,
+               # Heat index formula from weathermetrics library (based on NOAA algorithm)
+               "<br>Heat Index: ", heat.index(plotData$temp, rh=plotData$humidity),
+               "<br>Pace: ", plotData$pace),
+        hoverinfo = 'text'
+)
+
+fig %>% layout(
+          title = "Actual heat limited pace as calculated on fellrnr's wiki page compared to\na sample of my running data",
+          scene = list(
+            xaxis = list(title = "Temperature (F)"),
+            yaxis = list(title = "Humidity (%)"),
+            zaxis = list(title = "Pace (min.mi")
+    ))
+```
+
+I can make out that several points are straddling the limit, but it is difficult to visualize.
+
+In an attempt to present the data on a 2D plot so it's easier to see, let's transform the temperature and relative humidity variables into a single heat index variable (i.e., one that depends on both temperature and humidity). 
+
+```{r}
+byHI <-
+  plotData %>% mutate(heatIndex = ifelse(pace != is.na(pace), heat.index(temp, rh=humidity))) %>%
+  select(type, temp, humidity, heatIndex, pace)
+
+ggplot(byHI, aes(heatIndex, pace, color = type)) +
+  geom_point() +
+  theme(legend.position="bottom") +
+  labs(title =
+         "Actual heat limited pace as calculated on fellrnr's wiki page compared to\na sample of my running data",
+       x = "Heat Index (F)",
+       y = "Pace (min/mi)"
+      )
+```
+
+Unfortunately, this particular 2D plot doesn't make it any easier to see how the running data compares to a heat limited pace line (or line projections in this case).
+
+Let's group the data based on relative humidity, which should mostly solve our visualization problem. We can use one of my favorite functions -- `cut2` -- from the `Hmisc` library. All we have to do is specify the relative humidity cut points for plotting.
+
+```{r}
+library(Hmisc)
+
+ggplot(byHI %>% filter(humidity > 40), aes(temp, pace, color = type)) +
+  geom_point() +
+  facet_wrap(~cut2(humidity, c(50, 60, 70, 80, 90, 100))) +
+  theme(legend.position="bottom") +
+  labs(title =
+         "Actual heat limited pace as calculated on fellrnr's wiki page compared to\na sample of my running data",
+       subtitle = "Groupings by humidity (%)",
+       x = "Temperature (F)",
+       y = "Pace (min/mi)"
+      )
+```
+
+This looks much better. Now the data is displayed clearly and we can quickly confirm at least 2 observations that just barely violate the recommended heat limited pace guideline in the 70% relative humidity subplot (and maybe a couple in the 60%-70% subplot).
+
+After we create and validate a continuous heat limited pace model, we can try and see if running performance for the "violations" were significantly different from other runs.
+
+# Creating and validating a continuous heat limited pace model.
+
+Using a trial and error approach, I first created various multvariate regression models based on the few (temperature, humidity, pace) data points from the fellrnr heat limited pace wiki mentioned earlier to see if I could come up with a continuous analytical formula for heat limited running pace as a function of temperature and humidity. 
+
+```{r, results = 'hide'}
+# Fit full model.
+heatPaceLOESS <- loess(pace ~ temp + humidity, data = byHI %>% filter(type == "limit"))
+
+library(mgcv)
+heatPaceGAM <-
+  gam(pace ~
+       # Set the cubic spline as the basis function bs='cr' 
+       # and also not have it penalized with fx=TRUE. 
+       # Both options are set for a smooth term that is set with s().
+       s(temp, bs = 'cr', k = 4, fx = TRUE) +
+       s(humidity, bs = 'cr', k = 4, fx = TRUE),
+     data = byHI %>% filter(type == "limit"))
+
+library(splines)
+heatPaceSpline <- lm(pace ~ bs(temp, knots = 7) + bs(humidity, knots = 7), data = byHI %>% filter(type == "limit"))
+
+library(rpart)
+heatPacePART <- rpart(pace ~ temp + humidity, data = byHI %>% filter(type == "limit"))
+
+library(DiceKriging)
+
+forKM <- 
+  byHI %>%
+  filter(type == "limit" & pace != is.na(pace)) %>%
+  select(temp, humidity, pace)
+
+heatPaceKM <-
+  km( ~ temp + humidity,
+                design =
+                  forKM %>% select(temp, humidity),
+                response =
+                  forKM %>% select(pace)
+    )
+
+library(lookupTable)
+
+heatPaceLT <-
+  lookupTable(forKM %>% select(temp, humidity, pace),
+              'pace',
+              feature.boundaries =
+                list(c(-50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100),
+                     c(-50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100)
+                     ),
+              features.con =
+                c('temp', 'humidity')
+              )
+
+# Function for returning km response values for mutate calls.
+heatLimPace <- function(T, H) {
+  predict(heatPaceKM, data.frame(temp=c(T), humidity=c(H)), type = "UK")$mean
+}
+
+# Add model predictions to dataframe for comparison.
+library(modelr)
+
+deltas <-
+byHI %>%
+  add_predictions(heatPaceLOESS, var = "predLOESS") %>%
+  add_predictions(heatPaceGAM, var = "predGAM") %>%
+  add_predictions(heatPaceSpline, var = "predSpline") %>%
+  add_predictions(heatPacePART, var = "predPART") %>%
+  add_predictions(heatPaceLT, var = "predLT") %>%
+  # Implementation for kriging model from DiceKriging lib.
+  mutate(predKM = heatLimPace(temp, humidity)) %>%
+  mutate(LOESS  = pace - predLOESS,
+         GAM    = pace - predGAM,
+         Spline = pace - predSpline,
+         PART   = pace - predPART,
+         LT     = pace - predLT,
+         KM     = pace - predKM
+  )
+
+plotPreds <- 
+  deltas %>% 
+  filter(type == "limit") %>% 
+  select(temp, humidity, pace:predKM) %>%
+  rename(actual = pace)
+
+longPreds <- 
+  pivot_longer(plotPreds, actual:predKM, names_to = "type", values_to = "pred")
+
+ggplot(longPreds, aes(temp, pred, color = type)) +
+  geom_line() +
+  facet_wrap(~cut2(humidity, c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)), scales = "free_y") +
+  theme(legend.position="bottom") +
+  labs(title = "Actual and predicted heat limited pace from multivariate regression models",
+      subtitle = "Groupings by humidity (%)",
+      x = "Temperature (F)",
+      y = "Pace (min/mi)"
+      )
+```
+
+I tried out 6 different models. Here is a plot of all of those models over the domain of interest along with the actual heat limited pace data points.
+
+This plot shows the wide range of predictive power amongst the various model types in addition to their limitations and/or strengths.
+
+Let's highlight a couple of models that work really well using the `gghighlight` package to help with the highlighting.
+
+```{r}
+library(gghighlight)
+
+ggplot(longPreds, aes(temp, pred, color = type)) +
+  geom_line() +
+  facet_wrap(~cut2(humidity, c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)), scales = "free_y") +
+  theme(legend.position="bottom") +
+  gghighlight(type == "actual",
+              calculate_per_facet = T,
+              use_direct_label = F
+              ) +
+  labs(title = "Actual heat limited pace compared to multivariate regression models",
+      subtitle = "Groupings by humidity (%)",
+      x = "Temperature (F)",
+      y = "Pace (min/mi)"
+      )
+
+ggplot(longPreds, aes(temp, pred, color = type)) +
+  geom_line() +
+  facet_wrap(~cut2(humidity, c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)), scales = "free_y") +
+  theme(legend.position="bottom") +
+  gghighlight(type == "actual" | type == "predKM" | type == "predGAM",
+              calculate_per_facet = T,
+              use_direct_label = F
+              ) +
+  labs(title = "Actual and predicted heat limited pace from multivariate regression models",
+      subtitle = "Groupings by humidity (%)",
+      x = "Temperature (F)",
+      y = "Pace (min/mi)"
+      )
+```
+
+The first plot shows the actual data used to develop the regression models and the second shows the most powerful models.
+
+I struck gold when I found a [StackExchange post on fitting multivariate datasets](https://stats.stackexchange.com/questions/13510/fitting-multivariate-natural-cubic-spline) with a recommendation to use the `DiceKriging` package as described in a [2009 UseR! conference presentation](https://www.r-project.org/conferences/useR-2009/slides/Roustant+Ginsbourger+Deville.pdf). This method seems to be nearly perfect with impressive predictive power given so few data points for model development.
+
+As seen from the plots directly above, not only does the kriging model show no difference between the actual data points used to produce it,[^1] but it also extrapolates to lower humidities where we gave the model no data to work with![^2]
+
+Now I have a validated model for use in downstream analysis that will give valid heat limited pace data for comparison against my real running data on demand!
+
+[^1]: You can't see the "actual" data in the plot because it is equal to the kriging method model response so that it is completely covered by it!
+
+[^2]: WARNING: One should always be cautious when extrapolating! In this analysis, it is just for fun, and it is cool to see that the model produces some seemingly plausible extrapolated results. For serious analysis, it is best practice to ALWAYS check this against ground truth data. Do not assume a model will be correct without rigorous checking!
+
+# Does the data show that extreme heat affect running performance?
+
+If we highlight runs where average running pace was faster than the heat limited pace, we might expect a noticeable dip in running performance.
+
+```{r}
+source("~/GitHub/myBlog/content/resources/2020-03-27-100-lap-challenge/100LapChallengePrepare.R")
+
+bkkSummer20 <- getHLP()
+
+plotBKKSumm20 <-
+  bkkSummer20 %>%
+  group_by(Date) %>%
+  summarise(Temp = mean(Temp),
+            Humidity = mean(humidity),
+            HeatIndex = mean(heatIndex),
+            Pace = mean(Avg.Pace),
+            RPI = mean(RPI)
+            ) %>%
+  mutate(HeatLimitPace = heatLimPace(Temp, Humidity),
+         Violation = ifelse(Pace < HeatLimitPace, TRUE, FALSE)
+         ) %>%
+  select(Date:Pace, HeatLimitPace, Violation, RPI)
+
+ggplot(plotBKKSumm20, aes(Date, RPI, color = Violation)) +
+  geom_point() +
+  theme(legend.position="bottom") +
+  gghighlight(Violation == TRUE,
+              calculate_per_facet = T,
+              use_direct_label = F
+              ) +
+  labs(title = "BKK late Spring 2020 runs at Vadhana fixed track",
+      subtitle = "Red points indicate when average pace faster than heat limited pace",
+      x = "Date",
+      y = "Running Performance Index"
+      )
+```
+
+However, that's not what we observe as the red points where the heat limited running pace was "violated" do not stand out as having significantly lower running performance than those that weren't.
+
+```{r}
+library(knitr)
+library(kableExtra)
+
+kable(plotBKKSumm20 %>% group_by(Violation) %>% summarise(avgRPI = mean(RPI)),
+      align = c("l", "c")) %>%
+  kable_styling(position = "center")
+```
+
+Interestingly, comparing average running performance between runs where heat limited pace was exceeded versus those that weren't indicate a slight increase in performance when heat limited pace is exceeded![^3]
+
+[^3]: Although this is likely statistically insignificant.
+
+Now I have useful functions and workflows for future related studies.
+
+In my next post, I will write a simple function using what I've developed to-date to plot running performance and related metrics for any run or group of runs that is time-based rather than lap-based to serve as a more flexible diagnostic tool. 
