@@ -16,7 +16,7 @@ Using more or less the same process as documented in the previous post, I import
 ```{r, message = F, warning = F}
 library(tidyverse)
 
-historical <- tbl_df(read.csv("~/Downloads/Vadhana Running - Historical Full.csv", stringsAsFactors = F))
+historical <- tbl_df(read.csv("~/GitHub/myBlog/content/resources/2020-03-29-running-economy-over-time/Vadhana Running - Historical Full.csv", stringsAsFactors = F))
 
 rpi <- 
   historical %>%
