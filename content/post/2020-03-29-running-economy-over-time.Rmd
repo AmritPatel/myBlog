@@ -64,8 +64,8 @@ p <-
                   label = Title,
                   label2 = Distance,
                   label3 = Avg.HR,
-                  label4 = Cadence,
-                  label5 = Temp)) +
+                  label4 = Avg.Pace,
+                  label5 = Cadence)) +
     geom_point()  +
     geom_smooth() # formula = y ~ splines::bs(x, 3)
 
@@ -132,8 +132,8 @@ q <-
                      label = Title,
                      label2 = Distance,
                      label3 = Avg.HR,
-                     label4 = Cadence,
-                     label5 = Temp)) +
+                     label4 = Avg.Pace,
+                     label5 = Cadence)) +
     geom_point()  +
     geom_smooth() # formula = y ~ splines::bs(x, 3)
 
@@ -161,8 +161,8 @@ r <-
                      label = Title,
                      label2 = Distance,
                      label3 = Avg.HR,
-                     label4 = Cadence,
-                     label5 = Temp)) +
+                     label4 = Avg.Pace,
+                     label5 = Cadence)) +
     geom_point()  +
     geom_smooth(aes(group = 1)) # formula = y ~ splines::bs(x, 3)
 
@@ -186,8 +186,8 @@ s <-
                      label = Title,
                      label2 = Distance,
                      label3 = Avg.HR,
-                     label4 = Cadence,
-                     label5 = Temp)) +
+                     label4 = Avg.Pace,
+                     label5 = Cadence)) +
     geom_point()  +
     geom_smooth(aes(group = 1)) # formula = y ~ splines::bs(x, 3)
 
