@@ -67,8 +67,8 @@ p <-
                   label4 = Avg.Pace,
                   label5 = Cadence)) +
     geom_point()  +
-    geom_smooth() # formula = y ~ splines::bs(x, 3)
-
+    geom_smooth() # + formula = y ~ splines::bs(x, 3)
+  
 ggplotly(p)
 ```
 

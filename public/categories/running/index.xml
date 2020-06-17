@@ -6,10 +6,20 @@
     <description>Recent content in running on Amrit&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 13 Jun 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 14 Jun 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/running/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Heat training continues in Hua Hin.</title>
+      <link>/2020/06/14/heat-training-continues-in-hua-hin/</link>
+      <pubDate>Sun, 14 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/06/14/heat-training-continues-in-hua-hin/</guid>
+      <description>Building off of my last post, after several setbacks over 3 days, I finally managed to hack together a function that generates the RPI and heat limited pace related plots of my previous posts all from the comfort of a RStudio chunk.
+First off, for the life of me I couldn’t figure out how to run a Python script from within R using the reticulate package. I spent hours to get this to work.</description>
+    </item>
     
     <item>
       <title>Heat limited running pace.</title>

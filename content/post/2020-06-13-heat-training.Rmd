@@ -161,6 +161,8 @@ heatPaceKM <-
                   forKM %>% select(pace)
     )
 
+saveRDS(heatPaceKM, "~/GitHub/myBlog/content/resources/2020-06-13-heat-training/heatPaceKM.rds")
+
 library(lookupTable)
 
 heatPaceLT <-
@@ -269,7 +271,7 @@ Now I have a validated model for use in downstream analysis that will give valid
 
 [^2]: WARNING: One should always be cautious when extrapolating! In this analysis, it is just for fun, and it is cool to see that the model produces some seemingly plausible extrapolated results. For serious analysis, it is best practice to ALWAYS check this against ground truth data. Do not assume a model will be correct without rigorous checking!
 
-# Does the data show that extreme heat affect running performance?
+# Does the data show that extreme heat affects running performance?
 
 If we highlight runs where average running pace was faster than the heat limited pace, we might expect a noticeable dip in running performance.
 
@@ -317,10 +319,12 @@ kable(plotBKKSumm20 %>% group_by(Violation) %>% summarise(avgRPI = mean(RPI)),
   kable_styling(position = "center")
 ```
 
-Interestingly, comparing average running performance between runs where heat limited pace was exceeded versus those that weren't indicate a slight increase in performance when heat limited pace is exceeded![^3]
+Interestingly, comparing average running performance between runs where heat limited pace was exceeded versus those that weren't indicate a slight increase in performance when heat limited pace is exceeded![^3] 
+
+It is likely that heat limited pace really only applies for longer distances.
 
 [^3]: Although this is likely statistically insignificant.
 
 Now I have useful functions and workflows for future related studies.
 
-In my next post, I will write a simple function using what I've developed to-date to plot running performance and related metrics for any run or group of runs that is time-based rather than lap-based to serve as a more flexible diagnostic tool. 
+In my next post, I will write a function using what I've developed to-date to plot running performance and related metrics for any run or group of runs that is time-based rather than lap-based to serve as a more flexible diagnostic tool. 
