@@ -1,3 +1,27 @@
+# Create single dataframe from runs of interest.
+dfRPI <- function(workDir) {
+  
+  library(data.table)
+  
+  setwd(workDir)
+  
+  # lapply + glob passes all .csv files to previously defined data import and formatting function `getData`.
+  data <- lapply(Sys.glob(paste0(workDir, "*.csv")), getData, RHR = 56) 
+  
+  # Combine created list data into a single dataframe.
+  df <- rbindlist(data)
+  
+  # Get date-based activity names from "runs" df for plot labeling.
+  load("runs.Rdata")
+  runs <-
+    runs %>%
+    mutate(Date = as.Date(substr(start_time, 1, 10))) %>%
+    select(name, Date)
+
+  df <- left_join(df, runs)
+  
+}
+
 # Basic importing, re-formatting and distance correction.
 getData <- function(fname, RHR) {
   
@@ -16,21 +40,6 @@ getData <- function(fname, RHR) {
            Date = as.Date(timestamp)
     ) %>%
     select(Time:Date)
-}
-
-# Create single dataframe from runs of interest.
-dfRPI <- function(workDir) {
-  
-  library(data.table)
-  
-  setwd(workDir)
-  
-  # lapply + glob passes all .csv files to previously defined data import and formatting function `getData`.
-  data <- lapply(Sys.glob(paste0(workDir, "*.csv")), getData, RHR = 56) 
-  
-  # Combine created list data into a single dataframe.
-  df <- rbindlist(data)
-  
 }
 
 # Add user-provided humidity data to the running activity datqframe, then calculate and add a heat index column
@@ -66,21 +75,21 @@ plotRPI <- function(df, titleText) {
 
   library(tidyverse)
   
-  # Calculate standard deviation and mean data for RPI data to filter out data collected before 1.3 mi. that is biased high.
+  # Calculate standard deviation and mean data for RPI data to filter out data collected before 1.3 mi that is biased high.
   df <- 
     df %>%
     group_by(Date) %>%
     filter(Distance > 1.3) %>%
     summarise(sd = sd(RPI, na.rm = T)) %>%
     left_join(df)
-  
+
   df <- 
     df %>%
     group_by(Date) %>%
     filter(Distance > 1.3) %>%
     summarise(mn = mean(RPI, na.rm = T)) %>%
     left_join(df)
-  
+
   # Change the data from "wide" to "long' to make plotting easier.
   pltRunData <- 
     reshape2::melt(df %>%
@@ -91,8 +100,11 @@ plotRPI <- function(df, titleText) {
                             # Filter out points that exceed # of standard deviations specified.
                             RPI = ifelse(abs(RPI - mn) > 1.2 * sd, NA, RPI),
                             Cadence = ifelse(Distance <= 0.1, NA, Cadence),
+                            # Filter out Inf values
+                            Avg.Pace = ifelse(Avg.Pace > 18, NA, Avg.Pace),
+                            Cadence = ifelse(Cadence < 50, NA, Cadence)
                      ),
-                   id.vars = c("Date", "Distance")
+                   id.vars = c("Date", "Distance", "name")
     )
   
   # Create a dataset of variable means to add to plots.
@@ -122,7 +134,7 @@ plotRPI <- function(df, titleText) {
              variable == "heatIndex" |
              variable == "RPI"
     )
-  
+ 
   # Only keep variables of interest.
   lessPlt <-
     pltRunData %>%
@@ -183,8 +195,10 @@ plotViolation <- function(df, titleText) {
 # Summary plot intended to compare average RPIs from multiple runs to visually check if heat limited violations impact RPI.
 plotViolationSumm <- function(df, titleText) {
   
-  library(gghighlight)
   library(tidyverse)
+  library(gghighlight)
+  library(ggrepel)
+  library(RColorBrewer)
   
   # Load previously defined heat limited pace model.
   heatPaceKM <- readRDS("~/GitHub/myBlog/content/resources/2020-06-13-heat-training/heatPaceKM.rds")
@@ -197,6 +211,8 @@ plotViolationSumm <- function(df, titleText) {
   pltDF <-
     df %>%
     group_by(Date) %>%
+    # RPI data doesn't settle until after about 1.3 miles so data less than filtered out.
+    filter(Distance > 1.3) %>%
     summarise(Avg.Pace = mean(Avg.Pace, na.rm = T, trim = 0.01),
               Temp = mean(Temp, na.rm = T),
               humidity = mean(humidity, na.rm = T),
@@ -204,18 +220,29 @@ plotViolationSumm <- function(df, titleText) {
               ) %>%
     mutate(predKM = heatLimPace(Temp, humidity),
            Violation = ifelse(Avg.Pace < predKM, TRUE, FALSE)
-    )
+    ) %>%
+    # Add activity names back in for plot labeling.
+    left_join(df %>% select(Date, name)) %>%
+    distinct()
+  
+  # save(pltDF, file = "~/HealthData/FitFiles/working/pltDF.Rdata")
   
   ggplot(pltDF, aes(Date, RPI, color = Violation)) +
     geom_point() +
     theme(legend.position="bottom") +
-    gghighlight(Violation == TRUE,
-                calculate_per_facet = T,
-                use_direct_label = F
+    # gghighlight(Violation == TRUE,
+    #             calculate_per_facet = T,
+    #             use_direct_label = F
+    # ) +
+    geom_label_repel(aes(label = name),
+                     box.padding   = 0.35,
+                     point.padding = 0.5,
+                     segment.color = 'grey50'
     ) +
     labs(title = titleText,
-         subtitle = "Red points indicate when average pace faster than heat limited pace",
+        # subtitle = "Red points indicate when average pace faster than heat limited pace",
          x = "Date",
          y = "Running Performance Index"
-    )
+    ) +
+    scale_color_brewer(palette="Paired")
 }

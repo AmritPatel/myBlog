@@ -6,10 +6,32 @@
     <description>Recent content in Posts on Amrit&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 14 Jun 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 11 Jul 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Final heat.</title>
+      <link>/2020/07/11/final-heat/</link>
+      <pubDate>Sat, 11 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/07/11/final-heat/</guid>
+      <description> Here I am compiling a set of heat training data1 to assess whether “violation” of an established heat limited pace2 has a noticeable impact on running performance index as defined in a previous post.
+ From runs in Thailand during the summer of 2020.↩
+ See Heat limited running pace. post for more details.↩
+   </description>
+    </item>
+    
+    <item>
+      <title>Tough decisions.</title>
+      <link>/2020/06/26/tough-decisions/</link>
+      <pubDate>Fri, 26 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/06/26/tough-decisions/</guid>
+      <description>After hearing about the rapid increase in COVID-19 cases in Nepal over the past 2 weeks1, and given that the uptick in cases is very delayed compared to most of the rest of the world, I wanted to see how Nepal’s new cases per day density trajectory stacked up to other countries.
+I figured I would do my own analysis and present the results here for posterity, but I found a lot of great work already done providing open access to not only data, but really good interactive graphs.</description>
+    </item>
     
     <item>
       <title>Heat training continues in Hua Hin.</title>

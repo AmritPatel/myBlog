@@ -7,6 +7,6 @@ getRPIandHLPfromFIT <- function(wd, aname) {
   getFit(workDir = wd, actName = aname)
   getCSV(workDir = wd)
   dfRPI(workDir = wd)
-
+  
 }
 

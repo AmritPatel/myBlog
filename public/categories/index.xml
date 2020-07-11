@@ -6,7 +6,7 @@
     <description>Recent content in Categories on Amrit&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 14 Jun 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 11 Jul 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>R</title>
       <link>/categories/r/</link>
-      <pubDate>Sun, 14 Jun 2020 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 11 Jul 2020 00:00:00 +0000</pubDate>
       
       <guid>/categories/r/</guid>
       <description></description>
@@ -23,9 +23,18 @@
     <item>
       <title>running</title>
       <link>/categories/running/</link>
-      <pubDate>Sun, 14 Jun 2020 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 11 Jul 2020 00:00:00 +0000</pubDate>
       
       <guid>/categories/running/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>exploratory</title>
+      <link>/categories/exploratory/</link>
+      <pubDate>Fri, 26 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/exploratory/</guid>
       <description></description>
     </item>
     

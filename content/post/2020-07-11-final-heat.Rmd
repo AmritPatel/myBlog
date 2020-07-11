@@ -1,0 +1,78 @@
+---
+title: Final heat.
+author: Amrit D. Patel
+date: '2020-07-11'
+slug: final-heat
+categories:
+  - running
+tags:
+  - plot
+draft: false
+---
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = "center")
+```
+
+Here I am compiling a set of heat training data[^2] to assess whether "violation" of an established heat limited pace[^1] has a noticeable impact on running performance index [as defined in a previous post](https://amritpatel.rbind.io/2020/03/27/100-lap-challenge/). 
+
+[^1]: See [*Heat limited running pace.*](https://amritpatel.rbind.io/2020/06/13/heat-training/) post for more details.
+[^2]: From runs in Thailand during the summer of 2020.
+
+```{r}
+# Update Garmin activity database
+# system("cp /Applications/GarminDb_Darwin_1.6.0/GarminConnectConfig.json . && /Applications/GarminDb_Darwin_1.6.0/download_update_dbs.sh")
+
+source("~/GitHub/myBlog/content/resources/2020-06-14-heat-training-continues-in-hua-hin/RPIandHeatLimitedPacePlots.R")
+
+# Pran Buri Running
+
+dataPB <- getRPIandHLPfromFIT(wd = "~/HealthData/FitFiles/working/", aname = "Pran Buri")
+cleanup()
+
+# Fix run split over 2 different dates.
+dataPB$Date <- as.character(dataPB$Date)
+dataPB <- dataPB %>% mutate(Date = ifelse(Date == "2020-06-17", "2020-06-18", Date))
+dataPB$Date <- as.Date(dataPB$Date)
+
+# Hua Hin Running
+
+dataHH <- getRPIandHLPfromFIT(wd = "~/HealthData/FitFiles/working/", aname = "Hua Hin")
+cleanup()
+
+# BKK/Lumphini Park Running
+
+dataLP <- getRPIandHLPfromFIT(wd = "~/HealthData/FitFiles/working/", aname = "Pathum Wan")
+cleanup()
+
+# BKK/Benchasiri Park
+
+# dataBS <- getRPIandHLPfromFIT(wd = "~/HealthData/FitFiles/working/", aname = "Khlong")
+# cleanup()
+
+dataThailand <- bind_rows(dataPB, dataHH, dataLP) #, dataBS)
+
+########### OPTIONAL USER INPUT FOR HEAT INDEX FACET
+
+humidity  <-
+  tribble(
+    ~Date,	~humidity,
+    "2020-06-09", 79,
+    "2020-06-13", 62,
+    "2020-06-17", 76,
+    "2020-06-18", 76,
+    "2020-06-21", 70,
+    "2020-06-25", 68,
+    "2020-06-30", 66,
+    "2020-07-01", 57,
+    "2020-07-03", 64,
+    "2020-07-06", 50
+)
+
+#####################
+
+dataThailand <- addHI(dataThailand, humidity)
+
+# plotViolation(dataThailand, titleText = "Thailand Summer 2020 heat training runs.")
+plotViolationSumm(dataThailand, titleText = "Thailand Summer 2020 heat training runs.")
+plotRPI(dataThailand, titleText = "Thailand Summer 2020 heat training runs.")
+```

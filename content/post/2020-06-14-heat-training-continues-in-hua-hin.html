@@ -20,7 +20,7 @@ tags:
 <p>All I really have to do now is figure out at least a partial activity name to pass to <code>RPIandHeatLimitedPacePlots.R</code>.</p>
 <p>As before, I still have to manually provide humidity data for the run, but at least this is the only manual step remaining.</p>
 <pre class="r"><code># Update Garmin activity database
-# system(&quot;/Applications/GarminDb_Darwin_1.6.0/download_update_dbs.sh&quot;)
+# system(&quot;cp /Applications/GarminDb_Darwin_1.6.0/GarminConnectConfig.json . &amp;&amp; /Applications/GarminDb_Darwin_1.6.0/download_update_dbs.sh&quot;)
 
 source(&quot;~/GitHub/myBlog/content/resources/2020-06-14-heat-training-continues-in-hua-hin/RPIandHeatLimitedPacePlots.R&quot;)
 
@@ -28,6 +28,11 @@ source(&quot;~/GitHub/myBlog/content/resources/2020-06-14-heat-training-continue
 
 dataPB &lt;- getRPIandHLPfromFIT(wd = &quot;~/HealthData/FitFiles/working/&quot;, aname = &quot;Pran Buri&quot;)
 cleanup()
+
+# Fix run split over 2 different dates.
+dataPB$Date &lt;- as.character(dataPB$Date)
+dataPB &lt;- dataPB %&gt;% mutate(Date = ifelse(Date == &quot;2020-06-17&quot;, &quot;2020-06-18&quot;, Date))
+dataPB$Date &lt;- as.Date(dataPB$Date)
 
 # Hua Hin Running
 
@@ -42,7 +47,11 @@ humidity  &lt;-
   tribble(
     ~Date,  ~humidity,
     &quot;2020-06-09&quot;, 79,
-    &quot;2020-06-13&quot;, 62
+    &quot;2020-06-13&quot;, 62,
+    &quot;2020-06-17&quot;, 76,
+    &quot;2020-06-18&quot;, 76,
+    &quot;2020-06-21&quot;, 70,
+    &quot;2020-06-25&quot;, 68
 )
 
 #####################
@@ -50,25 +59,27 @@ humidity  &lt;-
 dataHuaHin &lt;- addHI(dataHuaHin, humidity)
 
 plotViolation(dataHuaHin, titleText = &quot;Hua Hin Running late Spring 2020 runs.&quot;)</code></pre>
-<p><img src="/post/2020-06-14-heat-training-continues-in-hua-hin_files/figure-html/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2020-06-14-heat-training-continues-in-hua-hin_files/figure-html/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>plotViolationSumm(dataHuaHin, titleText = &quot;Hua Hin Running late Spring 2020 runs.&quot;)</code></pre>
-<p><img src="/post/2020-06-14-heat-training-continues-in-hua-hin_files/figure-html/unnamed-chunk-1-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2020-06-14-heat-training-continues-in-hua-hin_files/figure-html/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>plotRPI(dataHuaHin, titleText = &quot;Hua Hin Running late Spring 2020 runs.&quot;)</code></pre>
-<p><img src="/post/2020-06-14-heat-training-continues-in-hua-hin_files/figure-html/unnamed-chunk-1-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2020-06-14-heat-training-continues-in-hua-hin_files/figure-html/unnamed-chunk-2-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>A few things I found interesting, thoughts, and notes on some plot features:</p>
 <ul>
-<li><p>The spikes in 2020-06-13 heat index correspond to the last part of a lap for this course, which was around a nearby lake. I remember thiis stretch not being in shade like most of the run and uncomfortably hot (as the data supports).</p></li>
-<li><p>Function removesl first 1.3 mi of RPI data due to noise.</p></li>
-<li><p>Function removes first 0.1 mi of other data due to inaccurate measurements.</p></li>
+<li>The spikes in 2020-06-13 heat index correspond to the last part of a lap for this course, which was around a nearby lake. I remember this stretch not being in shade like most of the run and uncomfortably hot (as the data supports).<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a></li>
+</ul>
+<ul>
+<li><p>Function removes first 1.3 mi of RPI data due to noise. Likely best to compare runs of about the same distance (and other characteristics) for most meaningful average RPI comparisons. Also, runs &lt; 3 mi should not be analyzed as these really short runs don’t allow enough time to assess a meaningful average RPI.</p></li>
+<li><p>Function trims first 0.1 mi of other data due to inaccurate measurements.</p></li>
 <li><p>Heat index may have a significant effect on RPI in this case as seen through elevated HR for approximately the same pace as the 2020-06-09 run with other similar characteristcs. Although, this is counter to the conclusions of my previous post on the relationship between heat limited pace and RPI.</p></li>
 <li><p>Based on observed and unfiltered noise, are previous RPI calculations accurate? Excess noise may have to due with errors in distance estimation early on in run due to very small distance between 1s measurement intervals. Check GPS accuracy.</p></li>
-<li><p>Re-analyze .fit data from Pike’s Peek 10k PR and compare with value in running economy over time post plot.<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a></p></li>
+<li><p>Re-analyze .fit data from Pike’s Peek 10k PR and compare with value in <a href="https://amritpatel.rbind.io/2020/03/29/running-economy-over-time/"><em>Running economy over time post.</em></a> plot.<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a></p></li>
 </ul>
 </div>
 <div id="pikes-peek-2018-race-data." class="section level1">
 <h1><em>Pike’s Peek</em> 2018 race data.</h1>
 <p>Regarding that last note, here is my Pike’s Peek 10k PR data.</p>
-<p><img src="/post/2020-06-14-heat-training-continues-in-hua-hin_files/figure-html/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2020-06-14-heat-training-continues-in-hua-hin_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>There is a difference between the RPI generated from the filtered .fit data shown here (144.4) and that from the activity level data as seen in the final plot of my previous <a href="https://amritpatel.rbind.io/2020/03/29/running-economy-over-time/"><em>Running economy over time.</em></a> post (158.1).</p>
 <p>If I don’t filter the RPI data for distances greater than 1.3 miles, the RPI goes up to about 185. So, the RPI from the activity level data is probably due to it being based on the average pace and heart rate for the entire run, which may actually provide the best estimate for RPI as it is simple, requiring only 2 numbers and no filtering for the calculation. However, it is likely biased a bit high because none of the low heart rate data that occurs at the beginning of the run due to starting at rest is filtered out.</p>
 <p>Nonetheless, I am excited at my progress and happy to have a convenient function for analyzing and comparing future running data to answer all the random questions that occur to me.</p>
@@ -80,6 +91,7 @@ plotViolation(dataHuaHin, titleText = &quot;Hua Hin Running late Spring 2020 run
 <li id="fn2"><p><code>heatLimitedPace.R</code><a href="#fnref2" class="footnote-back">↩</a></p></li>
 <li id="fn3"><p><code>plotRPI.R</code><a href="#fnref3" class="footnote-back">↩</a></p></li>
 <li id="fn4"><p><code>RPIandHeatLimitedPacePlots.R</code><a href="#fnref4" class="footnote-back">↩</a></p></li>
-<li id="fn5"><p>This run chosen because I know where to locate it on the plot.<a href="#fnref5" class="footnote-back">↩</a></p></li>
+<li id="fn5"><p>That is to say that the temperature sensor seems to be doing its job.<a href="#fnref5" class="footnote-back">↩</a></p></li>
+<li id="fn6"><p>This run chosen because I know where to locate it on the plot.<a href="#fnref6" class="footnote-back">↩</a></p></li>
 </ol>
 </div>

@@ -33,9 +33,33 @@ All I really have to do now is figure out at least a partial activity name to pa
 
 As before, I still have to manually provide humidity data for the run, but at least this is the only manual step remaining.
 
+```{r, eval = F}
+# Automate humdity data collection for runs for heat index calculation.
+library(owmr)
+library(DBI)
+library(RSQLite)
+
+con <- dbConnect(SQLite(), "/Users/amrit/HealthData/DBs/garmin_activities.db")
+
+# Get table
+runningActs <- dbReadTable(con, 'running_activities_view')
+
+# get current weather data for cities around geo point
+res <- find_cities_by_geo_point(
+  lat = "12.4610291887075",
+  lon = "99.9740870855749",
+  cnt = 5,
+  units = "metric"
+) %>% owmr_as_tibble()
+
+idx <- c(names(res[1:6]), "name")
+res[, idx]
+```
+
+
 ```{r, echo = T}
 # Update Garmin activity database
-# system("/Applications/GarminDb_Darwin_1.6.0/download_update_dbs.sh")
+# system("cp /Applications/GarminDb_Darwin_1.6.0/GarminConnectConfig.json . && /Applications/GarminDb_Darwin_1.6.0/download_update_dbs.sh")
 
 source("~/GitHub/myBlog/content/resources/2020-06-14-heat-training-continues-in-hua-hin/RPIandHeatLimitedPacePlots.R")
 
@@ -43,6 +67,11 @@ source("~/GitHub/myBlog/content/resources/2020-06-14-heat-training-continues-in-
 
 dataPB <- getRPIandHLPfromFIT(wd = "~/HealthData/FitFiles/working/", aname = "Pran Buri")
 cleanup()
+
+# Fix run split over 2 different dates.
+dataPB$Date <- as.character(dataPB$Date)
+dataPB <- dataPB %>% mutate(Date = ifelse(Date == "2020-06-17", "2020-06-18", Date))
+dataPB$Date <- as.Date(dataPB$Date)
 
 # Hua Hin Running
 
@@ -57,7 +86,11 @@ humidity  <-
   tribble(
     ~Date,	~humidity,
     "2020-06-09", 79,
-    "2020-06-13", 62
+    "2020-06-13", 62,
+    "2020-06-17", 76,
+    "2020-06-18", 76,
+    "2020-06-21", 70,
+    "2020-06-25", 68
 )
 
 #####################
@@ -71,17 +104,19 @@ plotRPI(dataHuaHin, titleText = "Hua Hin Running late Spring 2020 runs.")
 
 A few things I found interesting, thoughts, and notes on some plot features:
 
-- The spikes in 2020-06-13 heat index correspond to the last part of a lap for this course, which was around a nearby lake. I remember thiis stretch not being in shade like most of the run and uncomfortably hot (as the data supports).
+- The spikes in 2020-06-13 heat index correspond to the last part of a lap for this course, which was around a nearby lake. I remember this stretch not being in shade like most of the run and uncomfortably hot (as the data supports).[^90]
 
-- Function removesl first 1.3 mi of RPI data due to noise.
+[^90]: That is to say that the temperature sensor seems to be doing its job.
 
-- Function removes first 0.1 mi of other data due to inaccurate measurements.
+- Function removes first 1.3 mi of RPI data due to noise. Likely best to compare runs of about the same distance (and other characteristics) for most meaningful average RPI comparisons. Also, runs < 3 mi should not be analyzed as these really short runs don't allow enough time to assess a meaningful average RPI.
+
+- Function trims first 0.1 mi of other data due to inaccurate measurements.
 
 - Heat index may have a significant effect on RPI in this case as seen through elevated HR for approximately the same pace as the 2020-06-09 run with other similar characteristcs. Although, this is counter to the conclusions of my previous post on the relationship between heat limited pace and RPI.
 
 - Based on observed and unfiltered noise, are previous RPI calculations accurate? Excess noise may have to due with errors in distance estimation early on in run due to very small distance between 1s measurement intervals. Check GPS accuracy.
 
-- Re-analyze .fit data from Pike's Peek 10k PR and compare with value in running economy over time post plot.[^5]
+- Re-analyze .fit data from Pike's Peek 10k PR and compare with value in [*Running economy over time post.*](https://amritpatel.rbind.io/2020/03/29/running-economy-over-time/) plot.[^5]
 
 [^5]: This run chosen because I know where to locate it on the plot.
 

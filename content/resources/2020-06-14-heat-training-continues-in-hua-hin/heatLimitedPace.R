@@ -19,15 +19,17 @@ getFit <- function(workDir, actName) {
     runningActs %>%
     # Allow partial activity name matching.
     filter(str_detect(name, actName)) %>%
-    select(activity_id) %>%
+    select(name, start_time, activity_id) %>%
     mutate(activity_id = paste0(path, activity_id, ".fit"))
+  
+  save(runs, file = "~/HealthData/FitFiles/working/runs.Rdata")
 
   # Setup a working directory to copy files to for processing.
   setwd(workDir)
 
   # Copy .fit files to working directory.
   lapply(paste("cp", runs$activity_id, workDir), system)
-
+  
 }
 
 # Convert .fit files to .csv.
@@ -50,6 +52,6 @@ getCSV <- function(workDir) {
 # Clear the working directory to allow for subsequent jobs.
 cleanup <- function() {
   
-  system("rm *.fit *.csv *.log True")
+  system("rm *.fit *.csv *.log True runs.Rdata")
   
 }
