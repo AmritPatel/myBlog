@@ -22,6 +22,12 @@ Here I am compiling a set of heat training data[^2] to assess whether "violation
 # Update Garmin activity database
 # system("cp /Applications/GarminDb_Darwin_1.6.0/GarminConnectConfig.json . && /Applications/GarminDb_Darwin_1.6.0/download_update_dbs.sh")
 
+# Vadhana Running
+# Dataframe saved from "2020-06-13-heat-training" post because data required special tx due to invalid GPS data.
+
+load("~/GitHub/myBlog/content/resources/2020-07-11-final-heat/vadhanaRuns.Rdata")
+
+# Load in all helper functions
 source("~/GitHub/myBlog/content/resources/2020-06-14-heat-training-continues-in-hua-hin/RPIandHeatLimitedPacePlots.R")
 
 # Pran Buri Running
@@ -73,6 +79,38 @@ humidity  <-
 dataThailand <- addHI(dataThailand, humidity)
 
 # plotViolation(dataThailand, titleText = "Thailand Summer 2020 heat training runs.")
-plotViolationSumm(dataThailand, titleText = "Thailand Summer 2020 heat training runs.")
+
+# Save ggplot object for merging with previously treated Vadhana runs.
+p <- plotViolationSumm(dataThailand, titleText = "Thailand Summer 2020 heat training runs.")
+
+# Combine Vadhana dataset with current.
+combined <-
+  plotBKKSumm20 %>%
+  mutate(name = "Vadhana") %>%
+  select(name, Date, RPI, Violation) %>%
+  bind_rows(p$data %>% select(name, Date, RPI, Violation))
+
+library(ggrepel)
+
+ggplot(combined, aes(Date, RPI, color = Violation)) +
+  geom_point() +
+  geom_smooth(method = "loess") +
+  theme(legend.position="bottom") +
+  # gghighlight(Violation == TRUE,
+  #             calculate_per_facet = T,
+  #             use_direct_label = F
+  # ) +
+  geom_text_repel(aes(label = name),
+                   box.padding   = 0.35,
+                   point.padding = 0.5,
+                   segment.color = 'grey50'
+  ) +
+  labs(title = "Thailand Summer 2020 heat training runs.",
+      # subtitle = "Red points indicate when average pace faster than heat limited pace",
+       x = "Date",
+       y = "Running Performance Index"
+  ) +
+  scale_color_brewer(palette="Paired")
+
 plotRPI(dataThailand, titleText = "Thailand Summer 2020 heat training runs.")
 ```

@@ -294,6 +294,8 @@ plotBKKSumm20 <-
          ) %>%
   select(Date:Pace, HeatLimitPace, Violation, RPI)
 
+save(plotBKKSumm20, file = "~/HealthData/FitFiles/working/vadhanaRuns.Rdata")
+
 ggplot(plotBKKSumm20, aes(Date, RPI, color = Violation)) +
   geom_point() +
   theme(legend.position="bottom") +
