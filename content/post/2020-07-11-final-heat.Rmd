@@ -92,6 +92,8 @@ combined <-
 
 library(ggrepel)
 
+combined$name <- stringr::str_remove(combined$name, " Running")
+
 ggplot(combined, aes(Date, RPI, color = Violation)) +
   geom_point() +
   geom_smooth(method = "loess") +
