@@ -52,10 +52,10 @@ cleanup()
 
 # BKK/Benchasiri Park
 
-# dataBS <- getRPIandHLPfromFIT(wd = "~/HealthData/FitFiles/working/", aname = "Khlong")
-# cleanup()
+dataBS <- getRPIandHLPfromFIT(wd = "~/HealthData/FitFiles/working/", aname = "Khlong")
+cleanup()
 
-dataThailand <- bind_rows(dataPB, dataHH, dataLP) #, dataBS)
+dataThailand <- bind_rows(dataPB, dataHH, dataLP, dataBS)
 
 ########### OPTIONAL USER INPUT FOR HEAT INDEX FACET
 
@@ -71,7 +71,8 @@ humidity  <-
     "2020-06-30", 66,
     "2020-07-01", 57,
     "2020-07-03", 64,
-    "2020-07-06", 50
+    "2020-07-06", 50,
+    "2020-07-14", 67
 )
 
 #####################
