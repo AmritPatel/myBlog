@@ -1,0 +1,97 @@
+Jumping Effect, 47.99722671508789,  
+Jumps, 1310,  
+avg_cadence, None, rpm
+avg_cadence_position, (None, None), rpm
+avg_combined_pedal_smoothness, None, percent
+avg_fractional_cadence, None, rpm
+avg_heart_rate, 146, bpm
+avg_left_pco, None, mm
+avg_left_pedal_smoothness, None, percent
+avg_left_power_phase, (None, None, None, None), degrees
+avg_left_power_phase_peak, (None, None, None, None), degrees
+avg_left_torque_effectiveness, None, percent
+avg_power, None, watts
+avg_power_position, (None, None), watts
+avg_right_pco, None, mm
+avg_right_pedal_smoothness, None, percent
+avg_right_power_phase, (None, None, None, None), degrees
+avg_right_power_phase_peak, (None, None, None, None), degrees
+avg_right_torque_effectiveness, None, percent
+avg_speed, 0, NA
+avg_stance_time, None, ms
+avg_stance_time_balance, None, percent
+avg_stance_time_percent, None, percent
+avg_step_length, None, mm
+avg_stroke_count, None, strokes/lap
+avg_stroke_distance, None, m
+avg_temperature, 31, C
+avg_vertical_oscillation, None, mm
+avg_vertical_ratio, None, percent
+enhanced_avg_speed, 0.0, m/s
+enhanced_max_speed, None, m/s
+event, lap, NA
+event_group, None, NA
+event_type, stop, NA
+first_lap_index, 0, NA
+intensity_factor, None, if
+left_right_balance, None, NA
+max_cadence, None, rpm
+max_cadence_position, (None, None), rpm
+max_fractional_cadence, None, rpm
+max_heart_rate, 170, bpm
+max_power, None, watts
+max_power_position, (None, None), watts
+max_speed, None, NA
+max_temperature, 32, C
+message_index, 0, NA
+nec_lat, None, semicircles
+nec_long, None, semicircles
+normalized_power, None, watts
+num_active_lengths, None, lengths
+num_laps, 1, NA
+pool_length, None, m
+pool_length_unit, None, NA
+sport, training, NA
+stand_count, None, NA
+start_position_lat, None, semicircles
+start_position_long, None, semicircles
+start_time, 2020-08-07 11:36:22, NA
+sub_sport, cardio_training, NA
+swc_lat, None, semicircles
+swc_long, None, semicircles
+swim_stroke, None, swim_stroke
+threshold_power, None, watts
+time_standing, None, s
+timestamp, 2020-08-07 11:46:31, NA
+total_anaerobic_training_effect, 0.7, NA
+total_ascent, 0, m
+total_calories, 125, kcal
+total_cycles, None, cycles
+total_descent, 0, m
+total_distance, 0.0, m
+total_elapsed_time, 601.456, s
+total_fractional_cycles, None, cycles
+total_timer_time, 601.456, s
+total_training_effect, 2.4, NA
+total_work, None, J
+training_stress_score, None, tss
+trigger, activity_end, NA
+unknown_106, 0, NA
+unknown_107, None, NA
+unknown_108, None, NA
+unknown_109, None, NA
+unknown_110, Jump Rope, NA
+unknown_138, (1, 0), NA
+unknown_150, 30, NA
+unknown_151, 0, NA
+unknown_152, 0, NA
+unknown_157, None, NA
+unknown_158, None, NA
+unknown_184, 0, NA
+unknown_33, None, NA
+unknown_38, None, NA
+unknown_39, None, NA
+unknown_78, None, NA
+unknown_79, None, NA
+unknown_80, None, NA
+unknown_81, 0, NA

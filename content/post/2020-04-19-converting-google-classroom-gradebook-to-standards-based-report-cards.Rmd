@@ -7,7 +7,6 @@ categories:
   - teaching
 tags:
   - regression
-  - correlation
 ---
 
 ```{r setup, include = FALSE}

@@ -6,10 +6,30 @@
     <description>Recent content in Posts on Amrit&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 11 Jul 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 08 Aug 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Learning to rope skip</title>
+      <link>/2020/08/08/learning-to-rope-skip/</link>
+      <pubDate>Sat, 08 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/08/08/learning-to-rope-skip/</guid>
+      <description> </description>
+    </item>
+    
+    <item>
+      <title>Am I a Machine Learning Engineer Yet?</title>
+      <link>/2020/07/28/am-i-a-machine-learning-engineer-yet/</link>
+      <pubDate>Tue, 28 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/07/28/am-i-a-machine-learning-engineer-yet/</guid>
+      <description>Transforming a nuclear engineer into a maching learning engineer. Yesterday I went down a rabbit hole for pretty much the entire day.
+White rabbit Matrix meme
+I was contemplating how I might go about getting a job doing data science. I jumped from LinkedIn to Reddit to Twitter1 to various blogs2. I recalled advice from a friend to get an Online Master’s of Computer Science from Georgia Tech. Jesse Mostipak’s blog was also very inspiring, especially after watching her rstudio::conf2019 talk on becoming a self-taught data scientist.</description>
+    </item>
     
     <item>
       <title>Final heat.</title>

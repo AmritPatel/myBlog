@@ -1,0 +1,451 @@
+---
+title: Am I a Machine Learning Engineer Yet?
+author: Amrit D. Patel
+date: '2020-07-28'
+slug: am-i-a-machine-learning-engineer-yet
+categories:
+  - R
+tags: []
+draft: true
+---
+
+
+
+<div id="transforming-a-nuclear-engineer-into-a-maching-learning-engineer." class="section level1">
+<h1>Transforming a nuclear engineer into a maching learning engineer.</h1>
+<p>Yesterday I went down a rabbit hole for pretty much the entire day.</p>
+<p><em>White rabbit Matrix meme</em></p>
+<p>I was contemplating how I might go about getting a job doing data science. I jumped from LinkedIn to Reddit to Twitter<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> to various blogs<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>. I recalled advice from a friend to get an Online Master’s of Computer Science from Georgia Tech. <a href="https://www.jessemaegan.com/">Jesse Mostipak’s blog</a> was also very inspiring, especially after watching <a href="https://resources.rstudio.com/rstudio-conf-2019/r4ds-online-learning-community-improvements-to-self-taught-data-science-and-the-critical-need-for-diversity-equity-and-inclusion-in-data-science-education">her rstudio::conf2019 talk</a> on becoming a self-taught data scientist.</p>
+<p>One of the resources I found that also helped me organize my thoughts was <a href="https://www.manning.com/books/build-a-career-in-data-science?a_aid=buildcareer&amp;a_bid=76784b6a"><em>Build a Career in Data Science</em></a>. After reading Chapter 3 on “Getting the Skills,” I came away with the following:</p>
+<ol style="list-style-type: decimal">
+<li><p>I didn’t want to wait for the Georgia Tech Graduate School Program to accept me in March 2021 to start learning. While this option is relatively affordable at $7000, I would also be repeating a lot of material that I’ve already learned.</p></li>
+<li><p>A data science bootcamp would require $15,000-$20,000 and 4 months of work for at least 8 hours per day. Again, there would be a significant amount of material that I have already learned and the price tag is even steeper.</p></li>
+<li><p>What don’t I know yet that I still need to know to be considered a functional data scientist?</p></li>
+</ol>
+</div>
+<div id="baselining." class="section level1">
+<h1>Baselining.</h1>
+<p>After mulling over that last point, I thought to have a look at the Georgia Tech Online Master’s of Computer Science curriculum for their machine learning track degree requirements so I can begin to identify key knowledge gaps. Here is the rundown:</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ───────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+## ✓ tibble  3.0.3     ✓ dplyr   1.0.0
+## ✓ tidyr   1.1.0     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.6.2</code></pre>
+<pre><code>## Warning: package &#39;tibble&#39; was built under R version 3.6.2</code></pre>
+<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.6.2</code></pre>
+<pre><code>## Warning: package &#39;purrr&#39; was built under R version 3.6.2</code></pre>
+<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.6.2</code></pre>
+<pre><code>## ── Conflicts ──────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(googlesheets4)</code></pre>
+<pre><code>## Warning: package &#39;googlesheets4&#39; was built under R version 3.6.2</code></pre>
+<pre class="r"><code>gs4_deauth()
+
+mlCourses &lt;- read_sheet(&quot;https://docs.google.com/spreadsheets/d/1MtFj0Ho8hwBHF7UJm3n6wEA3HduDgJ10SGN97ILeXWM/edit#gid=0&quot;,
+                        sheet = &quot;machineLearning&quot;,
+                        col_types = c(&quot;ccccili&quot;)
+                        )</code></pre>
+<pre><code>## Reading from &quot;gaTechOMCS&quot;</code></pre>
+<pre><code>## Range &quot;&#39;machineLearning&#39;&quot;</code></pre>
+<pre class="r"><code>currentCourses &lt;- read_sheet(&quot;https://docs.google.com/spreadsheets/d/1MtFj0Ho8hwBHF7UJm3n6wEA3HduDgJ10SGN97ILeXWM/edit#gid=1340971109&quot;,
+                              sheet = &quot;currentCourses&quot;,
+                        col_types = c(&quot;ccccilil&quot;)
+                        )</code></pre>
+<pre><code>## Reading from &quot;gaTechOMCS&quot;</code></pre>
+<pre><code>## Range &quot;&#39;currentCourses&#39;&quot;</code></pre>
+<pre class="r"><code>courses &lt;- full_join(currentCourses, mlCourses, by = c(&quot;department&quot;, &quot;courseID&quot;, &quot;title&quot;, &quot;online&quot;))
+
+mlTrack &lt;-
+  courses %&gt;%
+  mutate(type = ifelse(is.na(type.y), type.x, type.y),
+                   credits = ifelse(is.na(credits.y), credits.x, credits.y),
+                   required = ifelse(is.na(required.y), required.x, required.y)
+                   ) %&gt;%
+  select(-contains(&quot;.&quot;)) %&gt;%
+  select(type, department:title, online:required) %&gt;%
+  mutate(foundational = ifelse(is.na(foundational), FALSE, foundational))
+
+requirements &lt;-
+  mlTrack %&gt;%
+  group_by(type) %&gt;%
+  distinct(required)</code></pre>
+<p>Number of classes available to take online for the Machine Learning Specialization with specialization courses listed first.</p>
+<pre class="r"><code>mlTrack %&gt;%
+  filter(online == TRUE) %&gt;%
+  arrange(desc(type))</code></pre>
+<pre><code>## # A tibble: 44 x 8
+##    type   department courseID title         online foundational credits required
+##    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;         &lt;lgl&gt;  &lt;lgl&gt;          &lt;int&gt;    &lt;int&gt;
+##  1 ML     CS         7641     Machine Lear… TRUE   TRUE               3        6
+##  2 ML     CS         6515     Introduction… TRUE   FALSE              3        6
+##  3 elect… CS         6476     Computer Vis… TRUE   TRUE               3        9
+##  4 elect… CS         7646     Machine Lear… TRUE   TRUE               3        9
+##  5 elect… CSE        6242     Data and Vis… TRUE   TRUE               3        9
+##  6 elect… CS         7642     Reinforcemen… TRUE   FALSE              3        9
+##  7 elect… CSE        6250     Big Data for… TRUE   FALSE              3        9
+##  8 elect… ISYE       6420     Bayesian Met… TRUE   FALSE              3        9
+##  9 core   CS         6035     Introduction… TRUE   TRUE               3       15
+## 10 core   CS         6200     Introduction… TRUE   TRUE               3       15
+## # … with 34 more rows</code></pre>
+<p>ML core classes available:</p>
+<pre class="r"><code>mlTrack %&gt;%
+  arrange(desc(type)) %&gt;%
+  filter(online == TRUE, type == &quot;ML&quot;) %&gt;%
+  select(-online, -credits, -required)</code></pre>
+<pre><code>## # A tibble: 2 x 5
+##   type  department courseID title                               foundational
+##   &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;                               &lt;lgl&gt;       
+## 1 ML    CS         7641     Machine Learning                    TRUE        
+## 2 ML    CS         6515     Introduction to Graduate Algorithms FALSE</code></pre>
+<pre class="r"><code>MLcoreSelect &lt;-
+  mlTrack %&gt;%
+  arrange(desc(type)) %&gt;%
+  filter(online == TRUE, type == &quot;ML&quot;)</code></pre>
+<p>There are only 2 online courses available to meet the 6 credit ML core course requirements.</p>
+<p>ML elective courses available:</p>
+<pre class="r"><code>mlTrack %&gt;%
+  arrange(desc(type)) %&gt;%
+  filter(online == TRUE, type == &quot;electiveML&quot;) %&gt;%
+  select(-online, -credits, -required)</code></pre>
+<pre><code>## # A tibble: 6 x 5
+##   type     department courseID title                                foundational
+##   &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;                                &lt;lgl&gt;       
+## 1 electiv… CS         6476     Computer Vision                      TRUE        
+## 2 electiv… CS         7646     Machine Learning for Trading         TRUE        
+## 3 electiv… CSE        6242     Data and Visual Analytics            TRUE        
+## 4 electiv… CS         7642     Reinforcement Learning and Decision… FALSE       
+## 5 electiv… CSE        6250     Big Data for Health (Formerly CSE 8… FALSE       
+## 6 electiv… ISYE       6420     Bayesian Methods                     FALSE</code></pre>
+<pre class="r"><code>MLelectiveSelect &lt;-
+  mlTrack %&gt;%
+  arrange(desc(type)) %&gt;%
+  filter(online == TRUE,
+         type == &quot;electiveML&quot;)</code></pre>
+<p>All of these classes seem really interesting and really provide exposure to a wide range of ML contexts so let’s include them all.</p>
+<p>Core classes left that are available:</p>
+<pre class="r"><code>mlTrack %&gt;%
+  arrange(desc(type)) %&gt;%
+  filter(online == TRUE, type == &quot;core&quot;) %&gt;%
+  select(-online, -credits, -required)</code></pre>
+<pre><code>## # A tibble: 36 x 5
+##    type  department courseID title                                  foundational
+##    &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;                                  &lt;lgl&gt;       
+##  1 core  CS         6035     Introduction to Information Security   TRUE        
+##  2 core  CS         6200     Introduction to Operating Systems (fo… TRUE        
+##  3 core  CS         6210     Advanced Operating Systems             TRUE        
+##  4 core  CS         6238     Secure Computer Systems (page coming … FALSE       
+##  5 core  CS         6250     Computer Networks                      TRUE        
+##  6 core  CS         6260     Applied Cryptography (page coming soo… FALSE       
+##  7 core  CS         6262     Network Security                       TRUE        
+##  8 core  CS         6263     Intro to Cyber Physical Systems Secur… TRUE        
+##  9 core  CS         6265     Information Security Lab               FALSE       
+## 10 core  CS         6290     High Performance Computer Architecture TRUE        
+## # … with 26 more rows</code></pre>
+<pre class="r"><code>coreSelectInterested &lt;-
+  mlTrack %&gt;%
+  arrange(desc(type)) %&gt;%
+  filter(online == TRUE,
+         type == &quot;core&quot;,
+         courseID == &quot;6475&quot; |
+         courseID == &quot;6400&quot; |
+         courseID == &quot;6220&quot; |
+         courseID == &quot;6402&quot; |
+         courseID == &quot;6501&quot; |
+         courseID == &quot;8803&quot;
+         )</code></pre>
+<p>There are several core classes that are interesting. I will add them to the pile and filter them down further – maybe create a couple of options with different focuses.</p>
+<pre class="r"><code>options &lt;-
+  bind_rows(MLcoreSelect,
+            MLelectiveSelect,
+            coreSelectInterested
+            )
+
+options %&gt;%
+  select(-online, -credits, -required)</code></pre>
+<pre><code>## # A tibble: 14 x 5
+##    type     department courseID title                               foundational
+##    &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;                               &lt;lgl&gt;       
+##  1 ML       CS         7641     Machine Learning                    TRUE        
+##  2 ML       CS         6515     Introduction to Graduate Algorithms FALSE       
+##  3 electiv… CS         6476     Computer Vision                     TRUE        
+##  4 electiv… CS         7646     Machine Learning for Trading        TRUE        
+##  5 electiv… CSE        6242     Data and Visual Analytics           TRUE        
+##  6 electiv… CS         7642     Reinforcement Learning and Decisio… FALSE       
+##  7 electiv… CSE        6250     Big Data for Health (Formerly CSE … FALSE       
+##  8 electiv… ISYE       6420     Bayesian Methods                    FALSE       
+##  9 core     CS         6400     Database Systems Concepts and Desi… TRUE        
+## 10 core     CS         6475     Computational Photography           TRUE        
+## 11 core     CSE        6220     Intro to High-Performance Computing TRUE        
+## 12 core     ISYE       6402     Time Series Analysis                FALSE       
+## 13 core     ISYE       6501     Intro to Analytics Modeling         FALSE       
+## 14 core     ISYE       8803     Topics on High-Dimensional Data An… FALSE</code></pre>
+<p>Now let’s summarise things and see what types of courses need to be added/removed.</p>
+<pre class="r"><code>library(glue)</code></pre>
+<pre><code>## Warning: package &#39;glue&#39; was built under R version 3.6.2</code></pre>
+<pre><code>## 
+## Attaching package: &#39;glue&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     collapse</code></pre>
+<pre class="r"><code>  options %&gt;%
+  group_by(type) %&gt;%
+  summarise(credits = sum(credits)) %&gt;%
+  left_join(requirements) %&gt;%  
+  mutate(delta = credits - required,
+         action = ifelse(delta &gt; 0,
+                         glue(&#39;You might need to remove {delta/3} class(es).&#39;),
+                         glue(&#39;You need to add {delta/3} class(es).&#39;)
+                         )
+         )</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre><code>## Joining, by = &quot;type&quot;</code></pre>
+<pre><code>## # A tibble: 3 x 5
+##   type       credits required delta action                               
+##   &lt;chr&gt;        &lt;int&gt;    &lt;int&gt; &lt;int&gt; &lt;chr&gt;                                
+## 1 core            18       15     3 You might need to remove 1 class(es).
+## 2 electiveML      18        9     9 You might need to remove 3 class(es).
+## 3 ML               6        6     0 You need to add 0 class(es).</code></pre>
+<pre class="r"><code>option1 &lt;-
+  options %&gt;%
+  filter(courseID != &quot;6475&quot;,
+         courseID != &quot;6476&quot;,
+         courseID != &quot;6250&quot;,
+         courseID != &quot;7646&quot;)
+
+option1 %&gt;%
+  select(-online, -credits, -required)</code></pre>
+<pre><code>## # A tibble: 10 x 5
+##    type     department courseID title                               foundational
+##    &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;                               &lt;lgl&gt;       
+##  1 ML       CS         7641     Machine Learning                    TRUE        
+##  2 ML       CS         6515     Introduction to Graduate Algorithms FALSE       
+##  3 electiv… CSE        6242     Data and Visual Analytics           TRUE        
+##  4 electiv… CS         7642     Reinforcement Learning and Decisio… FALSE       
+##  5 electiv… ISYE       6420     Bayesian Methods                    FALSE       
+##  6 core     CS         6400     Database Systems Concepts and Desi… TRUE        
+##  7 core     CSE        6220     Intro to High-Performance Computing TRUE        
+##  8 core     ISYE       6402     Time Series Analysis                FALSE       
+##  9 core     ISYE       6501     Intro to Analytics Modeling         FALSE       
+## 10 core     ISYE       8803     Topics on High-Dimensional Data An… FALSE</code></pre>
+<pre class="r"><code>option1 %&gt;%
+group_by(type) %&gt;%
+summarise(credits = sum(credits)) %&gt;%
+left_join(requirements) %&gt;%  
+mutate(delta = credits - required,
+       action = ifelse(delta &gt; 0,
+                       glue(&#39;You might need to remove {delta/3} class(es).&#39;),
+                       glue(&#39;You need to add {delta/3} class(es).&#39;)
+                       )
+      )</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre><code>## Joining, by = &quot;type&quot;</code></pre>
+<pre><code>## # A tibble: 3 x 5
+##   type       credits required delta action                      
+##   &lt;chr&gt;        &lt;int&gt;    &lt;int&gt; &lt;int&gt; &lt;chr&gt;                       
+## 1 core            15       15     0 You need to add 0 class(es).
+## 2 electiveML       9        9     0 You need to add 0 class(es).
+## 3 ML               6        6     0 You need to add 0 class(es).</code></pre>
+<div id="what-about-suggested-prereqs" class="section level2">
+<h2>What about suggested prereqs?</h2>
+<ul>
+<li>7641
+<ul>
+<li>NA</li>
+</ul></li>
+<li>6515
+<ul>
+<li>Undergraduate course on the <strong>design and analysis of algorithms</strong>. <strong>Basic graph algorithms</strong>:
+<ul>
+<li>DFS</li>
+<li>BFS</li>
+<li>Dijkstra’s shortest path algorithm</li>
+</ul></li>
+<li>Basic <strong>dynamic programming</strong></li>
+<li><strong>Divide and conquer algorithms (including solving recurrences)</strong>.</li>
+<li>An undergraduate course in <strong>discrete mathematics</strong> is assumed</li>
+<li>Students should be comfortable analyzing the <strong>asymptotic running time of algorithms</strong>.</li>
+</ul></li>
+<li>6242
+<ul>
+<li>Are proficient in at least one high-level programming language (e.g., <strong>Python</strong>, C++, Java) and are efficient with debugging principles and practices; if you are not, you should instead first take CSE 6040 (for OMS Analytics students) and if needed, CS 1301 and CS 1371.</li>
+<li>CSE 6040
+<ul>
+<li>Hands-on introduction to programming techniques relevant to data analysis and machine learning. Most of the programming based on <strong>Python</strong> and <strong>SQL</strong>.</li>
+</ul></li>
+<li>CS 1301
+<ul>
+<li>How to program in <strong>Python</strong>.</li>
+</ul></li>
+<li>Linear algebra, probability, and statistics.</li>
+</ul></li>
+<li>7642
+<ul>
+<li>Successful completion of CS 7641: Machine Learning.</li>
+<li>Familiarity with object-oriented programming, preferably <strong>Python</strong>.</li>
+</ul></li>
+<li>6420
+<ul>
+<li>introductory courses in probability in statistics</li>
+<li>basic programming proficiency</li>
+<li>comfortable with calculus</li>
+</ul></li>
+<li>6400
+<ul>
+<li>Be familiar with at least one scripting or programming language, e.g., PHP, <strong>Python</strong>, Java.</li>
+<li>Some familiarity with software engineering concepts and Git/source control will be helpful.</li>
+</ul></li>
+<li>6220
+<ul>
+<li>Taken CS 6515: Intro to Grad Algorithms or an undergraduate algorithms class.</li>
+<li>Programming experience in a “low-level” “high-level” language like C or <strong>C++</strong> (for the programming assignments).</li>
+<li>Experience using command line interfaces in *nix environments (e.g., Unix, Linux).</li>
+</ul></li>
+<li>6402
+<ul>
+<li>undergraduate or graduate statistics and probability</li>
+<li>basic programming proficiency</li>
+<li>linear algebra</li>
+<li>basic calculus</li>
+<li>linear regression modeling</li>
+</ul></li>
+<li>6501
+<ul>
+<li>probability and statistics</li>
+<li>basic programming proficiency</li>
+<li>linear algebra</li>
+<li>basic calculus</li>
+</ul></li>
+<li>8803
+<ul>
+<li>knowledge of regression and linear algebra</li>
+<li>basic programming knowledge in R and Matlab</li>
+</ul></li>
+</ul>
+</div>
+<div id="what-do-the-skills-learned-boil-down-to" class="section level2">
+<h2>What do the skills learned boil down to?</h2>
+<ul>
+<li>7641
+<ul>
+<li>supervised learning</li>
+<li>unsupervised learning</li>
+<li>reinforcement learning</li>
+</ul></li>
+<li>6515
+<ul>
+<li>dynamic programming (design of algorithms)</li>
+<li>divide and conquer, including FFT (algorithms for fundamental problems)</li>
+<li>randomized algorithms, including RSA cryptosystem and hashing using Bloom filters</li>
+<li>graph algorithms</li>
+<li>max-flow algorithms</li>
+<li>linear programming</li>
+<li>NP-completeness (computational intractability)</li>
+</ul></li>
+<li>6242
+<ul>
+<li>Learn visual and computation techniques and tools for typical data types.
+Learn practical know-how (useful for jobs, research) through significant hands-on programming assignments.</li>
+</ul></li>
+<li>7642
+<ul>
+<li>Automated decision making from a computational perspective
+<ul>
+<li>Markov decision processes</li>
+<li>stochastic and repeated games</li>
+<li>partially observable Markov decision processes</li>
+<li>reinforcement learning</li>
+</ul></li>
+</ul></li>
+<li>6420
+<ul>
+<li>Given a real-life data set, be able to select an appropriate statistical model to conduct inference, to formulate any prior information in terms of probability distributions (priors), and to understand what the conducted inference implies.</li>
+<li>The core of Bayesian approach to data modeling is Markov Chain Monte Carlo method.</li>
+</ul></li>
+<li>6400
+<ul>
+<li>All the database concepts, techniques, and tools that are needed to develop a database application from scratch.</li>
+<li>Will learn the Extended Entity Relationship Model, the Relational Model, Relational algebra, calculus and SQL, database normalization, efficiency, and indexing.</li>
+<li>Techniques and tools for metadata management and archival.</li>
+</ul></li>
+<li>6220
+<ul>
+<li>Implementing the algorithms and techniques you’ll learn to run on real parallel and distributed systems.</li>
+<li>Programming models will include OpenMP, MPI, and possibly others.</li>
+</ul></li>
+<li>6402
+<ul>
+<li>Learn the widely used time series models such as univariate ARMA/ARIMA modelling, (G)ARCH modeling, and VAR model.</li>
+</ul></li>
+<li>6501
+<ul>
+<li>Given a business (or other) question, can select an appropriate analytics model to answer it, specify the data needed to solve it, and understand what the model’s solution will and will not provide as an answer.</li>
+</ul></li>
+<li>8803
+<ul>
+<li>Learn machine learning and statistical methods for image processing and analysis of functional data.</li>
+<li>Learn a variety of regularization techniques and their applications.</li>
+<li>Be able to use multilinear algebra and tensor analysis techniques for performing dimension-reduction on a broad range of high-dimensional data.</li>
+<li>Understand how to use well-known optimization methods to create efficient learning algorithms.</li>
+</ul></li>
+</ul>
+</div>
+<div id="how-else-can-i-acquire-these-skills" class="section level2">
+<h2>How else can I acquire these skills?</h2>
+</div>
+</div>
+<div id="taking-stock" class="section level1">
+<h1>Taking Stock</h1>
+<p>Focused mainly on reproducibility.</p>
+<ul>
+<li>Put .Rmds of interest on GitHub; DC schools data during TEACH-NOW, meta-analysis, DAKOTA fluence study, gt5%.</li>
+</ul>
+</div>
+<div id="resources" class="section level1">
+<h1>Resources</h1>
+<div id="learning" class="section level2">
+<h2>Learning</h2>
+<ul>
+<li><a href="https://www.tidymodels.org/start/models/" class="uri">https://www.tidymodels.org/start/models/</a></li>
+<li><a href="https://www.tidytextmining.com/tidytext.html" class="uri">https://www.tidytextmining.com/tidytext.html</a></li>
+<li>Hands on Machine Learning</li>
+<li><a href="https://datascienceineducation.com/" class="uri">https://datascienceineducation.com/</a></li>
+<li><a href="https://course.fast.ai/" class="uri">https://course.fast.ai/</a></li>
+<li><a href="https://jakevdp.github.io/WhirlwindTourOfPython/" class="uri">https://jakevdp.github.io/WhirlwindTourOfPython/</a></li>
+<li><a href="https://jakevdp.github.io/PythonDataScienceHandbook/" class="uri">https://jakevdp.github.io/PythonDataScienceHandbook/</a></li>
+<li><a href="https://www.oreilly.com/library/view/hands-on-machine-learning/9781492032632/" class="uri">https://www.oreilly.com/library/view/hands-on-machine-learning/9781492032632/</a></li>
+<li><a href="https://penniur.upenn.edu/events/musamasterclass-featuring-tyler-morgan-wall-3d-mapping-dataviz-in-r" class="uri">https://penniur.upenn.edu/events/musamasterclass-featuring-tyler-morgan-wall-3d-mapping-dataviz-in-r</a></li>
+<li><a href="https://vita.had.co.nz/papers/tidy-data.pdf" class="uri">https://vita.had.co.nz/papers/tidy-data.pdf</a></li>
+<li><a href="https://bookdown.org/rdpeng/rprogdatascience/" class="uri">https://bookdown.org/rdpeng/rprogdatascience/</a></li>
+<li><a href="https://leanpub.com/artofdatascience" class="uri">https://leanpub.com/artofdatascience</a></li>
+<li>cs50 on edX</li>
+<li><a href="https://swcarpentry.github.io/r-novice-gapminder/" class="uri">https://swcarpentry.github.io/r-novice-gapminder/</a></li>
+<li>Creating dynamic dashboards with the shinydashboard R package</li>
+<li><a href="http://www.rebeccabarter.com/teaching/" class="uri">http://www.rebeccabarter.com/teaching/</a> (do lab exercises)</li>
+<li><a href="http://swcarpentry.github.io/git-novice/" class="uri">http://swcarpentry.github.io/git-novice/</a></li>
+<li><a href="https://github.com/rlbarter/STAT-215A-Fall-2017" class="uri">https://github.com/rlbarter/STAT-215A-Fall-2017</a></li>
+<li><a href="https://github.com/rlbarter/reproducibility-workflow" class="uri">https://github.com/rlbarter/reproducibility-workflow</a></li>
+<li><a href="https://ro.uow.edu.au/cgi/viewcontent.cgi?article=6445&amp;context=smhpapers" class="uri">https://ro.uow.edu.au/cgi/viewcontent.cgi?article=6445&amp;context=smhpapers</a></li>
+<li><a href="http://www.rebeccabarter.com/tutorials/" class="uri">http://www.rebeccabarter.com/tutorials/</a></li>
+<li><a href="https://google.github.io/styleguide/pyguide.html" class="uri">https://google.github.io/styleguide/pyguide.html</a></li>
+<li><a href="https://style.tidyverse.org/" class="uri">https://style.tidyverse.org/</a></li>
+<li>Python for Finance</li>
+</ul>
+</div>
+<div id="career-guidance" class="section level2">
+<h2>Career Guidance</h2>
+<ul>
+<li><a href="https://towardsdatascience.com/how-to-build-a-data-science-portfolio-5f566517c79c" class="uri">https://towardsdatascience.com/how-to-build-a-data-science-portfolio-5f566517c79c</a></li>
+<li><a href="https://www.becomingadatascientist.com/2015/10/04/how-to-use-twitter-to-learn-data-science-or-anything/" class="uri">https://www.becomingadatascientist.com/2015/10/04/how-to-use-twitter-to-learn-data-science-or-anything/</a></li>
+</ul>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>I ended up creating a <a href="https://twitter.com/i/lists/1287766457791602689">Twitter list</a> to commemorate my spiral.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p><a href="">Thanks to Nassim Taleb</a>.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>

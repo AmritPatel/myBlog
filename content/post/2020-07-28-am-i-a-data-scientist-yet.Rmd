@@ -1,0 +1,323 @@
+---
+title: Am I a Machine Learning Engineer Yet?
+author: Amrit D. Patel
+date: '2020-07-28'
+slug: am-i-a-machine-learning-engineer-yet
+categories:
+  - R
+tags: []
+draft: true
+---
+
+# Transforming a nuclear engineer into a maching learning engineer.
+
+Yesterday I went down a rabbit hole for pretty much the entire day.
+
+*White rabbit Matrix meme*
+
+I was contemplating how I might go about getting a job doing data science. I jumped from LinkedIn to Reddit to Twitter[^1] to various blogs[^2]. I recalled advice from a friend to get an Online Master's of Computer Science from Georgia Tech. [Jesse Mostipak's blog](https://www.jessemaegan.com/) was also very inspiring, especially after watching [her rstudio::conf2019 talk](https://resources.rstudio.com/rstudio-conf-2019/r4ds-online-learning-community-improvements-to-self-taught-data-science-and-the-critical-need-for-diversity-equity-and-inclusion-in-data-science-education) on becoming a self-taught data scientist.
+
+[^1]: I ended up creating a [Twitter list](https://twitter.com/i/lists/1287766457791602689) to commemorate my spiral.
+[^2]: [Thanks to Nassim Taleb]().
+
+One of the resources I found that also helped me organize my thoughts was [*Build a Career in Data Science*](https://www.manning.com/books/build-a-career-in-data-science?a_aid=buildcareer&a_bid=76784b6a). After reading Chapter 3 on "Getting the Skills," I came away with the following:
+
+1. I didn't want to wait for the Georgia Tech Graduate School Program to accept me in March 2021 to start learning. While this option is relatively affordable at $7000, I would also be repeating a lot of material that I've already learned.
+
+2. A data science bootcamp would require $15,000-$20,000 and 4 months of work for at least 8 hours per day. Again, there would be a significant amount of material that I have already learned and the price tag is even steeper.
+
+3. What don't I know yet that I still need to know to be considered a functional data scientist?
+
+
+# Baselining.
+
+After mulling over that last point, I thought to have a look at the Georgia Tech Online Master's of Computer Science curriculum for their machine learning track degree requirements so I can begin to identify key knowledge gaps. Here is the rundown:
+
+```{r}
+library(tidyverse)
+library(googlesheets4)
+
+gs4_deauth()
+
+mlCourses <- read_sheet("https://docs.google.com/spreadsheets/d/1MtFj0Ho8hwBHF7UJm3n6wEA3HduDgJ10SGN97ILeXWM/edit#gid=0",
+                        sheet = "machineLearning",
+                        col_types = c("ccccili")
+                        )
+
+currentCourses <- read_sheet("https://docs.google.com/spreadsheets/d/1MtFj0Ho8hwBHF7UJm3n6wEA3HduDgJ10SGN97ILeXWM/edit#gid=1340971109",
+                              sheet = "currentCourses",
+                        col_types = c("ccccilil")
+                        )
+```
+
+```{r}
+courses <- full_join(currentCourses, mlCourses, by = c("department", "courseID", "title", "online"))
+
+mlTrack <-
+  courses %>%
+  mutate(type = ifelse(is.na(type.y), type.x, type.y),
+                   credits = ifelse(is.na(credits.y), credits.x, credits.y),
+                   required = ifelse(is.na(required.y), required.x, required.y)
+                   ) %>%
+  select(-contains(".")) %>%
+  select(type, department:title, online:required) %>%
+  mutate(foundational = ifelse(is.na(foundational), FALSE, foundational))
+
+requirements <-
+  mlTrack %>%
+  group_by(type) %>%
+  distinct(required)
+```
+
+Number of classes available to take online for the Machine Learning Specialization with specialization courses listed first.
+
+```{r}
+mlTrack %>%
+  filter(online == TRUE) %>%
+  arrange(desc(type))
+```
+
+ML core classes available:
+
+```{r}
+mlTrack %>%
+  arrange(desc(type)) %>%
+  filter(online == TRUE, type == "ML") %>%
+  select(-online, -credits, -required)
+
+MLcoreSelect <-
+  mlTrack %>%
+  arrange(desc(type)) %>%
+  filter(online == TRUE, type == "ML")
+```
+
+There are only 2 online courses available to meet the 6 credit ML core course requirements.
+
+ML elective courses available:
+
+```{r}
+mlTrack %>%
+  arrange(desc(type)) %>%
+  filter(online == TRUE, type == "electiveML") %>%
+  select(-online, -credits, -required)
+
+MLelectiveSelect <-
+  mlTrack %>%
+  arrange(desc(type)) %>%
+  filter(online == TRUE,
+         type == "electiveML")
+```
+
+All of these classes seem really interesting and really provide exposure to a wide range of ML contexts so let's include them all. 
+
+Core classes left that are available:
+
+```{r}
+mlTrack %>%
+  arrange(desc(type)) %>%
+  filter(online == TRUE, type == "core") %>%
+  select(-online, -credits, -required)
+
+coreSelectInterested <-
+  mlTrack %>%
+  arrange(desc(type)) %>%
+  filter(online == TRUE,
+         type == "core",
+         courseID == "6475" |
+         courseID == "6400" |
+         courseID == "6220" |
+         courseID == "6402" |
+         courseID == "6501" |
+         courseID == "8803"
+         )
+```
+
+There are several core classes that are interesting. I will add them to the pile and filter them down further -- maybe create a couple of options with different focuses.
+
+```{r}
+options <-
+  bind_rows(MLcoreSelect,
+            MLelectiveSelect,
+            coreSelectInterested
+            )
+
+options %>%
+  select(-online, -credits, -required)
+```
+
+Now let's summarise things and see what types of courses need to be added/removed.
+
+```{r}
+library(glue)
+
+  options %>%
+  group_by(type) %>%
+  summarise(credits = sum(credits)) %>%
+  left_join(requirements) %>%  
+  mutate(delta = credits - required,
+         action = ifelse(delta > 0,
+                         glue('You might need to remove {delta/3} class(es).'),
+                         glue('You need to add {delta/3} class(es).')
+                         )
+         )
+```
+
+```{r}
+option1 <-
+  options %>%
+  filter(courseID != "6475",
+         courseID != "6476",
+         courseID != "6250",
+         courseID != "7646")
+
+option1 %>%
+  select(-online, -credits, -required)
+
+option1 %>%
+group_by(type) %>%
+summarise(credits = sum(credits)) %>%
+left_join(requirements) %>%  
+mutate(delta = credits - required,
+       action = ifelse(delta > 0,
+                       glue('You might need to remove {delta/3} class(es).'),
+                       glue('You need to add {delta/3} class(es).')
+                       )
+      )
+```
+
+## What about suggested prereqs?
+
+- 7641
+  + NA
+- 6515
+  + Undergraduate course on the **design and analysis of algorithms**. **Basic graph algorithms**:
+      * DFS
+      * BFS
+      * Dijkstra's shortest path algorithm
+  + Basic **dynamic programming**
+  + **Divide and conquer algorithms (including solving recurrences)**.
+  + An undergraduate course in **discrete mathematics** is assumed
+  + Students should be comfortable analyzing the **asymptotic running time of algorithms**.
+- 6242
+  + Are proficient in at least one high-level programming language (e.g., **Python**, C++, Java) and are efficient with debugging principles and practices; if you are not, you should instead first take CSE 6040 (for OMS Analytics students) and if needed, CS 1301 and CS 1371.
+  + CSE 6040
+    * Hands-on introduction to programming techniques relevant to data analysis and machine learning. Most of the programming based on **Python** and **SQL**.
+  + CS 1301
+    * How to program in **Python**.
+  + Linear algebra, probability, and statistics.
+- 7642
+  + Successful completion of CS 7641: Machine Learning.
+  + Familiarity with object-oriented programming, preferably **Python**.
+- 6420
+  + introductory courses in probability in statistics
+  + basic programming proficiency
+  + comfortable with calculus
+- 6400
+  + Be familiar with at least one scripting or programming language, e.g., PHP, **Python**, Java.
+  + Some familiarity with software engineering concepts and Git/source control will be helpful.
+- 6220
+  + Taken CS 6515: Intro to Grad Algorithms or an undergraduate algorithms class.
+  + Programming experience in a "low-level" "high-level" language like C or **C++** (for the programming assignments).
+  + Experience using command line interfaces in *nix environments (e.g., Unix, Linux).
+- 6402
+  + undergraduate or graduate statistics and probability
+  + basic programming proficiency
+  + linear algebra
+  + basic calculus
+  + linear regression modeling
+- 6501
+  + probability and statistics
+  + basic programming proficiency
+  + linear algebra
+  + basic calculus
+- 8803
+  + knowledge of regression and linear algebra 
+  + basic programming knowledge in R and Matlab
+  
+## What do the skills learned boil down to?
+
+- 7641
+  + supervised learning
+  + unsupervised learning
+  + reinforcement learning
+- 6515
+  + dynamic programming (design of algorithms)
+  + divide and conquer, including FFT (algorithms for fundamental problems)
+  + randomized algorithms, including RSA cryptosystem and hashing using Bloom filters
+  + graph algorithms
+  + max-flow algorithms
+  + linear programming
+  + NP-completeness (computational intractability)
+- 6242
+  + Learn visual and computation techniques and tools for typical data types.
+Learn practical know-how (useful for jobs, research) through significant hands-on programming assignments.
+- 7642
+  + Automated decision making from a computational perspective
+    * Markov decision processes
+    * stochastic and repeated games
+    * partially observable Markov decision processes
+    * reinforcement learning
+- 6420
+  + Given a real-life data set, be able to select an appropriate statistical model to conduct inference, to formulate any prior information in terms of probability distributions (priors), and to understand what the conducted inference implies.
+  + The core of Bayesian approach to data modeling is Markov Chain Monte Carlo method.
+- 6400
+  + All the database concepts, techniques, and tools that are needed to develop a database application from scratch.
+  + Will learn the Extended Entity Relationship Model, the Relational Model, Relational algebra, calculus and SQL, database normalization, efficiency, and indexing.
+  + Techniques and tools for metadata management and archival.
+- 6220
+  + Implementing the algorithms and techniques you’ll learn to run on real parallel and distributed systems.
+  + Programming models will include OpenMP, MPI, and possibly others.
+- 6402
+  + Learn the widely used time series models such as univariate ARMA/ARIMA modelling, (G)ARCH modeling, and VAR model.
+- 6501
+  + Given a business (or other) question, can select an appropriate analytics model to answer it, specify the data needed to solve it, and understand what the model’s solution will and will not provide as an answer.
+- 8803
+  + Learn machine learning and statistical methods for image processing and analysis of functional data.
+  + Learn a variety of regularization techniques and their applications.
+  + Be able to use multilinear algebra and tensor analysis techniques for performing dimension-reduction on a broad range of high-dimensional data.
+  + Understand how to use well-known optimization methods to create efficient learning algorithms.
+
+## How else can I acquire these skills?
+
+# Taking Stock
+
+Focused mainly on reproducibility.
+
+- Put .Rmds of interest on GitHub; DC schools data during TEACH-NOW, meta-analysis, DAKOTA fluence study, gt5%.
+
+# Resources
+
+## Learning
+
+- https://www.tidymodels.org/start/models/
+- https://www.tidytextmining.com/tidytext.html
+- Hands on Machine Learning
+- https://datascienceineducation.com/
+- https://course.fast.ai/
+- https://jakevdp.github.io/WhirlwindTourOfPython/
+- https://jakevdp.github.io/PythonDataScienceHandbook/
+- https://www.oreilly.com/library/view/hands-on-machine-learning/9781492032632/
+- https://penniur.upenn.edu/events/musamasterclass-featuring-tyler-morgan-wall-3d-mapping-dataviz-in-r
+- https://vita.had.co.nz/papers/tidy-data.pdf
+- https://bookdown.org/rdpeng/rprogdatascience/
+- https://leanpub.com/artofdatascience
+- cs50 on edX
+- https://swcarpentry.github.io/r-novice-gapminder/
+- Creating dynamic dashboards with the shinydashboard R package
+- http://www.rebeccabarter.com/teaching/ (do lab exercises)
+- http://swcarpentry.github.io/git-novice/
+- https://github.com/rlbarter/STAT-215A-Fall-2017
+- https://github.com/rlbarter/reproducibility-workflow
+- https://ro.uow.edu.au/cgi/viewcontent.cgi?article=6445&context=smhpapers
+- http://www.rebeccabarter.com/tutorials/
+- https://google.github.io/styleguide/pyguide.html
+- https://style.tidyverse.org/
+- Python for Finance
+
+## Career Guidance
+
+- https://towardsdatascience.com/how-to-build-a-data-science-portfolio-5f566517c79c
+- https://www.becomingadatascientist.com/2015/10/04/how-to-use-twitter-to-learn-data-science-or-anything/
+
+
+
