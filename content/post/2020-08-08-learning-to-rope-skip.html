@@ -1,5 +1,5 @@
 ---
-title: Learning to rope skip
+title: 30 day rope skip challenge.
 author: Amrit D. Patel
 date: '2020-08-08'
 slug: learning-to-rope-skip
@@ -10,6 +10,206 @@ tags:
   - plot
 ---
 
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/plotly-binding/plotly.js"></script>
+<script src="/rmarkdown-libs/typedarray/typedarray.min.js"></script>
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<link href="/rmarkdown-libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/crosstalk/js/crosstalk.min.js"></script>
+<link href="/rmarkdown-libs/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/plotly-main/plotly-latest.min.js"></script>
 
 
-<p><img src="/post/2020-08-08-learning-to-rope-skip_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /><img src="/post/2020-08-08-learning-to-rope-skip_files/figure-html/unnamed-chunk-7-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Over our recent 5 month stay in Thailand we happened to acquire a jump rope. For most of the time it collected dust. Now that I’ve picked it up again I’m thinking the reason was because jumping rope is actually pretty challenging. On multiple levels.</p>
+<p>There is the whole timing the rope turns in sync with your jumping, which stimulates brain activity and as <a href="https://www.crossrope.com/blogs/blog/benefits-of-jumping-the-unique-value-of-jump-rope-training-good-cardio/">crossrope.com</a> explains:</p>
+<blockquote>
+<p><em>…helps with the development of the left and right hemispheres of your brain, which further enhances spatial awareness, improves reading skills, increases memory and makes you more mentally alert.</em></p>
+</blockquote>
+<blockquote>
+<p><em>As described in [an] <a href="https://www.brainhq.com/brain-resources/everyday-brain-fitness/physical-exercise">article from BrainHQ</a>, the best exercise for the brain involves a combination of timing, rhythm, coordination, and mental strategy.</em></p>
+</blockquote>
+<blockquote>
+<p><em>When you’re jumping rope, you’re combining timing and rhythm while having to make quick calculations to ensure your brain is recognizing the rope’s distance, speed, direction, and position relative to your body to ensure the rotations keep going. This combination of physical and mental activity has a greater effect on cognitive function.</em></p>
+</blockquote>
+<p>Other touted benefits include:</p>
+<ul>
+<li>high efficiency calorie burning</li>
+<li>improved cardio</li>
+<li>increased muscle engagement</li>
+<li>improved bone density</li>
+</ul>
+<p>As the <a href="http://www.jumpropeinstitute.com/benefits.htm"><em>Jump Rope Institute</em></a> says:</p>
+<blockquote>
+<p>The benefits of this simple but yet complex training technique ranks as an ideal brain exercise, bone builder, and as one of the most efficient ways of improving cardiovascular fitness <strong><em>in as little as ten minutes</em></strong>.</p>
+</blockquote>
+<p>More impressively, the <em>Jump Rope Institute</em> also says that with only 10 minutes of nonstop jumping at 120 jumps per minute (jpm) it can provide the same benefits as:</p>
+<ul>
+<li>30 minutes of jogging (<strong>!</strong>)</li>
+<li>2 sets of tennis singles</li>
+<li>30 minutes of racket/handball playing</li>
+<li>720 yards of swimming</li>
+<li>18 holes of golf</li>
+</ul>
+<p>What a missed opportunity for some quality fitness training!</p>
+<div id="the-gear" class="section level2">
+<h2>The gear</h2>
+<p>After the first day of jumping, counting jumps wasn’t my favorite part. I started a spreadsheet recording the number of jumps and my max heart rate, and quickly realized that there is likely an even better way to track this data.</p>
+<p>I headed over to the <em>Garmin Connect IQ Store</em> and was pleasantly surprised to find the really nice <a href="https://apps.garmin.com/en-US/apps/539e6c9e-a735-45c6-b390-c0bc65c1d65a"><em>Jumps</em></a> data field that not only counts your total jumps for you, but also gives you jumps over time data, jpm over time data, and a “Jumping Effect” score, which is supposed to be an indicator for how hard you trained with a value of 100 being equivalent to jumping 20 minutes non-stop at a 120+ jpm pace.</p>
+<p>I also learned a new unit to describe efficiency of physical exertion: the metabolic equivalent or MET. A MET is defined as <em>the objective measure of the ratio of the rate at which a person expends energy, relative to the mass of that person, while performing some specific physical activity compared to a reference, set by convention at 3.5 mL of oxygen per kilogram per minute, which is roughly equivalent to the energy expended when sitting quietly</em>.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
+<p>So, you spend 1 MET sitting around playing video games, for example, and a whopping <a href="https://sites.google.com/site/compendiumofphysicalactivities/Activity-Categories/sports">12.3 METs</a> jumping rope at a pace of 120-160 jpm!<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
+</div>
+<div id="the-setup" class="section level2">
+<h2>The setup</h2>
+<p>Building off of the heat training running posts from this past summer and the utilities built, I realized it would be straightforward to create another automated data pipeline. The basic flow is:</p>
+<ol style="list-style-type: decimal">
+<li>Pull raw data from <em>GarminDb</em> <code>bash</code> script to get <em>Garmin</em> .FIT files containing jump rope activity data from the cloud.</li>
+<li>Run <a href="https://github.com/dtcooper/python-fitparse"><code>fitparse</code></a> Python script in R via the <code>reticulate</code> library to convert binary .FIT to readable ASCII.</li>
+<li>Post-process ASCII file using <code>readr::read_csv</code> to get data into a dataframe, then formatting the data for plotting.</li>
+</ol>
+<div id="step-1-get-raw-data." class="section level3">
+<h3>Step 1: Get raw data.</h3>
+<pre class="r"><code>library(DBI)
+library(RSQLite)
+library(tidyverse)
+
+# Setup a working directory to copy files to for processing.
+workDir &lt;- &quot;~/HealthData/FitFiles/working/&quot;
+# setwd(workDir)
+
+con &lt;- dbConnect(SQLite(), &quot;/Users/amrit/HealthData/DBs/garmin_activities.db&quot;)
+
+# dbListTables(con)
+
+acts &lt;- dbReadTable(con, &#39;activities&#39;)
+
+# Path of the SQLite activities database.
+path &lt;- &quot;/Users/amrit/HealthData/FitFiles/Activities/&quot;
+
+# Get .fit filenames based on running activity names.
+cardio &lt;-
+  acts %&gt;%
+  filter(sub_sport == &quot;cardio_training&quot;) %&gt;%
+  arrange(desc(start_time)) %&gt;%
+  # Allow partial activity date matching.
+  filter(str_detect(start_time, &quot;2020-&quot;)) %&gt;%
+  select(start_time, activity_id) %&gt;%
+  mutate(activity_id = paste0(path, activity_id, &quot;.fit&quot;))
+ 
+save(cardio, file = &quot;~/HealthData/FitFiles/working/cardio.Rdata&quot;)
+
+# Copy .fit files to working directory.
+walk(paste(&quot;cp&quot;, cardio$activity_id, workDir), system) # same as lapply w/ no output printed</code></pre>
+</div>
+<div id="step-2-convert-data-from-binary-to-human-readable-form." class="section level3">
+<h3>Step 2: Convert data from binary to human readable form.</h3>
+<pre class="r"><code>getFitOut &lt;- function() {
+
+library(reticulate)
+py_capture_output(py_run_string(&quot;import fitparse
+
+# Load the FIT file
+fitfile = fitparse.FitFile(r.fitFile)
+
+# Iterate over all messages of type \&quot;record\&quot;
+# (other types include \&quot;device_info\&quot;, \&quot;file_creator\&quot;, \&quot;event\&quot;, etc)
+for record in fitfile.get_messages(\&quot;session\&quot;):
+
+    # Records can contain multiple pieces of data (ex: timestamp, latitude, longitude, etc)
+    for data in record:
+
+        # Print the name and value of the data (and the units if it has any)
+        if data.units:
+            print(\&quot;{}, {}, {}\&quot;.format(data.name, data.value, data.units))
+        else:
+            print(\&quot;{}, {}, NA\&quot;.format(data.name, data.value))
+&quot;))
+}</code></pre>
+</div>
+<div id="step-3-format-data-for-plotting." class="section level3">
+<h3>Step 3: Format data for plotting.</h3>
+<pre class="r"><code>getJumpData &lt;- function(jumpFit) {
+
+# Run python file created by @mcandocia on GitHub @ https://github.com/mcandocia/examples/tree/master/convert_fit_to_csv 
+# to convert .fit data to .csv to allow for processing in R.
+  
+# source_python(&quot;jumps.py&quot;, envir = NULL)
+
+jump &lt;- read_csv(jumpFit, col_name = c(&#39;type&#39;, &#39;value&#39;, &#39;units&#39;))
+
+jump %&gt;%
+  filter(
+    type == &quot;unknown_110&quot; |
+    type == &quot;Jumping Effect&quot; |
+    type == &quot;Jumps&quot; |
+    type == &quot;avg_heart_rate&quot; |
+    type == &quot;max_heart_rate&quot; |
+    type == &quot;avg_temperature&quot; |
+    type == &quot;max_temperature&quot; |
+    type == &quot;start_time&quot; |
+    type == &quot;sub_sport&quot; |
+    type == &quot;total_anaerobic_training_effect&quot; |
+    type == &quot;total_training_effect&quot; |
+    type == &quot;total_calories&quot; |
+    type == &quot;total_elapsed_time&quot;
+    ) %&gt;%
+  select(type, value) %&gt;%
+  pivot_wider(names_from = type) %&gt;%
+  type_convert(col_types = cols(.default = col_double(),
+                                start_time = col_datetime(),
+                                sub_sport = col_character(),
+                                unknown_110 = col_character()
+                                )
+               ) %&gt;%
+  rename(name = unknown_110,
+         jumpingEffect = &quot;Jumping Effect&quot;,
+         jumps = Jumps
+         )
+}</code></pre>
+<pre class="r"><code>passFit &lt;- function() {
+  getJumpData(getFitOut())
+}
+
+datalist = list()
+
+for (i in 1:length(cardio$activity_id)) {
+  fitFile &lt;- cardio$activity_id[i]
+  dat &lt;- passFit()
+  datalist[[i]] &lt;- dat
+}
+
+jumpData &lt;-
+  bind_rows(datalist) %&gt;%
+  filter(jumps &gt; 0) %&gt;%
+  mutate(jpm = jumps / total_elapsed_time * 60)</code></pre>
+<pre class="r"><code>pltJumpData &lt;- 
+  jumpData %&gt;%
+  select(-sub_sport, -name) %&gt;%
+  pivot_longer(-start_time)
+
+ggplot(pltJumpData, aes(start_time, value)) + 
+  geom_point() +
+  geom_smooth(method = lm, se = FALSE) +
+  facet_wrap(~ name, scales = &quot;free_y&quot;) +
+  labs(title = &quot;Summary of jump rope session data&quot;,
+       x = &quot;Date&quot;,
+       y = &quot;Value&quot;) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))</code></pre>
+<p><img src="/post/2020-08-08-learning-to-rope-skip_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="the-challenge" class="section level2">
+<h2>The challenge</h2>
+<p>The natural challenge that I gave myself based on my reading of the above info sources was to jump rope for 30 days straight. <em>And</em>, each session should last for at least ~10 minutes (or at least ~1000 jumps).</p>
+<p>Below is the plot that I’ve designed to help me keep track of my daily jump data, while also allowing me to track changes in fitness by observing changes in average heart rate during each jump session over time – a simple metric that will hopefully serve as a useful measure.<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a></p>
+<div id="htmlwidget-1" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"data":[{"x":[1596715101],"y":[119],"text":"start_time: 2020-08-06 11:58:21<br />avg_heart_rate: 119<br />jumpGroup:  101<br />jumps:  101<br />jpm: 122.5530<br />max_heart_rate: 140<br />total_training_effect: 0.1<br />jumpingEffect:  3.476286","type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(248,118,109,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(248,118,109,1)"}},"hoveron":"points","name":" 101","legendgroup":" 101","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1596970151,1596883159,1596800182,1596714808,1596710166],"y":[138,140,146,139,148],"text":["start_time: 2020-08-09 10:49:11<br />avg_heart_rate: 138<br />jumpGroup: [ 501,1310]<br />jumps: 1003<br />jpm: 122.1480<br />max_heart_rate: 167<br />total_training_effect: 2.1<br />jumpingEffect: 38.436390","start_time: 2020-08-08 10:39:19<br />avg_heart_rate: 140<br />jumpGroup: [ 501,1310]<br />jumps: 1260<br />jpm: 125.6674<br />max_heart_rate: 161<br />total_training_effect: 2.2<br />jumpingEffect: 47.167835","start_time: 2020-08-07 11:36:22<br />avg_heart_rate: 146<br />jumpGroup: [ 501,1310]<br />jumps: 1310<br />jpm: 130.6829<br />max_heart_rate: 170<br />total_training_effect: 2.4<br />jumpingEffect: 47.997227","start_time: 2020-08-06 11:53:28<br />avg_heart_rate: 139<br />jumpGroup: [ 501,1310]<br />jumps:  505<br />jpm: 133.6940<br />max_heart_rate: 157<br />total_training_effect: 1.2<br />jumpingEffect: 18.141636","start_time: 2020-08-06 10:36:06<br />avg_heart_rate: 148<br />jumpGroup: [ 501,1310]<br />jumps: 1012<br />jpm: 126.3855<br />max_heart_rate: 160<br />total_training_effect: 2.2<br />jumpingEffect: 36.588524"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,191,196,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,191,196,1)"}},"hoveron":"points","name":"[ 501,1310]","legendgroup":"[ 501,1310]","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1596710166,1596713456.94937,1596716747.89873,1596720038.8481,1596723329.79747,1596726620.74684,1596729911.6962,1596733202.64557,1596736493.59494,1596739784.5443,1596743075.49367,1596746366.44304,1596749657.39241,1596752948.34177,1596756239.29114,1596759530.24051,1596762821.18987,1596766112.13924,1596769403.08861,1596772694.03797,1596775984.98734,1596779275.93671,1596782566.88608,1596785857.83544,1596789148.78481,1596792439.73418,1596795730.68354,1596799021.63291,1596802312.58228,1596805603.53165,1596808894.48101,1596812185.43038,1596815476.37975,1596818767.32911,1596822058.27848,1596825349.22785,1596828640.17722,1596831931.12658,1596835222.07595,1596838513.02532,1596841803.97468,1596845094.92405,1596848385.87342,1596851676.82278,1596854967.77215,1596858258.72152,1596861549.67089,1596864840.62025,1596868131.56962,1596871422.51899,1596874713.46835,1596878004.41772,1596881295.36709,1596884586.31646,1596887877.26582,1596891168.21519,1596894459.16456,1596897750.11392,1596901041.06329,1596904332.01266,1596907622.96203,1596910913.91139,1596914204.86076,1596917495.81013,1596920786.75949,1596924077.70886,1596927368.65823,1596930659.60759,1596933950.55696,1596937241.50633,1596940532.4557,1596943823.40506,1596947114.35443,1596950405.3038,1596953696.25316,1596956987.20253,1596960278.1519,1596963569.10127,1596966860.05063,1596970151],"y":[144.619015761644,144.543576837939,144.468137914235,144.392698990523,144.317260066819,144.241821143114,144.16638221941,144.090943295698,144.015504371993,143.940065448282,143.864626524577,143.789187600873,143.713748677168,143.638309753464,143.562870829759,143.487431906047,143.411992982343,143.336554058638,143.261115134934,143.185676211222,143.110237287518,143.034798363806,142.959359440101,142.883920516397,142.808481592692,142.733042668988,142.657603745276,142.582164821571,142.506725897867,142.431286974163,142.355848050458,142.280409126754,142.204970203042,142.129531279337,142.054092355625,141.978653431921,141.903214508216,141.827775584505,141.7523366608,141.676897737096,141.601458813391,141.526019889687,141.450580965982,141.37514204227,141.299703118566,141.224264194861,141.14882527115,141.073386347445,140.997947423733,140.922508500029,140.847069576324,140.77163065262,140.696191728915,140.620752805211,140.545313881499,140.469874957795,140.39443603409,140.318997110386,140.243558186681,140.168119262969,140.092680339265,140.017241415553,139.941802491849,139.866363568144,139.79092464444,139.715485720728,139.640046797023,139.564607873319,139.489168949614,139.41373002591,139.338291102205,139.262852178494,139.187413254789,139.111974331077,139.036535407373,138.961096483668,138.885657559964,138.810218636252,138.734779712548,138.659340788843],"text":["start_time: 1596710166<br />avg_heart_rate: 144.6190<br />jumpGroup: [ 501,1310]","start_time: 1596713457<br />avg_heart_rate: 144.5436<br />jumpGroup: [ 501,1310]","start_time: 1596716748<br />avg_heart_rate: 144.4681<br />jumpGroup: [ 501,1310]","start_time: 1596720039<br />avg_heart_rate: 144.3927<br />jumpGroup: [ 501,1310]","start_time: 1596723330<br />avg_heart_rate: 144.3173<br />jumpGroup: [ 501,1310]","start_time: 1596726621<br />avg_heart_rate: 144.2418<br />jumpGroup: [ 501,1310]","start_time: 1596729912<br />avg_heart_rate: 144.1664<br />jumpGroup: [ 501,1310]","start_time: 1596733203<br />avg_heart_rate: 144.0909<br />jumpGroup: [ 501,1310]","start_time: 1596736494<br />avg_heart_rate: 144.0155<br />jumpGroup: [ 501,1310]","start_time: 1596739785<br />avg_heart_rate: 143.9401<br />jumpGroup: [ 501,1310]","start_time: 1596743075<br />avg_heart_rate: 143.8646<br />jumpGroup: [ 501,1310]","start_time: 1596746366<br />avg_heart_rate: 143.7892<br />jumpGroup: [ 501,1310]","start_time: 1596749657<br />avg_heart_rate: 143.7137<br />jumpGroup: [ 501,1310]","start_time: 1596752948<br />avg_heart_rate: 143.6383<br />jumpGroup: [ 501,1310]","start_time: 1596756239<br />avg_heart_rate: 143.5629<br />jumpGroup: [ 501,1310]","start_time: 1596759530<br />avg_heart_rate: 143.4874<br />jumpGroup: [ 501,1310]","start_time: 1596762821<br />avg_heart_rate: 143.4120<br />jumpGroup: [ 501,1310]","start_time: 1596766112<br />avg_heart_rate: 143.3366<br />jumpGroup: [ 501,1310]","start_time: 1596769403<br />avg_heart_rate: 143.2611<br />jumpGroup: [ 501,1310]","start_time: 1596772694<br />avg_heart_rate: 143.1857<br />jumpGroup: [ 501,1310]","start_time: 1596775985<br />avg_heart_rate: 143.1102<br />jumpGroup: [ 501,1310]","start_time: 1596779276<br />avg_heart_rate: 143.0348<br />jumpGroup: [ 501,1310]","start_time: 1596782567<br />avg_heart_rate: 142.9594<br />jumpGroup: [ 501,1310]","start_time: 1596785858<br />avg_heart_rate: 142.8839<br />jumpGroup: [ 501,1310]","start_time: 1596789149<br />avg_heart_rate: 142.8085<br />jumpGroup: [ 501,1310]","start_time: 1596792440<br />avg_heart_rate: 142.7330<br />jumpGroup: [ 501,1310]","start_time: 1596795731<br />avg_heart_rate: 142.6576<br />jumpGroup: [ 501,1310]","start_time: 1596799022<br />avg_heart_rate: 142.5822<br />jumpGroup: [ 501,1310]","start_time: 1596802313<br />avg_heart_rate: 142.5067<br />jumpGroup: [ 501,1310]","start_time: 1596805604<br />avg_heart_rate: 142.4313<br />jumpGroup: [ 501,1310]","start_time: 1596808894<br />avg_heart_rate: 142.3558<br />jumpGroup: [ 501,1310]","start_time: 1596812185<br />avg_heart_rate: 142.2804<br />jumpGroup: [ 501,1310]","start_time: 1596815476<br />avg_heart_rate: 142.2050<br />jumpGroup: [ 501,1310]","start_time: 1596818767<br />avg_heart_rate: 142.1295<br />jumpGroup: [ 501,1310]","start_time: 1596822058<br />avg_heart_rate: 142.0541<br />jumpGroup: [ 501,1310]","start_time: 1596825349<br />avg_heart_rate: 141.9787<br />jumpGroup: [ 501,1310]","start_time: 1596828640<br />avg_heart_rate: 141.9032<br />jumpGroup: [ 501,1310]","start_time: 1596831931<br />avg_heart_rate: 141.8278<br />jumpGroup: [ 501,1310]","start_time: 1596835222<br />avg_heart_rate: 141.7523<br />jumpGroup: [ 501,1310]","start_time: 1596838513<br />avg_heart_rate: 141.6769<br />jumpGroup: [ 501,1310]","start_time: 1596841804<br />avg_heart_rate: 141.6015<br />jumpGroup: [ 501,1310]","start_time: 1596845095<br />avg_heart_rate: 141.5260<br />jumpGroup: [ 501,1310]","start_time: 1596848386<br />avg_heart_rate: 141.4506<br />jumpGroup: [ 501,1310]","start_time: 1596851677<br />avg_heart_rate: 141.3751<br />jumpGroup: [ 501,1310]","start_time: 1596854968<br />avg_heart_rate: 141.2997<br />jumpGroup: [ 501,1310]","start_time: 1596858259<br />avg_heart_rate: 141.2243<br />jumpGroup: [ 501,1310]","start_time: 1596861550<br />avg_heart_rate: 141.1488<br />jumpGroup: [ 501,1310]","start_time: 1596864841<br />avg_heart_rate: 141.0734<br />jumpGroup: [ 501,1310]","start_time: 1596868132<br />avg_heart_rate: 140.9979<br />jumpGroup: [ 501,1310]","start_time: 1596871423<br />avg_heart_rate: 140.9225<br />jumpGroup: [ 501,1310]","start_time: 1596874713<br />avg_heart_rate: 140.8471<br />jumpGroup: [ 501,1310]","start_time: 1596878004<br />avg_heart_rate: 140.7716<br />jumpGroup: [ 501,1310]","start_time: 1596881295<br />avg_heart_rate: 140.6962<br />jumpGroup: [ 501,1310]","start_time: 1596884586<br />avg_heart_rate: 140.6208<br />jumpGroup: [ 501,1310]","start_time: 1596887877<br />avg_heart_rate: 140.5453<br />jumpGroup: [ 501,1310]","start_time: 1596891168<br />avg_heart_rate: 140.4699<br />jumpGroup: [ 501,1310]","start_time: 1596894459<br />avg_heart_rate: 140.3944<br />jumpGroup: [ 501,1310]","start_time: 1596897750<br />avg_heart_rate: 140.3190<br />jumpGroup: [ 501,1310]","start_time: 1596901041<br />avg_heart_rate: 140.2436<br />jumpGroup: [ 501,1310]","start_time: 1596904332<br />avg_heart_rate: 140.1681<br />jumpGroup: [ 501,1310]","start_time: 1596907623<br />avg_heart_rate: 140.0927<br />jumpGroup: [ 501,1310]","start_time: 1596910914<br />avg_heart_rate: 140.0172<br />jumpGroup: [ 501,1310]","start_time: 1596914205<br />avg_heart_rate: 139.9418<br />jumpGroup: [ 501,1310]","start_time: 1596917496<br />avg_heart_rate: 139.8664<br />jumpGroup: [ 501,1310]","start_time: 1596920787<br />avg_heart_rate: 139.7909<br />jumpGroup: [ 501,1310]","start_time: 1596924078<br />avg_heart_rate: 139.7155<br />jumpGroup: [ 501,1310]","start_time: 1596927369<br />avg_heart_rate: 139.6400<br />jumpGroup: [ 501,1310]","start_time: 1596930660<br />avg_heart_rate: 139.5646<br />jumpGroup: [ 501,1310]","start_time: 1596933951<br />avg_heart_rate: 139.4892<br />jumpGroup: [ 501,1310]","start_time: 1596937242<br />avg_heart_rate: 139.4137<br />jumpGroup: [ 501,1310]","start_time: 1596940532<br />avg_heart_rate: 139.3383<br />jumpGroup: [ 501,1310]","start_time: 1596943823<br />avg_heart_rate: 139.2629<br />jumpGroup: [ 501,1310]","start_time: 1596947114<br />avg_heart_rate: 139.1874<br />jumpGroup: [ 501,1310]","start_time: 1596950405<br />avg_heart_rate: 139.1120<br />jumpGroup: [ 501,1310]","start_time: 1596953696<br />avg_heart_rate: 139.0365<br />jumpGroup: [ 501,1310]","start_time: 1596956987<br />avg_heart_rate: 138.9611<br />jumpGroup: [ 501,1310]","start_time: 1596960278<br />avg_heart_rate: 138.8857<br />jumpGroup: [ 501,1310]","start_time: 1596963569<br />avg_heart_rate: 138.8102<br />jumpGroup: [ 501,1310]","start_time: 1596966860<br />avg_heart_rate: 138.7348<br />jumpGroup: [ 501,1310]","start_time: 1596970151<br />avg_heart_rate: 138.6593<br />jumpGroup: [ 501,1310]"],"type":"scatter","mode":"lines","name":"[ 501,1310]","line":{"width":3.77952755905512,"color":"rgba(0,191,196,1)","dash":"solid"},"hoveron":"points","legendgroup":"[ 501,1310]","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.7625570776256,"r":7.30593607305936,"b":40.1826484018265,"l":43.1050228310502},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Change in cardio fitness over time from jumping rope<br><sup>Goal is min of 10 min. continuous jumping per session<\/sup>","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[1596697166.75,1596983150.25],"tickmode":"array","ticktext":["Aug 07","Aug 08","Aug 09"],"tickvals":[1596758400,1596844800,1596931200],"categoryorder":"array","categoryarray":["Aug 07","Aug 08","Aug 09"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"Date","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[117.55,149.45],"tickmode":"array","ticktext":["120","130","140"],"tickvals":[120,130,140],"categoryorder":"array","categoryarray":["120","130","140"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"Average heart rate (bpm)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"y":0.913385826771654},"annotations":[{"text":"jumpGroup","x":1.02,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"left","yanchor":"bottom","legendTitle":true}],"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","showSendToCloud":false},"source":"A","attrs":{"10675498c0d30":{"x":{},"y":{},"colour":{},"label":{},"label2":{},"label3":{},"label4":{},"label5":{},"type":"scatter"},"106759b5f009":{"x":{},"y":{},"colour":{},"label":{},"label2":{},"label3":{},"label4":{},"label5":{}}},"cur_data":"10675498c0d30","visdat":{"10675498c0d30":["function (y) ","x"],"106759b5f009":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>I’ve separated the data in the plot into 2 groups: one with points with &lt; 500 jumps and one with &gt;= 500 jumps. This is mainly so the regression line for the &gt;= 500 jump group isn’t biased low due to sessions with relatively fewer jumps, which would correspond to a much lower average heart rate.</p>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>From <a href="https://en.wikipedia.org/wiki/Metabolic_equivalent_of_task">Wikipedia: Metabolic equivalent of task</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>100 jpm burns 11.8 METs and 80 jpm burns 8.8 METs.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>Hoping to see a decreasing trend in average heart rate over time indicating an increase in fitness.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
