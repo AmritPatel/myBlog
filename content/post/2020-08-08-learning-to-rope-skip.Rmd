@@ -62,7 +62,6 @@ Building off of the heat training running posts from this past summer and the ut
 2. Run [`fitparse`](https://github.com/dtcooper/python-fitparse) Python script in R via the `reticulate` library to convert binary .FIT to readable ASCII.
 3. Post-process ASCII file using `readr::read_csv` to get data into a dataframe, then formatting the data for plotting.
 
-
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = "center")
 library(reticulate)
@@ -80,11 +79,11 @@ use_virtualenv("jumps")
 # use_condaenv(condaenv = "auto")
 ```
 
-### Step 1: Get raw data.
+### Step 1: Get raw data
 
 ```{r, echo = T}
 library(DBI)
-library(RSQLite)
+library(RSQLite) 
 library(tidyverse)
 
 # Setup a working directory to copy files to for processing.
@@ -116,7 +115,7 @@ save(cardio, file = "~/HealthData/FitFiles/working/cardio.Rdata")
 walk(paste("cp", cardio$activity_id, workDir), system) # same as lapply w/ no output printed
 ```
 
-### Step 2: Convert data from binary to human readable form. 
+### Step 2: Convert data from binary to human readable form 
 
 ```{r, echo = T}
 getFitOut <- function() {
@@ -143,7 +142,7 @@ for record in fitfile.get_messages(\"session\"):
 }
 ```
 
-### Step 3: Format data for plotting.
+### Step 3: Format data for plotting 
 
 ```{r, echo = T}
 getJumpData <- function(jumpFit) {
@@ -270,3 +269,23 @@ ggplotly(p) %>%
 ```
 
 I've separated the data in the plot into 2 groups: one with points with < 500 jumps and one with >= 500 jumps. This is mainly so the regression line for the >= 500 jump group isn't biased low due to sessions with relatively fewer jumps, which would correspond to a much lower average heart rate.
+
+## Notes
+
+### 2020-08-12
+
+I ran 6.72 miles in morning; average heart rate was 147 bpm.
+
+### 2020-08-13
+
+While jumping rope today, I naturally started to move my feet differently. I began alternating my feet instead of jumping both at the same time early on in the 10 minute session. This resulted in much less of a bounce height. This also led to much more consistency while jumping with minimal disruptions of jump streaks. ***I had the realization that the average heart rate data reflected in the plot above is likely more indicative of my body learning to jump more efficiently rather than my cardio fitness improving.***
+
+I'm also wondering what the impact of me running relatively long distances recently has on the jump rope data. Does this introduce an element of fatigue or hysteresis that causes my average heart rate data on running days to be biased high when it otherwise wouldn't be? Needless to say, the first day I went running (yesterday) my calves felt really tight (due to jumping rope every day for a week). However, I noticed that in the morning today, they actually felt better (less tight and sore), as if running helped loosen them up. This is counter to what I would expect though because typically running causes me to have tighter calves. I looked to the internet to try and explain what was going on and found an [article](https://blog.mapmyrun.com/5-simple-solutions-for-tight-calves/#:~:text=A%20good%20way%20to%20stretch,faster%2C%20in%20a%20pumping%20motion.) mentioning that:
+
+> *A good way to stretch your calves is during your workout: Walking or running uphill is a great calf activator and naturally forces your muscles to stretch while your heading up.*
+
+Since the recent running route is about half uphill, I might be getting some benefit from this.
+
+### 2020-08-14
+
+I ran 5.88 miles in morning; average heart rate was 149 bpm.
