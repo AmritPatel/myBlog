@@ -79,7 +79,7 @@ use_virtualenv("jumps")
 # use_condaenv(condaenv = "auto")
 ```
 
-### Step 1: Get raw data
+### Step 1: Get raw data 
 
 ```{r, echo = T}
 library(DBI)
@@ -239,6 +239,8 @@ Below is the plot that I've designed to help me keep track of my daily jump data
 [^3]: Hoping to see a decreasing trend in average heart rate over time indicating an increase in fitness.
 
 ```{r}
+# Plot of avg. HR data over time.
+
 library(plotly)
 
 jumpGroup <- Hmisc::cut2(jumpData$jumps, cuts = c(501))
@@ -255,13 +257,13 @@ p <-
   geom_point() +
   geom_smooth(method = lm, se = FALSE) +
   # geom_text(vjust = 0, nudge_y = 1.0) +
-  labs(title = "Change in cardio fitness over time from jumping rope",
+  labs(title = "Assessing cardio fitness over time from jumping rope",
        subtitle = "Goal is min of 10 min. continuous jumping per session",
        x = "Date",
        y = "Average heart rate (bpm)")
 
 ggplotly(p) %>%
-  layout(title = list(text = paste0("Change in cardio fitness over time from jumping rope",
+  layout(title = list(text = paste0("Assessing cardio fitness over time from jumping rope",
                                     '<br>',
                                     '<sup>',
                                     "Goal is min of 10 min. continuous jumping per session",
@@ -269,6 +271,205 @@ ggplotly(p) %>%
 ```
 
 I've separated the data in the plot into 2 groups: one with points with < 500 jumps and one with >= 500 jumps. This is mainly so the regression line for the >= 500 jump group isn't biased low due to sessions with relatively fewer jumps, which would correspond to a much lower average heart rate.
+
+## Additional exploratory data analysis
+
+### Jumps rate vs. average heart rate by date
+
+```{r}
+# Plot of jpm data.
+
+q <-
+  ggplot(jumpData, aes(avg_heart_rate, jpm, color = jumpGroup,
+                       label  = jumps,
+                       label2 = start_time,
+                       label3 = max_heart_rate,
+                       label4 = total_training_effect,
+                       label5 = jumpingEffect
+                       )
+         ) + 
+  geom_point() +
+  geom_smooth(method = lm, se = FALSE) +
+  # geom_text(vjust = 0, nudge_y = 1.0) +
+  labs(title = "Assessing cardio fitness over time from jumping rope",
+       subtitle = "Goal is min of 10 min. continuous jumping per session",
+       x = "Average heart rate (bpm)",
+       y = "Jumps per minute")
+
+ggplotly(q) %>%
+  layout(title = list(text = paste0("Assessing cardio fitness over time from jumping rope",
+                                    '<br>',
+                                    '<sup>',
+                                    "Goal is min of 10 min. continuous jumping per session",
+                                    '</sup>')))
+```
+
+Viewed a slightly different way, we can highlight the trend using the session date and a color aesthetic. I think this one gets the point across better as the eye can quickly pickup the trend and perceive a clear improvement over time.
+
+```{r}
+# Plot of jpm data.
+
+library(gghighlight)
+#library(ggrepel)
+
+q <-
+  ggplot(jumpData, aes(avg_heart_rate, jpm, color = start_time,
+                        # label  = jumps,
+                        # label = start_time,
+                        # label3 = max_heart_rate,
+                        # label4 = total_training_effect
+                       # label5 = jumpingEffect
+                       )
+         ) + 
+  geom_point() +
+  #geom_smooth(method = lm, se = FALSE) +
+  #gghighlight(jpm >= 130) +
+  #geom_text(vjust = 0, nudge_y = 1.0) +
+  # geom_text_repel(aes(label = as.character(start_time)),
+  #                  box.padding   = 0.35,
+  #                  point.padding = 0.5,
+  #                  segment.color = 'grey50'
+  # ) +
+  labs(title = "Assessing cardio fitness over time from jumping rope",
+       #subtitle = "Highlighted data is jpm >= 130",
+       x = "Average heart rate (bpm)",
+       y = "Jumps per minute",
+       color = "Date")
+
+q
+
+# ggplotly(q) %>%
+#   layout(title = list(text = paste0("Change in cardio fitness over time from jumping rope",
+#                                     '<br>',
+#                                     '<sup>',
+#                                     "Goal is min of 10 min. continuous jumping per session",
+#                                     '</sup>')))
+```
+
+Moving from the bottom right corner of the plot (higher heart rate and lower jump rate) toward the upper left corner (lower heart rate and higher jump rate) shows an increase in jumping efficiency over time (though not necessarily cardio fitness)[^4].
+
+[^4]: This will be visited momentarily looking at recent running data!
+
+### Average heart rate vs. total jumps by date
+
+```{r}
+# Plot avg HR vs. number of jumps colored by time.
+
+r <-
+  ggplot(jumpData, aes(jumps, avg_heart_rate, color = start_time#,
+                       # label  = jpm,
+                       # label2 = start_time,
+                       # label3 = max_heart_rate,
+                       # label4 = total_training_effect,
+                       # label5 = jumpingEffect
+                       )
+         ) + 
+  geom_point() +
+  gghighlight(jumps >= 1000) +
+  geom_smooth(method = lm, se = FALSE) +
+  # geom_text(vjust = 0, nudge_y = 1.0) +
+  labs(title = "Assessing cardio fitness over time from jumping rope",
+       subtitle = "High jump data highlighted",
+       x = "Jumps",
+       y = "Average heart rate (bpm)",
+       color = "Date")
+
+r
+
+# ggplotly(r) %>%
+#   layout(title = list(text = paste0("Change in cardio fitness over time from jumping rope",
+#                                     '<br>',
+#                                     '<sup>',
+#                                     "Goal is min of 10 min. continuous jumping per session",
+#                                     '</sup>')))
+```
+
+Again, the trend is clear by presenting the data this way with the change in color indicating the change in jumping efficiency.
+
+It also shows that:
+
+- The first couple of days were not very productive and
+- Jumping inefficiency decreases very fast!
+
+From the very first plot in this article,[^5] it seems that there is about a *10 bpm decrease in average heart rate every 2-3 days in the first week!* This seems to level out as jumping efficiency increases over time leading to a higher jump rate, which causes a slight bump up in average heart rate.
+
+[^5]: It's Hard to tell from this plot.
+
+### Using recent hilly training runs to look for cardio gains
+
+Since I've been running while doing this jump rope cardio fitness experiment, there is a good opportunity to use the running data as a basis to look for cardio gains.
+
+Looking at recent running data around the Lalitpur foothills near Kirtipur and around Tribhuvan University,[^7] we might be able to detect changes in performance.
+
+[^7]: The runs show are essentially the same run with some slight variations due to either time (not enough!) and/or weather (monsoon rains!), which causes a slight (but significant) relative change in total distance.
+
+Using previous plotting tools developed to analyze and compare series' of running data, here is a quick plot of some training runs with some variables of interest.  
+
+```{r}
+# Load in all helper functions
+source("~/GitHub/myBlog/content/resources/2020-06-14-heat-training-continues-in-hua-hin/RPIandHeatLimitedPacePlots.R")
+
+# Lalitpur Running
+
+dataLalitpur <- getRPIandHLPfromFIT(wd = "~/HealthData/FitFiles/working/", aname = "Lalitpur")
+cleanup()
+
+humidity  <-
+  tribble(
+    ~Date,	~humidity,
+    "2020-01-12", 93,
+    "2020-08-10", 89,
+    "2020-08-11", 100,
+    "2020-08-13", 100,
+    "2020-08-16", 100,
+    "2020-08-18", 100
+)
+
+dataLalitpur <- addHI(dataLalitpur, humidity)
+
+plotRPI(dataLalitpur %>% filter(Date > "2020-08-01"), titleText = "Lalitpur Summer 2020 training runs.")
+```
+
+A quick glance indicates a high degree of similarity between these runs although it did rain that first day likely providing a significant cooling effect and slight performance bump.[^6]
+
+[^6]: This was also the first day running a longer distance and at higher elevation in nearly 7 months. I did run in Bangkok over the past 5 months, but they were much shorter (~3 miles) due to the intense heat.
+
+Since the running performance index (RPI)[^9] data is so noisy, it is easier to report in tabular form.
+
+[^9]: See [previous post](https://amritpatel.rbind.io/2020/03/27/100-lap-challenge/) for more about how to interpret this running efficiency metric.
+
+```{r, fig.align = 'center'}
+library(kableExtra)
+
+dataLalitpur %>% 
+  filter(Date > "2020-08-01") %>%
+  group_by(Date) %>%
+  summarise(AvgRPI = mean(RPI, na.rm = T)) %>%
+  kable() %>%
+  kable_styling(full_width = F, position = "center")
+```
+
+Now back to the question:
+
+> *Is jumping rope for 10 minutes a day for 30 days straight improving my cardio fitness?*
+
+Over the same course of time running, we see that the average RPI (or running economy), which is a function of heart rate and pace, is about the same for each run under similar conditions indicating that my performance isn't really improving.
+
+Long story short, this matches what my Garmin Connect VO~2~^max^ data indicates since I started running in Kathmandu this summer with a constant value of 48. 
+
+Here is what the Garmin Connect app says about VO~2~^max^:
+
+> *VO~2~^max^ is an indication of your cardiovascular fitness and should increase as your level of fitness improves. VO~2~^max^ is the maximum volume of oxygen (in milliliters) you can consume per minute per kilogram of body weight at your maximum performance. Your compatible Garmin device uses heart rate and exercise data to estimate your VO~2~^max^.*
+
+## tldr
+
+Jumping rope is great for the reasons listed above *except* it didn't really improve my cardio fitness.[^10] Maybe this is because I already had high cardio fitness? Maybe it would be different if I didn't?
+
+[^10]: I guess I could have just looked at the Garmin "training effect" data for the jump rope sessions to see that the "total training effect" values are practically 0! Yet another point of training effect validation...
+
+```{r, eval = F}
+plotViolationSumm(dataLalitpur %>% filter(Date > "2020-08-01"), titleText = "Lalitpur Summer 2020 training runs.")
+```
 
 ## Notes
 
@@ -289,3 +490,11 @@ Since the recent running route is about half uphill, I might be getting some ben
 ### 2020-08-14
 
 I ran 5.88 miles in morning; average heart rate was 149 bpm.
+
+### 2020-08-18
+
+Need to account for temperature effects.
+
+### 2020-08-19
+
+Jumped in rain, which served as a cooling effect; temperature conditions similar to yesterday.
