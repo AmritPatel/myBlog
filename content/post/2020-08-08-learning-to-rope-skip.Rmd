@@ -39,7 +39,7 @@ More impressively, the *Jump Rope Institute* also says that with only 10 minutes
 - 720 yards of swimming
 - 18 holes of golf
 
-What a missed opportunity for some quality fitness training!
+What a missed opportunity for some quality fitness training (if true)!
 
 ## The gear
 
@@ -393,15 +393,15 @@ It also shows that:
 
 From the very first plot in this article,[^5] it seems that there is about a *10 bpm decrease in average heart rate every 2-3 days in the first week!* This seems to level out as jumping efficiency increases over time leading to a higher jump rate, which causes a slight bump up in average heart rate.
 
-[^5]: It's Hard to tell from this plot.
+[^5]: It's hard to tell from this plot.
 
 ### Using recent hilly training runs to look for cardio gains
 
 Since I've been running while doing this jump rope cardio fitness experiment, there is a good opportunity to use the running data as a basis to look for cardio gains.
 
-Looking at recent running data around the Lalitpur foothills near Kirtipur and around Tribhuvan University,[^7] we might be able to detect changes in performance.
+Looking at recent running data around the Lalitpur foothills near Kirtipur and Tribhuvan University,[^7] we might be able to detect changes in performance.
 
-[^7]: The runs show are essentially the same run with some slight variations due to either time (not enough!) and/or weather (monsoon rains!), which causes a slight (but significant) relative change in total distance.
+[^7]: The runs shown are essentially the same with slight variations due to either time (not enough!) and/or weather (monsoon rains!), which causes a slight (but significant) relative change in total distance.
 
 Using previous plotting tools developed to analyze and compare series' of running data, here is a quick plot of some training runs with some variables of interest.  
 
@@ -444,7 +444,7 @@ library(kableExtra)
 dataLalitpur %>% 
   filter(Date > "2020-08-01") %>%
   group_by(Date) %>%
-  summarise(AvgRPI = mean(RPI, na.rm = T)) %>%
+  summarise(AvgRPI = round(mean(RPI, na.rm = T))) %>%
   kable() %>%
   kable_styling(full_width = F, position = "center")
 ```
@@ -455,11 +455,17 @@ Now back to the question:
 
 Over the same course of time running, we see that the average RPI (or running economy), which is a function of heart rate and pace, is about the same for each run under similar conditions indicating that my performance isn't really improving.
 
-Long story short, this matches what my Garmin Connect VO~2~^max^ data indicates since I started running in Kathmandu this summer with a constant value of 48. 
+Long story short, this matches what my *Garmin Connect* VO~2~^max^ data indicates since I started running in Kathmandu this summer with a constant value of 48 ml O~2~/kg-min. 
 
-Here is what the Garmin Connect app says about VO~2~^max^:
+Here is what the *Garmin Connect* app says about VO~2~^max^:
 
 > *VO~2~^max^ is an indication of your cardiovascular fitness and should increase as your level of fitness improves. VO~2~^max^ is the maximum volume of oxygen (in milliliters) you can consume per minute per kilogram of body weight at your maximum performance. Your compatible Garmin device uses heart rate and exercise data to estimate your VO~2~^max^.*
+
+And what is really great (from the [*Forerunner 935 Owner's Manual*](https://www8.garmin.com/manuals/webhelp/forerunner935/EN-US/GUID-F5BF67CE-C94E-4842-AE96-A7A05C85B732.html)):
+
+> *Your device adjusts the VO~2~^max^ values for heat and altitude, such as when you are acclimating to high heat environments or high altitude.*
+
+So accounting for differences in elevation gives added confidence in the *Garmin*-calculated VO~2~^max^.
 
 ## tldr
 
@@ -498,3 +504,7 @@ Need to account for temperature effects.
 ### 2020-08-19
 
 Jumped in rain, which served as a cooling effect; temperature conditions similar to yesterday.
+
+### 2020-08-20
+
+Fever of 100.6-100.9 F measured around 8 pm. Temperature recorded as normal (98.5 F) when woke up next morning around 7 am.
