@@ -313,7 +313,7 @@ library(gghighlight)
 #library(ggrepel)
 
 q <-
-  ggplot(jumpData, aes(avg_heart_rate, jpm, color = start_time,
+  ggplot(jumpData, aes(jpm, avg_heart_rate, color = start_time,
                         # label  = jumps,
                         # label = start_time,
                         # label3 = max_heart_rate,
@@ -332,8 +332,8 @@ q <-
   # ) +
   labs(title = "Assessing cardio fitness over time from jumping rope",
        #subtitle = "Highlighted data is jpm >= 130",
-       x = "Average heart rate (bpm)",
-       y = "Jumps per minute",
+       y = "Average heart rate (bpm)",
+       x = "Jumps per minute",
        color = "Date")
 
 q
@@ -346,7 +346,7 @@ q
 #                                     '</sup>')))
 ```
 
-Moving from the bottom right corner of the plot (higher heart rate and lower jump rate) toward the upper left corner (lower heart rate and higher jump rate) shows an increase in jumping efficiency over time (though not necessarily cardio fitness)[^4].
+Moving from the top left corner of the plot (higher heart rate and lower jump rate) toward the lower right corner (lower heart rate and higher jump rate) shows an increase in jumping efficiency over time (though not necessarily cardio fitness)[^4].
 
 [^4]: This will be visited momentarily looking at recent running data!
 
@@ -394,6 +394,37 @@ It also shows that:
 From the very first plot in this article,[^5] it seems that there is about a *10 bpm decrease in average heart rate every 2-3 days in the first week!* This seems to level out as jumping efficiency increases over time leading to a higher jump rate, which causes a slight bump up in average heart rate.
 
 [^5]: It's hard to tell from this plot.
+
+### Data normalization
+
+```{r}
+# Plot avg HR vs. jumping efficiency colored by time.
+
+s <-
+  ggplot(jumpData, aes(jumpingEffect, avg_heart_rate, color = start_time,
+                       label  = jpm,
+                       label2 = max_heart_rate,
+                       label3 = total_training_effect)) +
+  geom_point() +
+  #gghighlight(jumpingEffect >= 20) +
+  #geom_smooth(method = lm, se = FALSE) +
+  # geom_text(vjust = 0, nudge_y = 1.0) +
+  labs(title = "Assessing cardio fitness over time from jumping rope",
+       subtitle = "Jumping effect data >= 20 highlighted",
+       x = "Jumping Effect",
+       y = "Average heart rate (bpm)",
+       color = "Date")
+
+
+ggplotly(s) %>%
+  layout(title = list(text = paste0("Change in cardio fitness over time from jumping rope",
+                                    '<br>',
+                                    '<sup>',
+                                    "Jumping effect data >= 20 highlighted",
+                                    '</sup>')))
+```
+
+Recalling that a jumping effect of 100 is equivalent to jumping 20 minutes non-stop at a 120+ jpm pace, we can combine session duration and jump rate variables into a single convenient normalizing parameter. This would allow for removal of arbitrary 10 minute session duration and ~1000 jumps target encouraging growth. *This parameter isn't ideal though as it treats any jump rate above 120 jpm the same.* Again, coloring by date shows the improvement over time trend clearly with the convenient benefit of showing changing level of effort over time.
 
 ### Using recent hilly training runs to look for cardio gains
 
