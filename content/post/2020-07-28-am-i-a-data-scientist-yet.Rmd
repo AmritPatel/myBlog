@@ -1,5 +1,5 @@
 ---
-title: Am I a Machine Learning Engineer Yet?
+title: Am I a Machine Learning Engineer yet?
 author: Amrit D. Patel
 date: '2020-07-28'
 slug: am-i-a-machine-learning-engineer-yet

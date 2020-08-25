@@ -49,7 +49,7 @@ I headed over to the  *Garmin Connect IQ Store* and was pleasantly surprised to 
 
 I also learned a new unit to describe efficiency of physical exertion: the metabolic equivalent or MET. A MET is defined as *the objective measure of the ratio of the rate at which a person expends energy, relative to the mass of that person, while performing some specific physical activity compared to a reference, set by convention at 3.5 mL of oxygen per kilogram per minute, which is roughly equivalent to the energy expended when sitting quietly*.[^1]
 
-So, you spend 1 MET sitting around playing video games, for example, and a whopping [12.3 METs](https://sites.google.com/site/compendiumofphysicalactivities/Activity-Categories/sports) jumping rope at a pace of 120-160 jpm![^2]
+So, you spend 1 MET sitting around playing video games, for example, and a whopping [12.3](https://sites.google.com/site/compendiumofphysicalactivities/Activity-Categories/sports) METs jumping rope at a pace of 120-160 jpm![^2] For additional reference, running at a 7 minute mile pace also costs about [12.3](https://sites.google.com/site/compendiumofphysicalactivities/Activity-Categories/running) METs.
 
 [^1]: From [Wikipedia: Metabolic equivalent of task](https://en.wikipedia.org/wiki/Metabolic_equivalent_of_task).
 [^2]: 100 jpm burns 11.8 METs and 80 jpm burns 8.8 METs.
@@ -205,6 +205,14 @@ jumpData <-
 ```
 
 ```{r, echo = T}
+# Determine number of days in a row with a 10 min. jump rope session. Multiple entries per day should be excluded.
+
+sessions <- unique(format(jumpData$start_time, "%A, %B %d, %Y"))
+```
+
+```{r, echo = T}
+library(glue) # for convenient string/var concatenation
+
 pltJumpData <- 
   jumpData %>%
   select(-sub_sport, -name) %>%
@@ -214,7 +222,8 @@ ggplot(pltJumpData, aes(start_time, value)) +
   geom_point() +
   geom_smooth(method = lm, se = FALSE) +
   facet_wrap(~ name, scales = "free_y") +
-  labs(title = "Summary of jump rope session data",
+  labs(title = glue("Summary of jump rope session data over {length(sessions)} days"),
+       subtitle = "Goal is min of 10 min. continuous jumping per session",
        x = "Date",
        y = "Value") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -257,13 +266,13 @@ p <-
   geom_point() +
   geom_smooth(method = lm, se = FALSE) +
   # geom_text(vjust = 0, nudge_y = 1.0) +
-  labs(title = "Assessing cardio fitness over time from jumping rope",
+  labs(title = glue("Assessing cardio fitness over time from jumping rope over {length(sessions)} days"),
        subtitle = "Goal is min of 10 min. continuous jumping per session",
        x = "Date",
        y = "Average heart rate (bpm)")
 
 ggplotly(p) %>%
-  layout(title = list(text = paste0("Assessing cardio fitness over time from jumping rope",
+  layout(title = list(text = glue("Assessing cardio fitness over time from jumping rope over {length(sessions)} days",
                                     '<br>',
                                     '<sup>',
                                     "Goal is min of 10 min. continuous jumping per session",
@@ -291,13 +300,13 @@ q <-
   geom_point() +
   geom_smooth(method = lm, se = FALSE) +
   # geom_text(vjust = 0, nudge_y = 1.0) +
-  labs(title = "Assessing cardio fitness over time from jumping rope",
+  labs(title = glue("Assessing cardio fitness over time from jumping rope over {length(sessions)} days"),
        subtitle = "Goal is min of 10 min. continuous jumping per session",
        x = "Average heart rate (bpm)",
        y = "Jumps per minute")
 
 ggplotly(q) %>%
-  layout(title = list(text = paste0("Assessing cardio fitness over time from jumping rope",
+  layout(title = list(text = glue("Assessing cardio fitness over time from jumping rope over {length(sessions)} days",
                                     '<br>',
                                     '<sup>',
                                     "Goal is min of 10 min. continuous jumping per session",
@@ -330,8 +339,8 @@ q <-
   #                  point.padding = 0.5,
   #                  segment.color = 'grey50'
   # ) +
-  labs(title = "Assessing cardio fitness over time from jumping rope",
-       #subtitle = "Highlighted data is jpm >= 130",
+  labs(title = glue("Assessing cardio fitness over time from jumping rope over {length(sessions)} days"),
+       subtitle = "Goal is min of 10 min. continuous jumping per session",
        y = "Average heart rate (bpm)",
        x = "Jumps per minute",
        color = "Date")
@@ -339,11 +348,11 @@ q <-
 q
 
 # ggplotly(q) %>%
-#   layout(title = list(text = paste0("Change in cardio fitness over time from jumping rope",
-#                                     '<br>',
-#                                     '<sup>',
-#                                     "Goal is min of 10 min. continuous jumping per session",
-#                                     '</sup>')))
+  # layout(title = list(text = glue("Assessing cardio fitness over time from jumping rope over {length(sessions)} days",
+  #                                   '<br>',
+  #                                   '<sup>',
+  #                                   "Goal is min of 10 min. continuous jumping per session",
+  #                                   '</sup>')))
 ```
 
 Moving from the top left corner of the plot (higher heart rate and lower jump rate) toward the lower right corner (lower heart rate and higher jump rate) shows an increase in jumping efficiency over time (though not necessarily cardio fitness)[^4].
@@ -368,8 +377,8 @@ r <-
   gghighlight(jumps >= 1000) +
   geom_smooth(method = lm, se = FALSE) +
   # geom_text(vjust = 0, nudge_y = 1.0) +
-  labs(title = "Assessing cardio fitness over time from jumping rope",
-       subtitle = "High jump data highlighted",
+  labs(title = glue("Assessing cardio fitness over time from jumping rope over {length(sessions)} days"),
+       subtitle = "Sessions with higher number of jumps highlighted",
        x = "Jumps",
        y = "Average heart rate (bpm)",
        color = "Date")
@@ -377,11 +386,11 @@ r <-
 r
 
 # ggplotly(r) %>%
-#   layout(title = list(text = paste0("Change in cardio fitness over time from jumping rope",
-#                                     '<br>',
-#                                     '<sup>',
-#                                     "Goal is min of 10 min. continuous jumping per session",
-#                                     '</sup>')))
+  # layout(title = list(text = glue("Assessing cardio fitness over time from jumping rope over {length(sessions)} days",
+  #                                   '<br>',
+  #                                   '<sup>',
+  #                                   "Sessions with higher number of jumps highlighted",
+  #                                   '</sup>')))
 ```
 
 Again, the trend is clear by presenting the data this way with the change in color indicating the change in jumping efficiency.
@@ -408,20 +417,21 @@ s <-
   geom_point() +
   #gghighlight(jumpingEffect >= 20) +
   #geom_smooth(method = lm, se = FALSE) +
-  # geom_text(vjust = 0, nudge_y = 1.0) +
-  labs(title = "Assessing cardio fitness over time from jumping rope",
-       subtitle = "Jumping effect data >= 20 highlighted",
+  #geom_text(vjust = 0, nudge_y = 1.0) +
+  labs(title = glue("Assessing cardio fitness over time from jumping rope over {length(sessions)} days"),
+       #subtitle = "Jumping effect data >= 20 highlighted",
        x = "Jumping Effect",
        y = "Average heart rate (bpm)",
        color = "Date")
 
 
 ggplotly(s) %>%
-  layout(title = list(text = paste0("Change in cardio fitness over time from jumping rope",
+  layout(title = list(text = glue("Change in cardio fitness over time from jumping rope over {length(sessions)} days",
                                     '<br>',
                                     '<sup>',
-                                    "Jumping effect data >= 20 highlighted",
-                                    '</sup>')))
+                                    #"Jumping effect data >= 20 highlighted",
+                                    '</sup>'))
+         )
 ```
 
 Recalling that a jumping effect of 100 is equivalent to jumping 20 minutes non-stop at a 120+ jpm pace, we can combine session duration and jump rate variables into a single convenient normalizing parameter. This would allow for removal of arbitrary 10 minute session duration and ~1000 jumps target encouraging growth. *This parameter isn't ideal though as it treats any jump rate above 120 jpm the same.* Again, coloring by date shows the improvement over time trend clearly with the convenient benefit of showing changing level of effort over time.
@@ -502,6 +512,8 @@ So accounting for differences in elevation gives added confidence in the *Garmin
 
 Jumping rope is great for the reasons listed above *except* it didn't really improve my cardio fitness.[^10] Maybe this is because I already had high cardio fitness? Maybe it would be different if I didn't?
 
+Another thought: As jump rope efficiency increased, I probably should have increased jump rate closer to 160 jpm to provoke a significant cardio response. Maybe then I could have approached a cardio workout equivalent to running a 7 minute mile pace as mentioned earlier.
+
 [^10]: I guess I could have just looked at the Garmin "training effect" data for the jump rope sessions to see that the "total training effect" values are practically 0! Yet another point of training effect validation...
 
 ```{r, eval = F}
@@ -539,3 +551,7 @@ Jumped in rain, which served as a cooling effect; temperature conditions similar
 ### 2020-08-20
 
 Fever of 100.6-100.9 F measured around 8 pm. Temperature recorded as normal (98.5 F) when woke up next morning around 7 am.
+
+### 2020-08-23
+
+Twisted ankle playing soccer; no visible swelling, but a significant strain.
