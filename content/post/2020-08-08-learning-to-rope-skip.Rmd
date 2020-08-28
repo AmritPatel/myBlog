@@ -10,6 +10,8 @@ tags:
   - plot
 ---
 
+`r htmltools::HTML("{{< youtube s5XZDHH6yMM >}}")`
+
 Over our recent 5 month stay in Thailand we happened to acquire a jump rope. For most of the time it collected dust. Now that I've picked it up again I'm thinking the reason was because jumping rope is actually pretty challenging. On multiple levels.
 
 There is the whole timing the rope turns in sync with your jumping, which stimulates brain activity and as [crossrope.com](https://www.crossrope.com/blogs/blog/benefits-of-jumping-the-unique-value-of-jump-rope-training-good-cardio/) explains:
