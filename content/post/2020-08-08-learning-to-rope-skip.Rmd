@@ -231,6 +231,22 @@ ggplot(pltJumpData, aes(start_time, value)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
+```{r, fig.align = 'center'}
+# Summary of running totals
+
+library(kableExtra)
+
+bind_cols(Days = length(sessions),
+          jumpData %>%
+            summarise(totalJumps = sum(jumps),
+                      totalCalories = sum(total_calories)
+                      )
+          ) %>%
+  kable() %>%
+  kable_styling(full_width = F, position = "center")
+```
+
+
 ```{r, eval = F}
 # ggplot(jumpData, aes(start_time, jpm, color = Hmisc::cut2(jumps, cuts = c(501)))) + 
 #   geom_point() +
@@ -482,8 +498,6 @@ Since the running performance index (RPI)[^9] data is so noisy, it is easier to 
 [^9]: See [previous post](https://amritpatel.rbind.io/2020/03/27/100-lap-challenge/) for more about how to interpret this running efficiency metric.
 
 ```{r, fig.align = 'center'}
-library(kableExtra)
-
 dataLalitpur %>% 
   filter(Date > "2020-08-01") %>%
   group_by(Date) %>%
