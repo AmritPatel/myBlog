@@ -232,7 +232,7 @@ ggplot(pltJumpData, aes(start_time, value)) +
 ```
 
 ```{r, fig.align = 'center'}
-# Summary of running totals
+# Summary of jumping totals
 
 library(kableExtra)
 
