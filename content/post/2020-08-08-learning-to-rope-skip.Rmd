@@ -323,7 +323,7 @@ q <-
        subtitle = "Goal is min of 10 min. continuous jumping per session",
        x = "Average heart rate (bpm)",
        y = "Total training effect",
-       color = "Jumps per min.")
+       color = "Jumps per min.") 
 
 ggplotly(q) %>%
   layout(title = list(text = glue("Assessing cardio fitness over time from jumping rope over {length(sessions)} days",
