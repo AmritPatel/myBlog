@@ -370,7 +370,7 @@ q <-
                        )
          ) + 
   geom_point() +
-  #geom_smooth(method = lm, se = FALSE) +
+  geom_smooth(method = loess, se = F) +
   #gghighlight(jpm >= 130) +
   #geom_text(vjust = 0, nudge_y = 1.0) +
   # geom_text_repel(aes(label = as.character(start_time)),
