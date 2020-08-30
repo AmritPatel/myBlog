@@ -273,21 +273,22 @@ library(plotly)
 jumpGroup <- Hmisc::cut2(jumpData$jumps, cuts = c(501))
 
 p <-
-  ggplot(jumpData, aes(start_time, avg_heart_rate, color = jumpGroup,
+  ggplot(jumpData, aes(start_time, avg_heart_rate, color = jpm,
                        label  = jumps,
-                       label2 = jpm,
-                       label3 = max_heart_rate,
-                       label4 = total_training_effect,
-                       label5 = jumpingEffect
+                       # label2 = jpm,
+                       label2 = max_heart_rate,
+                       label3 = total_training_effect,
+                       label4 = jumpingEffect
                        )
          ) + 
   geom_point() +
-  geom_smooth(method = lm, se = FALSE) +
+  geom_smooth(method = loess, se = FALSE) +
   # geom_text(vjust = 0, nudge_y = 1.0) +
   labs(title = glue("Assessing cardio fitness over time from jumping rope over {length(sessions)} days"),
        subtitle = "Goal is min of 10 min. continuous jumping per session",
        x = "Date",
-       y = "Average heart rate (bpm)")
+       y = "Average heart rate (bpm)",
+       color = "Jumps per min.")
 
 ggplotly(p) %>%
   layout(title = list(text = glue("Assessing cardio fitness over time from jumping rope over {length(sessions)} days",
@@ -297,31 +298,32 @@ ggplotly(p) %>%
                                     '</sup>')))
 ```
 
-I've separated the data in the plot into 2 groups: one with points with < 500 jumps and one with >= 500 jumps. This is mainly so the regression line for the >= 500 jump group isn't biased low due to sessions with relatively fewer jumps, which would correspond to a much lower average heart rate.
+The data also show that as my coordination increases, I am able to jump at a faster rate while keeping my heart rate relatively low. As time goes on and coordination keeps hopefully improving, I will try and jump closer to 160 jpm to try and get my heart rate up for a decent workout. 
 
 ## Additional exploratory data analysis
 
-### Jumps rate vs. average heart rate by date
+### Total training effect vs. average heart rate
 
 ```{r}
 # Plot of jpm data.
 
 q <-
-  ggplot(jumpData, aes(avg_heart_rate, jpm, color = jumpGroup,
+  ggplot(jumpData, aes(avg_heart_rate, total_training_effect, color = jpm,
                        label  = jumps,
                        label2 = start_time,
                        label3 = max_heart_rate,
-                       label4 = total_training_effect,
+                       label4 = total_calories,
                        label5 = jumpingEffect
                        )
          ) + 
   geom_point() +
-  geom_smooth(method = lm, se = FALSE) +
+  geom_smooth(method = loess, se = F) +
   # geom_text(vjust = 0, nudge_y = 1.0) +
   labs(title = glue("Assessing cardio fitness over time from jumping rope over {length(sessions)} days"),
        subtitle = "Goal is min of 10 min. continuous jumping per session",
        x = "Average heart rate (bpm)",
-       y = "Jumps per minute")
+       y = "Total training effect",
+       color = "Jumps per min.")
 
 ggplotly(q) %>%
   layout(title = list(text = glue("Assessing cardio fitness over time from jumping rope over {length(sessions)} days",
@@ -331,7 +333,26 @@ ggplotly(q) %>%
                                     '</sup>')))
 ```
 
-Viewed a slightly different way, we can highlight the trend using the session date and a color aesthetic. I think this one gets the point across better as the eye can quickly pickup the trend and perceive a clear improvement over time.
+This plot shows that what really matters for a cardio workout is getting your heart rate up and keeping it up. Obviously, this is more achievable the faster you jump, but jump rate is also affected by coordination. This is why there is no clear trend or clustering by jump rate.
+
+As for training effect, the interpretation of this variable is as follows:
+
+```{r, fig.align = 'center'}
+
+tribble(
+  ~Category,             ~Range,
+  "No benefit",       "0.0-0.9",
+  "Minor benefit",    "1.0-1.9",
+  "Maintaining",      "2.0-2.9",
+  "Improving",        "3.0-3.9",
+  "Highly improving", "4.0-4.9",
+  "Overreaching",         "5.0"
+) %>%
+  kable() %>%
+  kable_styling(full_width = F, position = "center")
+```
+
+Also, there is both aerobic and anaerobic training effect. The plot above (and further below) shows only the aerobic training effect since it is really the only significant one. Therefore, for a jump rope session to be a good cardio workout, we should target to have a training effect >= 2.0 -- that is, a workout that will allow us to at least maintain our current level of fitness. However, ideally, >= 3.0 would be desirable for cardio gains.
 
 ```{r}
 # Plot of jpm data.
@@ -373,7 +394,7 @@ q
   #                                   '</sup>')))
 ```
 
-Moving from the top left corner of the plot (higher heart rate and lower jump rate) toward the lower right corner (lower heart rate and higher jump rate) shows an increase in jumping efficiency over time (though not necessarily cardio fitness)[^4].
+Moving from the top left corner of the plot (higher heart rate and lower jump rate) toward the lower right corner (lower heart rate and higher jump rate) shows an increase in jumping efficiency over time (though not necessarily cardio fitness as discussed above)[^4].
 
 [^4]: This will be visited momentarily looking at recent running data!
 
@@ -393,7 +414,7 @@ r <-
          ) + 
   geom_point() +
   gghighlight(jumps >= 1000) +
-  geom_smooth(method = lm, se = FALSE) +
+  #geom_smooth(method = loess, se = F) +
   # geom_text(vjust = 0, nudge_y = 1.0) +
   labs(title = glue("Assessing cardio fitness over time from jumping rope over {length(sessions)} days"),
        subtitle = "Sessions with higher number of jumps highlighted",
@@ -428,19 +449,20 @@ From the very first plot in this article,[^5] it seems that there is about a *10
 # Plot avg HR vs. jumping efficiency colored by time.
 
 s <-
-  ggplot(jumpData, aes(jumpingEffect, avg_heart_rate, color = start_time,
-                       label  = jpm,
-                       label2 = max_heart_rate,
-                       label3 = total_training_effect)) +
+  ggplot(jumpData, aes(jumpingEffect, total_training_effect, color = avg_heart_rate,
+                       label  = start_time,
+                       label2 = jpm,
+                       label3 = max_heart_rate)) +
+                       # label4 = total_training_effect)) +
   geom_point() +
   #gghighlight(jumpingEffect >= 20) +
   #geom_smooth(method = lm, se = FALSE) +
   #geom_text(vjust = 0, nudge_y = 1.0) +
   labs(title = glue("Assessing cardio fitness over time from jumping rope over {length(sessions)} days"),
        #subtitle = "Jumping effect data >= 20 highlighted",
-       x = "Jumping Effect",
-       y = "Average heart rate (bpm)",
-       color = "Date")
+       x = "Jumping effect",
+       y = "Total training effect",
+       color = "Avg. HR")
 
 
 ggplotly(s) %>%
@@ -452,7 +474,7 @@ ggplotly(s) %>%
          )
 ```
 
-Recalling that a jumping effect of 100 is equivalent to jumping 20 minutes non-stop at a 120+ jpm pace, we can combine session duration and jump rate variables into a single convenient normalizing parameter. This would allow for removal of arbitrary 10 minute session duration and ~1000 jumps target encouraging growth. *This parameter isn't ideal though as it treats any jump rate above 120 jpm the same.* Again, coloring by date shows the improvement over time trend clearly with the convenient benefit of showing changing level of effort over time.
+Recalling that a jumping effect of 100 is equivalent to jumping 20 minutes non-stop at a 120+ jpm pace, we can combine session duration and jump rate variables into a single convenient normalizing parameter. This would allow for removal of arbitrary 10 minute session duration and ~1000 jumps target encouraging growth. *This parameter isn't ideal though as it treats any jump rate above 120 jpm the same.* More data is needed at higher jumping effect values (i.e., longer/faster sessions) to say anything about when cardio benefits start to show up.
 
 ### Using recent hilly training runs to look for cardio gains
 
@@ -526,7 +548,7 @@ So accounting for differences in elevation gives added confidence in the *Garmin
 
 ## tldr
 
-Jumping rope is great for the reasons listed above *except* it didn't really improve my cardio fitness.[^10] Maybe this is because I already had high cardio fitness? Maybe it would be different if I didn't?
+Jumping rope is great for the reasons listed above *except* it didn't really improve my cardio fitness [***until ...***].[^10] Maybe this is because I already had high cardio fitness? Maybe it would be different if I didn't?
 
 Another thought: As jump rope efficiency increased, I probably should have increased jump rate closer to 160 jpm to provoke a significant cardio response. Maybe then I could have approached a cardio workout equivalent to running a 7 minute mile pace as mentioned earlier.
 
