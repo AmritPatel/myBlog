@@ -192,9 +192,12 @@ passFit <- function() {
   getJumpData(getFitOut())
 }
 
-datalist = list()
-
-for (i in 1:length(cardio$activity_id)) {
+#datalist = list()
+# Advice from: https://adv-r.hadley.nz/control-flow.html#for-family
+# Make sure to preallocate the output container,otherwise the loop will be very slow.
+datalist <- vector("list", length(cardio$activity_id))
+# Use seq_along(x) instead of 1:length(x). It always returns a value the same length as x.
+for (i in seq_along(cardio$activity_id)) {
   fitFile <- cardio$activity_id[i]
   dat <- passFit()
   datalist[[i]] <- dat
@@ -414,6 +417,7 @@ r <-
          ) + 
   geom_point() +
   gghighlight(jumps >= 1000) +
+  geom_rug(sides = "b") +
   #geom_smooth(method = loess, se = F) +
   # geom_text(vjust = 0, nudge_y = 1.0) +
   labs(title = glue("Assessing cardio fitness over time from jumping rope over {length(sessions)} days"),
