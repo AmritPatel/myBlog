@@ -225,7 +225,7 @@ pltJumpData <-
 
 ggplot(pltJumpData, aes(start_time, value)) + 
   geom_point() +
-  geom_smooth(method = lm, se = FALSE) +
+  geom_smooth(method = loess, se = FALSE) +
   facet_wrap(~ name, scales = "free_y") +
   labs(title = glue("Summary of jump rope session data over {length(sessions)} days"),
        subtitle = "Goal is min of 10 min. continuous jumping per session",
