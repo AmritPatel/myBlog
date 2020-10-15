@@ -32,18 +32,19 @@ use_python("/usr/local/bin/python3", required = TRUE)
 cat(readLines("res.inp"), sep = '\n')
 ```
 
-## Example `hbf` call 
+## Example `hbf` call
 
-```{python, echo = T}
+```{python, echo = T, results = "hide"}
 from hbf.getCleanedDF import getDF
-
 
 wheaton = getDF("res.inp")
 ```
 
-## Example output
+## Example output as R `df`
 
-```{r}
+The Python object is now available as a R dataframe via the `reticulate` package!
+
+```{r, echo = T}
 unlink("hbfDev.log") # delete log file
 py$wheaton
 ```
@@ -109,7 +110,7 @@ mean_pred
 
 With `tidymodels`, the types of predicted values are standardized so that we can use the same syntax to get these values across model types using `predict()`.
 
-> When making predictions, the tidymodels convention is to always produce a tibble of results with standardized column names. This makes it easy to combine the original data and the predictions in a usable format:
+> When making predictions, the `tidymodels` convention is to always produce a tibble of results with standardized column names. This makes it easy to combine the original data and the predictions in a usable format:
 
 ```{r, echo = T}
 conf_int_pred <- predict(lm_fit, 
@@ -135,6 +136,7 @@ ggplot(plot_data, aes(x = `Home Size`)) +
                 width = .2) + 
   labs(x = "home size", y = "sell price")
 ```
+
 ## Fitting a Bayesian model
 
 Re-purposing the previous `fit()` call is now straightforward. Notice that it is unchanged, we only need to define the new engine to operate on it.
@@ -167,7 +169,7 @@ bayes_fit <-
 print(bayes_fit, digits = 5)
 ```
 
-```{r}
+```{r, echo = T}
 tidy(bayes_fit, conf.int = TRUE)
 ```
 

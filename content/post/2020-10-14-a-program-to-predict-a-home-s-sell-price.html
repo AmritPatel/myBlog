@@ -41,40 +41,13 @@ user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)
 <h2>Example <code>hbf</code> call</h2>
 <pre class="python"><code>from hbf.getCleanedDF import getDF
 
-
 wheaton = getDF(&quot;res.inp&quot;)</code></pre>
-<pre><code>## 
-##                                         Address  Sell Price  Beds  Baths  \
-## 0  11705 College View Dr Silver Spring MD 20902    293000.0   2.0    2.0   
-## 1  11714 College View Dr Silver Spring MD 20902    465000.0   4.0    3.0   
-## 2         3406 Glorus Pl Silver Spring MD 20902    785000.0   5.0    5.0   
-## 3  11703 College View Dr Silver Spring MD 20902    475000.0   4.0    2.0   
-## 4         3400 Glorus Pl Silver Spring MD 20902    395000.0   4.0    3.0   
-## 5    11714 Veirs Mill Rd Silver Spring MD 20902    383000.0   6.0    3.0   
-## 6      3402 Pendleton Dr Silver Spring MD 20902    340000.0   2.0    1.0   
-## 
-##    Home Size      Home Type  Year Built                         Heating  \
-## 0     1526.0  Single Family      1951.0                      Forced air   
-## 1     2843.0  Single Family      1962.0  Baseboard, Heat pump, Electric   
-## 2     5872.0  Single Family      2006.0                      Forced air   
-## 3     1982.0  Single Family      1951.0                 Forced air, Gas   
-## 4     1914.0  Single Family      1953.0                None, Forced air   
-## 5     1836.0  Single Family      1953.0                      Forced air   
-## 6      882.0  Single Family      1951.0                      Forced air   
-## 
-##    Cooling Parking  Lot Size  
-## 0  Central     NaN    6791.0  
-## 1  Central     NaN    8115.0  
-## 2  Central     NaN   10890.0  
-## 3  Central     NaN    6930.0  
-## 4  Central     NaN    7178.0  
-## 5  Central     NaN    6812.0  
-## 6  Central     NaN    7609.0  
-## 
-## --- 14.532149076461792 seconds ---</code></pre>
 </div>
-<div id="example-output" class="section level2">
-<h2>Example output</h2>
+<div id="example-output-as-r-df" class="section level2">
+<h2>Example output as R <code>df</code></h2>
+<p>The Python object is now available as a R dataframe via the <code>reticulate</code> package!</p>
+<pre class="r"><code>unlink(&quot;hbfDev.log&quot;) # delete log file
+py$wheaton</code></pre>
 <pre><code>##                                        Address Sell Price Beds Baths Home Size
 ## 1 11705 College View Dr Silver Spring MD 20902     293000    2     2      1526
 ## 2 11714 College View Dr Silver Spring MD 20902     465000    4     3      2843
@@ -175,7 +148,7 @@ mean_pred</code></pre>
 ## 3 683437.</code></pre>
 <p>With <code>tidymodels</code>, the types of predicted values are standardized so that we can use the same syntax to get these values across model types using <code>predict()</code>.</p>
 <blockquote>
-<p>When making predictions, the tidymodels convention is to always produce a tibble of results with standardized column names. This makes it easy to combine the original data and the predictions in a usable format:</p>
+<p>When making predictions, the <code>tidymodels</code> convention is to always produce a tibble of results with standardized column names. This makes it easy to combine the original data and the predictions in a usable format:</p>
 </blockquote>
 <pre class="r"><code>conf_int_pred &lt;- predict(lm_fit, 
                          new_data = new_points, 
@@ -201,8 +174,10 @@ ggplot(plot_data, aes(x = `Home Size`)) +
                     ymax = .pred_upper),
                 width = .2) + 
   labs(x = &quot;home size&quot;, y = &quot;sell price&quot;)</code></pre>
-<p><img src="/post/2020-10-14-a-program-to-predict-a-home-s-sell-price_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" />
-## Fitting a Bayesian model</p>
+<p><img src="/post/2020-10-14-a-program-to-predict-a-home-s-sell-price_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="fitting-a-bayesian-model" class="section level2">
+<h2>Fitting a Bayesian model</h2>
 <p>Re-purposing the previous <code>fit()</code> call is now straightforward. Notice that it is unchanged, we only need to define the new engine to operate on it.</p>
 <p>First, set the prior distribution to be the default as discussed at <a href="https://mc-stan.org/rstanarm/articles/priors.html"><em>Prior Distributions for <code>rstanarm</code> Models</em></a>.</p>
 <pre class="r"><code># set the prior distribution
@@ -212,8 +187,8 @@ prior_dist &lt;-
 <pre><code>## 
 ## SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 0.000119 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 1.19 seconds.
+## Chain 1: Gradient evaluation took 0.000146 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 1.46 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -230,9 +205,9 @@ prior_dist &lt;-
 ## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 2.36194 seconds (Warm-up)
-## Chain 1:                0.110351 seconds (Sampling)
-## Chain 1:                2.47229 seconds (Total)
+## Chain 1:  Elapsed Time: 2.28763 seconds (Warm-up)
+## Chain 1:                0.113201 seconds (Sampling)
+## Chain 1:                2.40083 seconds (Total)
 ## Chain 1:</code></pre>
 <pre class="r"><code>set.seed(123) # for reproducibiility
 
@@ -250,7 +225,7 @@ bayes_fit &lt;-
 print(bayes_fit, digits = 5)</code></pre>
 <pre><code>## parsnip model object
 ## 
-## Fit time:  56.9s 
+## Fit time:  1m 1.2s 
 ## stan_glm
 ##  family:       gaussian [identity]
 ##  formula:      `Sell Price` ~ Beds + Baths + `Home Size` + `Year Built` + `Lot Size`
@@ -272,6 +247,7 @@ print(bayes_fit, digits = 5)</code></pre>
 ## ------
 ## * For help interpreting the printed output see ?print.stanreg
 ## * For info on the priors used see ?prior_summary.stanreg</code></pre>
+<pre class="r"><code>tidy(bayes_fit, conf.int = TRUE)</code></pre>
 <pre><code>## # A tibble: 6 x 5
 ##   term             estimate std.error   conf.low conf.high
 ##   &lt;chr&gt;               &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;
