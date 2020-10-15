@@ -4,7 +4,7 @@ title = "Amrit's Blog"
 theme = "hugo-lithium"
 googleAnalytics = "UA-162702364-1"
 disqusShortname = "amrits-blog"
-ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "\\.knit\\.md$", "\\.utf8\\.md$", "_cache$"]
 enableEmoji = true
 
 [permalinks]

@@ -1,0 +1,285 @@
+---
+title: A program to predict a home's sell price.
+author: Amrit D. Patel
+date: '2020-10-14'
+slug: a-program-to-predict-a-home-s-sell-price
+categories:
+  - learning
+tags:
+  - python
+draft: false
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<p><code>hbf</code> is a new Python package that allows one to scrape data from Zillow.com with a starting address and a search box. Currently, it is limited to processing only 800 results per call due to result number limitations when issuing an <code>http</code> request on Zillow.com.</p>
+<div id="example-input-file" class="section level2">
+<h2>Example input file</h2>
+<pre><code>[Address Control]
+Street Number:      11714
+Street Name:        College View Drive
+Apartment Number:
+City:
+State:              Maryland
+Zip Code:           20902
+
+[Search Control]
+Search Box Half-Width (miles): 0.1
+
+[Zillow Control]
+accept: /
+accept-encoding: gzip, deflate, br
+accept-language: en-US,en;q=0.9
+upgrade-insecure-requests: 1
+user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+            AppleWebKit/537.36 (KHTML, like Gecko)
+            Chrome/85.0.4183.102
+            Safari/537.36</code></pre>
+</div>
+<div id="example-hbf-call" class="section level2">
+<h2>Example <code>hbf</code> call</h2>
+<pre class="python"><code>from hbf.getCleanedDF import getDF
+
+
+wheaton = getDF(&quot;res.inp&quot;)</code></pre>
+<pre><code>## 
+##                                         Address  Sell Price  Beds  Baths  \
+## 0  11705 College View Dr Silver Spring MD 20902    293000.0   2.0    2.0   
+## 1  11714 College View Dr Silver Spring MD 20902    465000.0   4.0    3.0   
+## 2         3406 Glorus Pl Silver Spring MD 20902    785000.0   5.0    5.0   
+## 3  11703 College View Dr Silver Spring MD 20902    475000.0   4.0    2.0   
+## 4         3400 Glorus Pl Silver Spring MD 20902    395000.0   4.0    3.0   
+## 5    11714 Veirs Mill Rd Silver Spring MD 20902    383000.0   6.0    3.0   
+## 6      3402 Pendleton Dr Silver Spring MD 20902    340000.0   2.0    1.0   
+## 
+##    Home Size      Home Type  Year Built                         Heating  \
+## 0     1526.0  Single Family      1951.0                      Forced air   
+## 1     2843.0  Single Family      1962.0  Baseboard, Heat pump, Electric   
+## 2     5872.0  Single Family      2006.0                      Forced air   
+## 3     1982.0  Single Family      1951.0                 Forced air, Gas   
+## 4     1914.0  Single Family      1953.0                None, Forced air   
+## 5     1836.0  Single Family      1953.0                      Forced air   
+## 6      882.0  Single Family      1951.0                      Forced air   
+## 
+##    Cooling Parking  Lot Size  
+## 0  Central     NaN    6791.0  
+## 1  Central     NaN    8115.0  
+## 2  Central     NaN   10890.0  
+## 3  Central     NaN    6930.0  
+## 4  Central     NaN    7178.0  
+## 5  Central     NaN    6812.0  
+## 6  Central     NaN    7609.0  
+## 
+## --- 14.532149076461792 seconds ---</code></pre>
+</div>
+<div id="example-output" class="section level2">
+<h2>Example output</h2>
+<pre><code>##                                        Address Sell Price Beds Baths Home Size
+## 1 11705 College View Dr Silver Spring MD 20902     293000    2     2      1526
+## 2 11714 College View Dr Silver Spring MD 20902     465000    4     3      2843
+## 3        3406 Glorus Pl Silver Spring MD 20902     785000    5     5      5872
+## 4 11703 College View Dr Silver Spring MD 20902     475000    4     2      1982
+## 5        3400 Glorus Pl Silver Spring MD 20902     395000    4     3      1914
+## 6   11714 Veirs Mill Rd Silver Spring MD 20902     383000    6     3      1836
+## 7     3402 Pendleton Dr Silver Spring MD 20902     340000    2     1       882
+##       Home Type Year Built                        Heating Cooling Parking
+## 1 Single Family       1951                     Forced air Central     NaN
+## 2 Single Family       1962 Baseboard, Heat pump, Electric Central     NaN
+## 3 Single Family       2006                     Forced air Central     NaN
+## 4 Single Family       1951                Forced air, Gas Central     NaN
+## 5 Single Family       1953               None, Forced air Central     NaN
+## 6 Single Family       1953                     Forced air Central     NaN
+## 7 Single Family       1951                     Forced air Central     NaN
+##   Lot Size
+## 1     6791
+## 2     8115
+## 3    10890
+## 4     6930
+## 5     7178
+## 6     6812
+## 7     7609</code></pre>
+</div>
+<div id="working-with-a-larger-dataset" class="section level2">
+<h2>Working with a larger dataset</h2>
+<p>Searching from the same from the D.C. metro area, fit a linear model.</p>
+<pre><code>## # A tibble: 800 x 11
+##    Address `Sell Price`  Beds Baths `Home Size` `Home Type` `Year Built` Heating
+##    &lt;list&gt;         &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;              &lt;dbl&gt; &lt;list&gt; 
+##  1 &lt;chr […       599000     3     2        1758 Multiple O…         1927 &lt;chr […
+##  2 &lt;chr […       780000     2     2        1081 Condo               1895 &lt;chr […
+##  3 &lt;chr […      1215000     4     3        1929 Single Fam…         1900 &lt;chr […
+##  4 &lt;chr […       128000     2     1        1037 Condo               1975 &lt;chr […
+##  5 &lt;chr […       125000     1     1         894 Condo               1973 &lt;chr […
+##  6 &lt;chr […       419000     3     2        1200 Single Fam…         1953 &lt;chr […
+##  7 &lt;chr […       455500     3     4        1960 Single Fam…         1989 &lt;chr […
+##  8 &lt;chr […       516000     4     3        2774 Single Fam…         1970 &lt;chr […
+##  9 &lt;chr […      1880000     5     5        3978 Single Fam…         2020 &lt;chr […
+## 10 &lt;chr […       610000     2     2        1148 Condo               1925 &lt;chr […
+## # … with 790 more rows, and 3 more variables: Cooling &lt;list&gt;, Parking &lt;list&gt;,
+## #   `Lot Size` &lt;dbl&gt;</code></pre>
+</div>
+<div id="build-and-fit-a-linear-regression-prediction-model-using-tidymodels" class="section level2">
+<h2>Build and fit a linear regression prediction model using <code>tidymodels</code></h2>
+<p>From example in <a href="https://www.tidymodels.org/start/models/"><code>tidymodels</code>, “Get Started”</a>:</p>
+<blockquote>
+<p>With <code>tidymodels</code>, we start by specifying the functional form of the model that we want using the <code>parsnip</code> package. Since there is a numeric outcome and the model should be linear with slopes and intercepts, the model type is “linear regression”.</p>
+</blockquote>
+<p>Since this model will have more than one predictor, it will be type “multiple linear regression”.</p>
+<pre class="r"><code># 1. Define the ordinary least squares linear model engine.
+lm_mod &lt;- 
+  linear_reg() %&gt;% # from `parsnip`
+  set_engine(&quot;lm&quot;)
+
+# 2. Estimate or train using the `fit()` function.
+lm_fit &lt;- 
+  lm_mod %&gt;% 
+  fit(`Sell Price` ~ Beds + Baths + `Home Size` + `Year Built` + `Lot Size`,
+      data = DCscrape)
+
+tidy(lm_fit)</code></pre>
+<pre><code>## # A tibble: 6 x 5
+##   term             estimate  std.error statistic  p.value
+##   &lt;chr&gt;               &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)  12659419.    906235.        14.0  1.92e-37
+## 2 Beds           -20575.     17614.        -1.17 2.43e- 1
+## 3 Baths          145871.     18100.         8.06 6.18e-15
+## 4 `Home Size`       176.        16.3       10.9  1.10e-24
+## 5 `Year Built`    -6488.       464.       -14.0  1.65e-37
+## 6 `Lot Size`         -0.981      0.395     -2.48 1.33e- 2</code></pre>
+</div>
+<div id="create-example-data-for-new-predictions" class="section level2">
+<h2>Create example data for new predictions</h2>
+<p>New points are built by varying home square footage.</p>
+<pre class="r"><code>new_points &lt;- expand.grid(Beds = 2,
+                          Baths = 2,
+                          `Home Size` = c(1000, 2000, 3000),
+                          `Year Built` = 1965,
+                          `Lot Size` = 8000
+                          )
+new_points</code></pre>
+<pre><code>##   Beds Baths Home Size Year Built Lot Size
+## 1    2     2      1000       1965     8000
+## 2    2     2      2000       1965     8000
+## 3    2     2      3000       1965     8000</code></pre>
+</div>
+<div id="use-the-predict-function-to-find-the-mean-values-of-new-points" class="section level2">
+<h2>use the <code>predict()</code> function to find the mean values of new points</h2>
+<pre class="r"><code>mean_pred &lt;- predict(lm_fit, new_data = new_points)
+mean_pred</code></pre>
+<pre><code>## # A tibble: 3 x 1
+##     .pred
+##     &lt;dbl&gt;
+## 1 330516.
+## 2 506976.
+## 3 683437.</code></pre>
+<p>With <code>tidymodels</code>, the types of predicted values are standardized so that we can use the same syntax to get these values across model types using <code>predict()</code>.</p>
+<blockquote>
+<p>When making predictions, the tidymodels convention is to always produce a tibble of results with standardized column names. This makes it easy to combine the original data and the predictions in a usable format:</p>
+</blockquote>
+<pre class="r"><code>conf_int_pred &lt;- predict(lm_fit, 
+                         new_data = new_points, 
+                         type = &quot;conf_int&quot;)
+conf_int_pred</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##   .pred_lower .pred_upper
+##         &lt;dbl&gt;       &lt;dbl&gt;
+## 1     276473.     384558.
+## 2     445024.     568929.
+## 3     600994.     765881.</code></pre>
+<p>It is now straightforward to make a plot.</p>
+<pre class="r"><code># Now combine:
+plot_data &lt;- 
+  new_points %&gt;% 
+  bind_cols(mean_pred) %&gt;% 
+  bind_cols(conf_int_pred)
+
+# and plot:
+ggplot(plot_data, aes(x = `Home Size`)) + 
+  geom_point(aes(y = .pred)) + 
+  geom_errorbar(aes(ymin = .pred_lower, 
+                    ymax = .pred_upper),
+                width = .2) + 
+  labs(x = &quot;home size&quot;, y = &quot;sell price&quot;)</code></pre>
+<p><img src="/post/2020-10-14-a-program-to-predict-a-home-s-sell-price_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" />
+## Fitting a Bayesian model</p>
+<p>Re-purposing the previous <code>fit()</code> call is now straightforward. Notice that it is unchanged, we only need to define the new engine to operate on it.</p>
+<p>First, set the prior distribution to be the default as discussed at <a href="https://mc-stan.org/rstanarm/articles/priors.html"><em>Prior Distributions for <code>rstanarm</code> Models</em></a>.</p>
+<pre class="r"><code># set the prior distribution
+prior_dist &lt;- 
+  rstanarm::stan_glm(`Sell Price` ~ Beds + Baths + `Home Size` + `Year Built` + `Lot Size`,
+                     data = DCscrape, chains = 1) # using default prior means don&#39;t add</code></pre>
+<pre><code>## 
+## SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 1).
+## Chain 1: 
+## Chain 1: Gradient evaluation took 0.000119 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 1.19 seconds.
+## Chain 1: Adjust your expectations accordingly!
+## Chain 1: 
+## Chain 1: 
+## Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
+## Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)
+## Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)
+## Chain 1: Iteration:  600 / 2000 [ 30%]  (Warmup)
+## Chain 1: Iteration:  800 / 2000 [ 40%]  (Warmup)
+## Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+## Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
+## Chain 1: 
+## Chain 1:  Elapsed Time: 2.36194 seconds (Warm-up)
+## Chain 1:                0.110351 seconds (Sampling)
+## Chain 1:                2.47229 seconds (Total)
+## Chain 1:</code></pre>
+<pre class="r"><code>set.seed(123) # for reproducibiility
+
+# make the parsnip model
+bayes_mod &lt;-   
+  linear_reg() %&gt;% 
+  set_engine(&quot;stan&quot;, 
+             prior_intercept = prior_dist$prior.info$prior_intercept, 
+             prior =  prior_dist$prior.info$prior)</code></pre>
+<pre class="r"><code># train the model
+bayes_fit &lt;- 
+  bayes_mod %&gt;% 
+  fit(`Sell Price` ~ Beds + Baths + `Home Size` + `Year Built` + `Lot Size`, data = DCscrape)
+
+print(bayes_fit, digits = 5)</code></pre>
+<pre><code>## parsnip model object
+## 
+## Fit time:  56.9s 
+## stan_glm
+##  family:       gaussian [identity]
+##  formula:      `Sell Price` ~ Beds + Baths + `Home Size` + `Year Built` + `Lot Size`
+##  observations: 485
+##  predictors:   6
+## ------
+##              Median       MAD_SD      
+## (Intercept)  749957.00523   9963.81938
+## Beds              0.01222      2.43983
+## Baths            -0.00758      2.48043
+## `Home Size`       5.80689      2.52670
+## `Year Built`      0.00123      2.57621
+## `Lot Size`        1.38428      0.56839
+## 
+## Auxiliary parameter(s):
+##       Median       MAD_SD      
+## sigma 464456.45718  15238.33120
+## 
+## ------
+## * For help interpreting the printed output see ?print.stanreg
+## * For info on the priors used see ?prior_summary.stanreg</code></pre>
+<pre><code>## # A tibble: 6 x 5
+##   term             estimate std.error   conf.low conf.high
+##   &lt;chr&gt;               &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)  749957.       9964.    733635.    767566.  
+## 2 Beds              0.0122      2.44      -3.95       4.19
+## 3 Baths            -0.00758     2.48      -3.96       4.06
+## 4 `Home Size`       5.81        2.53       1.56       9.81
+## 5 `Year Built`      0.00123     2.58      -4.18       4.26
+## 6 `Lot Size`        1.38        0.568      0.446      2.33</code></pre>
+<p><img src="/post/2020-10-14-a-program-to-predict-a-home-s-sell-price_files/figure-html/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>

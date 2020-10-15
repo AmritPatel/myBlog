@@ -1,0 +1,85 @@
+---
+title: Ma Nepali bolna sikchu.
+author: Amrit D. Patel
+date: '2020-10-09'
+slug: ma-nepali-bolna-sikchu
+categories:
+  - learning
+tags:
+  - nepal
+draft: true
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = "center")
+```
+
+## Inspiration
+
+- A simple Nepali sentence constructor inspired by [Nepali Ann's Itty-Bitty (but darn good) Nepali Language Primer](http://the-voyagers.tripod.com/language.htm)
+
+- [Nepalgo](https://nepalgo.de/)
+
+## Verbs
+
+### Notes
+
+- The order of sentences is reversed in Nepali. The conjugated verb is **always** last.
+  + Sentence structure is: *subject* + *object* + *verb*.
+
+### Vocabulary
+
+```{r}
+library(tidyverse)
+library(googlesheets4)
+
+# Load data from GSheets spreadsheet
+gs4_deauth()
+data_loc <- "https://docs.google.com/spreadsheets/d/1Iw_fyccbC4IBifAOG4UfdqZ23s_5QQgn3JY7WxxV06A"
+read_gsheet <- function(data_location, sheet_id){
+      googlesheets4::read_sheet(data_location, sheet = sheet_id, skip = 0, col_types = "c")
+}
+```
+
+```{r, fig.align = 'center'}
+library(kableExtra)
+
+# Present table of basic verbs
+verbs <- read_gsheet(data_loc, "verbs")
+
+verbs %>%
+  kable() %>%
+  kable_styling(full_width = F, position = "center")
+```
+
+### Conjugation
+
+```{r}
+conjugation <- read_gsheet(data_loc, "conjugation")
+conjugation %>%
+  kable() %>%
+  kable_styling(full_width = F, position = "center")
+```
+
+## Nouns
+
+### Notes
+
+- There is a strong tendency for the indirect object to be placed **before** the direct object.
+- If there is no indirect object and a verb is applied to an **animate** direct object, `-lai` is added. This is the *accusative* case.
+- The structure which employs the dative case, which is marked by `-lai` in Nepali, is called *dative construction*, and is always applied to the indirect object of the sentence.
+  + It is used mostly to describe **feelings** and **emotions**.
+- To make a noun (or pronoun) plural, use pluralizer `-haru`.
+  + If noun ends in `-o`, drop it, and add `-a`, then add `-haru`.
+    
+## Adjectives
+
+- If adjective ends in `-o`, drop it, and add `-a`, but don't add `-haru`.
+
+## Adverbs
+
+- Adverbs are not declined for number.
+
+## Conjunctions
+
+- Conjunctions are not declined for number.

@@ -28,7 +28,7 @@ library(weathermetrics)
 
 # Heat limited data import and formatting.
 hlp <-
-  tbl_df(read.csv("~/GitHub/myBlog/content/resources/2020-06-13-heat-training/Heat limited pace comparison with BKK summer running data - Temp _ Humidity _ Pace.csv",
+  tbl_df(read.csv("~/GitHub/myBlog/contentResources/2020-06-13-heat-training/Heat limited pace comparison with BKK summer running data - Temp _ Humidity _ Pace.csv",
                   stringsAsFactors = F)) %>% 
   pivot_longer(-T.H, names_to = "humidity", values_to = "pace") %>%
   rename(temp = T.H) %>%
@@ -161,7 +161,7 @@ heatPaceKM <-
                   forKM %>% select(pace)
     )
 
-saveRDS(heatPaceKM, "~/GitHub/myBlog/content/resources/2020-06-13-heat-training/heatPaceKM.rds")
+saveRDS(heatPaceKM, "~/GitHub/myBlog/contentResources/2020-06-13-heat-training/heatPaceKM.rds")
 
 library(lookupTable)
 
@@ -276,7 +276,7 @@ Now I have a validated model for use in downstream analysis that will give valid
 If we highlight runs where average running pace was faster than the heat limited pace, we might expect a noticeable dip in running performance.
 
 ```{r}
-source("~/GitHub/myBlog/content/resources/2020-03-27-100-lap-challenge/100LapChallengePrepare.R")
+source("~/GitHub/myBlog/contentResources/2020-03-27-100-lap-challenge/100LapChallengePrepare.R") 
 
 bkkSummer20 <- getHLP()
 

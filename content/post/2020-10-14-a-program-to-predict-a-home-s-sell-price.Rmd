@@ -1,0 +1,185 @@
+---
+title: A program to predict a home's sell price.
+author: Amrit D. Patel
+date: '2020-10-14'
+slug: a-program-to-predict-a-home-s-sell-price
+categories:
+  - learning
+tags:
+  - python
+draft: false
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.align = "center") 
+library(reticulate)
+use_python("/usr/local/bin/python3", required = TRUE)
+
+# virtualenv_create("hbf")
+# use_virtualenv("hbf")
+# py_install("hbf", pip = TRUE, envname = "hbf")
+
+# py_config()
+# py_module_available("hbf")
+# py_install("hbf")
+```
+
+`hbf` is a new Python package that allows one to scrape data from Zillow.com with a starting address and a search box. Currently, it is limited to processing only 800 results per call due to result number limitations when issuing an `http` request on Zillow.com.
+
+## Example input file
+
+```{r, comment=''}
+cat(readLines("res.inp"), sep = '\n')
+```
+
+## Example `hbf` call 
+
+```{python, echo = T}
+from hbf.getCleanedDF import getDF
+
+
+wheaton = getDF("res.inp")
+```
+
+## Example output
+
+```{r}
+unlink("hbfDev.log") # delete log file
+py$wheaton
+```
+
+## Working with a larger dataset
+
+Searching from the same from the D.C. metro area, fit a linear model.
+
+```{r}
+library(tidymodels)  # for the parsnip package, along with the rest of tidymodels
+
+# Helper packages
+library(readr)       # for importing data
+library(broom.mixed) # for converting bayesian models to tidy tibbles
+
+# saveRDS(wheatonScrape, file = "wheatonScrape.rds")
+DCscrape <- readRDS(file = "wheatonScrape.rds")
+DCscrape
+```
+## Build and fit a linear regression prediction model using `tidymodels`
+
+From example in [`tidymodels`, "Get Started"](https://www.tidymodels.org/start/models/):
+
+> With `tidymodels`, we start by specifying the functional form of the model that we want using the `parsnip` package. Since there is a numeric outcome and the model should be linear with slopes and intercepts, the model type is "linear regression".
+
+Since this model will have more than one predictor, it will be type "multiple linear regression".
+
+```{r, echo = T}
+# 1. Define the ordinary least squares linear model engine.
+lm_mod <- 
+  linear_reg() %>% # from `parsnip`
+  set_engine("lm")
+
+# 2. Estimate or train using the `fit()` function.
+lm_fit <- 
+  lm_mod %>% 
+  fit(`Sell Price` ~ Beds + Baths + `Home Size` + `Year Built` + `Lot Size`,
+      data = DCscrape)
+
+tidy(lm_fit)
+```
+
+## Create example data for new predictions
+
+New points are built by varying home square footage.
+
+```{r, echo = T}
+new_points <- expand.grid(Beds = 2,
+                          Baths = 2,
+                          `Home Size` = c(1000, 2000, 3000),
+                          `Year Built` = 1965,
+                          `Lot Size` = 8000
+                          )
+new_points
+```
+
+## use the `predict()` function to find the mean values of new points
+
+```{r, echo = T}
+mean_pred <- predict(lm_fit, new_data = new_points)
+mean_pred
+```
+
+With `tidymodels`, the types of predicted values are standardized so that we can use the same syntax to get these values across model types using `predict()`.
+
+> When making predictions, the tidymodels convention is to always produce a tibble of results with standardized column names. This makes it easy to combine the original data and the predictions in a usable format:
+
+```{r, echo = T}
+conf_int_pred <- predict(lm_fit, 
+                         new_data = new_points, 
+                         type = "conf_int")
+conf_int_pred
+```
+
+It is now straightforward to make a plot.
+
+```{r, echo = T}
+# Now combine:
+plot_data <- 
+  new_points %>% 
+  bind_cols(mean_pred) %>% 
+  bind_cols(conf_int_pred)
+
+# and plot:
+ggplot(plot_data, aes(x = `Home Size`)) + 
+  geom_point(aes(y = .pred)) + 
+  geom_errorbar(aes(ymin = .pred_lower, 
+                    ymax = .pred_upper),
+                width = .2) + 
+  labs(x = "home size", y = "sell price")
+```
+## Fitting a Bayesian model
+
+Re-purposing the previous `fit()` call is now straightforward. Notice that it is unchanged, we only need to define the new engine to operate on it.
+
+First, set the prior distribution to be the default as discussed at [*Prior Distributions for `rstanarm` Models*
+](https://mc-stan.org/rstanarm/articles/priors.html).
+
+```{r, echo = T}
+# set the prior distribution
+prior_dist <- 
+  rstanarm::stan_glm(`Sell Price` ~ Beds + Baths + `Home Size` + `Year Built` + `Lot Size`,
+                     data = DCscrape, chains = 1) # using default prior means don't add
+
+set.seed(123) # for reproducibiility
+
+# make the parsnip model
+bayes_mod <-   
+  linear_reg() %>% 
+  set_engine("stan", 
+             prior_intercept = prior_dist$prior.info$prior_intercept, 
+             prior =  prior_dist$prior.info$prior)
+```
+
+```{r, echo = T}
+# train the model
+bayes_fit <- 
+  bayes_mod %>% 
+  fit(`Sell Price` ~ Beds + Baths + `Home Size` + `Year Built` + `Lot Size`, data = DCscrape)
+
+print(bayes_fit, digits = 5)
+```
+
+```{r}
+tidy(bayes_fit, conf.int = TRUE)
+```
+
+```{r}
+bayes_plot_data <- 
+  new_points %>% 
+  bind_cols(predict(bayes_fit, new_data = new_points)) %>% 
+  bind_cols(predict(bayes_fit, new_data = new_points, type = "conf_int"))
+
+ggplot(bayes_plot_data, aes(x = `Home Size`)) + 
+  geom_point(aes(y = .pred)) + 
+  geom_errorbar(aes(ymin = .pred_lower, ymax = .pred_upper), width = .2) + 
+  labs(x = "home size", y = "sell price") + 
+  ggtitle("Bayesian model with default weekly informative prior distribution")
+```

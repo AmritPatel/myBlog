@@ -2,50 +2,50 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>regression on Amrit&#39;s Blog</title>
-    <link>/tags/regression/</link>
+    <link>http://amritpatel.rbind.io/tags/regression/</link>
     <description>Recent content in regression on Amrit&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 08 Aug 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/regression/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://amritpatel.rbind.io/tags/regression/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>30 day rope skip challenge.</title>
-      <link>/2020/08/08/learning-to-rope-skip/</link>
+      <link>http://amritpatel.rbind.io/2020/08/08/learning-to-rope-skip/</link>
       <pubDate>Sat, 08 Aug 2020 00:00:00 +0000</pubDate>
       
-      <guid>/2020/08/08/learning-to-rope-skip/</guid>
+      <guid>http://amritpatel.rbind.io/2020/08/08/learning-to-rope-skip/</guid>
       <description>Over our recent 5 month stay in Thailand we happened to acquire a jump rope. For most of the time it collected dust. Now that I’ve picked it up again I’m thinking the reason was because jumping rope is actually pretty challenging. On multiple levels.
 There is the whole timing the rope turns in sync with your jumping, which stimulates brain activity and as crossrope.</description>
     </item>
     
     <item>
       <title>Heat limited running pace.</title>
-      <link>/2020/06/13/heat-training/</link>
+      <link>http://amritpatel.rbind.io/2020/06/13/heat-training/</link>
       <pubDate>Sat, 13 Jun 2020 00:00:00 +0000</pubDate>
       
-      <guid>/2020/06/13/heat-training/</guid>
+      <guid>http://amritpatel.rbind.io/2020/06/13/heat-training/</guid>
       <description>Plot heat limited running pace and a sample of my average running pace data vs. temperature and humidity. I obtained heat limiting pace data from fellrnr.com to see if my body would naturally self-limit pace based on intense heat.
 I wanted to spot check some of my running data taken during pretty intense heat in Bangkok while I was there during late Spring 2020.</description>
     </item>
     
     <item>
       <title>Converting Google Classroom gradebook to standards based report cards.</title>
-      <link>/2020/04/19/converting-google-classroom-gradebook-to-standards-based-report-cards/</link>
+      <link>http://amritpatel.rbind.io/2020/04/19/converting-google-classroom-gradebook-to-standards-based-report-cards/</link>
       <pubDate>Sun, 19 Apr 2020 00:00:00 +0000</pubDate>
       
-      <guid>/2020/04/19/converting-google-classroom-gradebook-to-standards-based-report-cards/</guid>
+      <guid>http://amritpatel.rbind.io/2020/04/19/converting-google-classroom-gradebook-to-standards-based-report-cards/</guid>
       <description>Number of assignments by reportable.1   reportable  count       28    CC  2    DC  2    EL  6    KC  2      Scores over time.  Student average score and mastery by reportable.2  {&#34;x&#34;:{&#34;filter&#34;:&#34;none&#34;,&#34;data&#34;:[[&#34;1&#34;,&#34;2&#34;,&#34;3&#34;,&#34;4&#34;,&#34;5&#34;,&#34;6&#34;,&#34;7&#34;,&#34;8&#34;,&#34;9&#34;,&#34;10&#34;,&#34;11&#34;,&#34;12&#34;,&#34;13&#34;,&#34;14&#34;,&#34;15&#34;,&#34;16&#34;,&#34;17&#34;,&#34;18&#34;,&#34;19&#34;,&#34;20&#34;,&#34;21&#34;,&#34;22&#34;,&#34;23&#34;,&#34;24&#34;,&#34;25&#34;,&#34;26&#34;,&#34;27&#34;,&#34;28&#34;,&#34;29&#34;,&#34;30&#34;,&#34;31&#34;,&#34;32&#34;,&#34;33&#34;,&#34;34&#34;,&#34;35&#34;,&#34;36&#34;,&#34;37&#34;,&#34;38&#34;,&#34;39&#34;,&#34;40&#34;,&#34;41&#34;,&#34;42&#34;,&#34;43&#34;,&#34;44&#34;,&#34;45&#34;,&#34;46&#34;,&#34;47&#34;,&#34;48&#34;,&#34;49&#34;,&#34;50&#34;,&#34;51&#34;,&#34;52&#34;,&#34;53&#34;,&#34;54&#34;,&#34;55&#34;,&#34;56&#34;,&#34;57&#34;,&#34;58&#34;,&#34;59&#34;,&#34;60&#34;,&#34;61&#34;,&#34;62&#34;,&#34;63&#34;,&#34;64&#34;,&#34;65&#34;,&#34;66&#34;,&#34;67&#34;,&#34;68&#34;,&#34;69&#34;,&#34;70&#34;,&#34;71&#34;,&#34;72&#34;,&#34;73&#34;,&#34;74&#34;,&#34;75&#34;],[&#34;Blankenship.Karen&#34;,&#34;Blankenship.Karen&#34;,&#34;Blankenship.Karen&#34;,&#34;Blankenship.Karen&#34;,&#34;Blankenship.Karen&#34;,&#34;Brown.Kailee&#34;,&#34;Brown.Kailee&#34;,&#34;Brown.Kailee&#34;,&#34;Brown.Kailee&#34;,&#34;Brown.Kailee&#34;,&#34;Cooper.Kayleigh&#34;,&#34;Cooper.Kayleigh&#34;,&#34;Cooper.Kayleigh&#34;,&#34;Cooper.Kayleigh&#34;,&#34;Cooper.Kayleigh&#34;,&#34;Day.Kaleb&#34;,&#34;Day.Kaleb&#34;,&#34;Day.Kaleb&#34;,&#34;Day.Kaleb&#34;,&#34;Day.Kaleb&#34;,&#34;Ford.Abby&#34;,&#34;Ford.Abby&#34;,&#34;Ford.Abby&#34;,&#34;Ford.Abby&#34;,&#34;Ford.Abby&#34;,&#34;Hanna.Anya&#34;,&#34;Hanna.Anya&#34;,&#34;Hanna.Anya&#34;,&#34;Hanna.Anya&#34;,&#34;Hanna.Anya&#34;,&#34;Hayden.Gunnar&#34;,&#34;Hayden.Gunnar&#34;,&#34;Hayden.Gunnar&#34;,&#34;Hayden.Gunnar&#34;,&#34;Hayden.Gunnar&#34;,&#34;Houston.Hazel&#34;,&#34;Houston.Hazel&#34;,&#34;Houston.Hazel&#34;,&#34;Houston.Hazel&#34;,&#34;Houston.Hazel&#34;,&#34;Meza.Averie&#34;,&#34;Meza.Averie&#34;,&#34;Meza.Averie&#34;,&#34;Meza.Averie&#34;,&#34;Meza.Averie&#34;,&#34;Moore.Dale&#34;,&#34;Moore.Dale&#34;,&#34;Moore.Dale&#34;,&#34;Moore.Dale&#34;,&#34;Moore.Dale&#34;,&#34;Parsons.Mateo&#34;,&#34;Parsons.Mateo&#34;,&#34;Parsons.Mateo&#34;,&#34;Parsons.Mateo&#34;,&#34;Parsons.Mateo&#34;,&#34;Rush.Jamison&#34;,&#34;Rush.Jamison&#34;,&#34;Rush.Jamison&#34;,&#34;Rush.Jamison&#34;,&#34;Rush.Jamison&#34;,&#34;Schmidt.Santiago&#34;,&#34;Schmidt.Santiago&#34;,&#34;Schmidt.Santiago&#34;,&#34;Schmidt.Santiago&#34;,&#34;Schmidt.Santiago&#34;,&#34;Solomon.Leila&#34;,&#34;Solomon.Leila&#34;,&#34;Solomon.Leila&#34;,&#34;Solomon.Leila&#34;,&#34;Solomon.Leila&#34;,&#34;Wolfe.Aimee&#34;,&#34;Wolfe.Aimee&#34;,&#34;Wolfe.Aimee&#34;,&#34;Wolfe.Aimee&#34;,&#34;Wolfe.Aimee&#34;],[&#34;&#34;,&#34;CC&#34;,&#34;DC&#34;,&#34;EL&#34;,&#34;KC&#34;,&#34;&#34;,&#34;CC&#34;,&#34;DC&#34;,&#34;EL&#34;,&#34;KC&#34;,&#34;&#34;,&#34;CC&#34;,&#34;DC&#34;,&#34;EL&#34;,&#34;KC&#34;,&#34;&#34;,&#34;CC&#34;,&#34;DC&#34;,&#34;EL&#34;,&#34;KC&#34;,&#34;&#34;,&#34;CC&#34;,&#34;DC&#34;,&#34;EL&#34;,&#34;KC&#34;,&#34;&#34;,&#34;CC&#34;,&#34;DC&#34;,&#34;EL&#34;,&#34;KC&#34;,&#34;&#34;,&#34;CC&#34;,&#34;DC&#34;,&#34;EL&#34;,&#34;KC&#34;,&#34;&#34;,&#34;CC&#34;,&#34;DC&#34;,&#34;EL&#34;,&#34;KC&#34;,&#34;&#34;,&#34;CC&#34;,&#34;DC&#34;,&#34;EL&#34;,&#34;KC&#34;,&#34;&#34;,&#34;CC&#34;,&#34;DC&#34;,&#34;EL&#34;,&#34;KC&#34;,&#34;&#34;,&#34;CC&#34;,&#34;DC&#34;,&#34;EL&#34;,&#34;KC&#34;,&#34;&#34;,&#34;CC&#34;,&#34;DC&#34;,&#34;EL&#34;,&#34;KC&#34;,&#34;&#34;,&#34;CC&#34;,&#34;DC&#34;,&#34;EL&#34;,&#34;KC&#34;,&#34;&#34;,&#34;CC&#34;,&#34;DC&#34;,&#34;EL&#34;,&#34;KC&#34;,&#34;&#34;,&#34;CC&#34;,&#34;DC&#34;,&#34;EL&#34;,&#34;KC&#34;],[3.625,null,4,3.59,null,2.875,null,4,3.7,null,3.25,null,4,3.65,null,1.33333333333333,null,0,1.05333333333333,null,2.875,null,4,3.09,null,2.875,null,4,3.51,null,1,null,0,0.826666666666667,null,3,null,4,2.9667,null,2,null,4,0.666666666666667,null,2.75,null,4,3.0167,null,3.625,null,4,2.74,null,3.5,null,4,3.2867,null,3.625,null,4,3,null,1.625,null,0,2.23106666666667,null,3.75,null,4,3.44,null],[&#34;Exceeding&#34;,null,&#34;Exceeding&#34;,&#34;Exceeding&#34;,null,&#34;Meeting&#34;,null,&#34;Exceeding&#34;,&#34;Exceeding&#34;,null,&#34;Meeting&#34;,null,&#34;Exceeding&#34;,&#34;Exceeding&#34;,null,&#34;Beginning&#34;,null,&#34;Beginning&#34;,&#34;Beginning&#34;,null,&#34;Meeting&#34;,null,&#34;Exceeding&#34;,&#34;Meeting&#34;,null,&#34;Meeting&#34;,null,&#34;Exceeding&#34;,&#34;Exceeding&#34;,null,&#34;Beginning&#34;,null,&#34;Beginning&#34;,&#34;Beginning&#34;,null,&#34;Meeting&#34;,null,&#34;Exceeding&#34;,&#34;Meeting&#34;,null,&#34;Approaching&#34;,null,&#34;Exceeding&#34;,&#34;Beginning&#34;,null,&#34;Meeting&#34;,null,&#34;Exceeding&#34;,&#34;Meeting&#34;,null,&#34;Exceeding&#34;,null,&#34;Exceeding&#34;,&#34;Meeting&#34;,null,&#34;Exceeding&#34;,null,&#34;Exceeding&#34;,&#34;Meeting&#34;,null,&#34;Exceeding&#34;,null,&#34;Exceeding&#34;,&#34;Meeting&#34;,null,&#34;Approaching&#34;,null,&#34;Beginning&#34;,&#34;Approaching&#34;,null,&#34;Exceeding&#34;,null,&#34;Exceeding&#34;,&#34;Meeting&#34;,null]],&#34;container&#34;:&#34;\n \n \n  \n name\n reportable\n average\n mastery\n \n \n&#34;</description>
     </item>
     
     <item>
       <title>Is that it?</title>
-      <link>/2020/03/30/is-that-it/</link>
+      <link>http://amritpatel.rbind.io/2020/03/30/is-that-it/</link>
       <pubDate>Mon, 30 Mar 2020 00:00:00 +0000</pubDate>
       
-      <guid>/2020/03/30/is-that-it/</guid>
+      <guid>http://amritpatel.rbind.io/2020/03/30/is-that-it/</guid>
       <description>Just like that, the 100 lap challenge is over. On my next try, I completed 100 sweltering laps. What surprised me was how tired I was at the outset from not getting enough sleep the night before. I guess it really shows what you can do if you put your mind toward something.
 I noticed that something’s up with Lap 50 as the RPI is unusually high.
 ## # A tibble: 5 x 4 ## # Groups: Date, variable [1] ## Date Laps variable value ## &amp;lt;date&amp;gt; &amp;lt;dbl&amp;gt; &amp;lt;fct&amp;gt; &amp;lt;dbl&amp;gt; ## 1 2020-03-30 50 RPI 238.</description>
@@ -53,34 +53,23 @@ I noticed that something’s up with Lap 50 as the RPI is unusually high.
     
     <item>
       <title>Running economy over time.</title>
-      <link>/2020/03/29/running-economy-over-time/</link>
+      <link>http://amritpatel.rbind.io/2020/03/29/running-economy-over-time/</link>
       <pubDate>Sun, 29 Mar 2020 00:00:00 +0000</pubDate>
       
-      <guid>/2020/03/29/running-economy-over-time/</guid>
+      <guid>http://amritpatel.rbind.io/2020/03/29/running-economy-over-time/</guid>
       <description>After implementing the running performance index (RPI) in my previous post, I was curious to know what my RPI was using ALL the data I had available, which I found goes back to 2009!
 Using more or less the same process as documented in the previous post, I import all of my available running data for runs that were greater than or equal to 3 miles and that were not run on a treadmill.</description>
     </item>
     
     <item>
       <title>100 lap challenge.</title>
-      <link>/2020/03/27/100-lap-challenge/</link>
+      <link>http://amritpatel.rbind.io/2020/03/27/100-lap-challenge/</link>
       <pubDate>Fri, 27 Mar 2020 00:00:00 +0000</pubDate>
       
-      <guid>/2020/03/27/100-lap-challenge/</guid>
+      <guid>http://amritpatel.rbind.io/2020/03/27/100-lap-challenge/</guid>
       <description>Having recently hunkered down in Bangkok for the foreseeable future,1 in an apartment building with a closed gym,2 I wondered what kind of exercise routine I could establish.
 Playing with my son in the courtyard a couple days in, I somehow got the idea of jogging a few laps around the makeshift track formed by the walking pathway – despite a heat index over 100 degrees F!
 Having not run in months3, I took the opportunity to challenge myself to keep going.</description>
-    </item>
-    
-    <item>
-      <title>Hello R Markdown</title>
-      <link>/2015/07/23/hello-r-markdown/</link>
-      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
-      
-      <guid>/2015/07/23/hello-r-markdown/</guid>
-      <description>R Markdown This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
-You can embed an R code chunk like this:
-summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.98 ## 3rd Qu.</description>
     </item>
     
   </channel>

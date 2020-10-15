@@ -2,31 +2,31 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>plot on Amrit&#39;s Blog</title>
-    <link>/tags/plot/</link>
+    <link>http://amritpatel.rbind.io/tags/plot/</link>
     <description>Recent content in plot on Amrit&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 08 Aug 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/plot/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://amritpatel.rbind.io/tags/plot/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>30 day rope skip challenge.</title>
-      <link>/2020/08/08/learning-to-rope-skip/</link>
+      <link>http://amritpatel.rbind.io/2020/08/08/learning-to-rope-skip/</link>
       <pubDate>Sat, 08 Aug 2020 00:00:00 +0000</pubDate>
       
-      <guid>/2020/08/08/learning-to-rope-skip/</guid>
+      <guid>http://amritpatel.rbind.io/2020/08/08/learning-to-rope-skip/</guid>
       <description>Over our recent 5 month stay in Thailand we happened to acquire a jump rope. For most of the time it collected dust. Now that I’ve picked it up again I’m thinking the reason was because jumping rope is actually pretty challenging. On multiple levels.
 There is the whole timing the rope turns in sync with your jumping, which stimulates brain activity and as crossrope.</description>
     </item>
     
     <item>
       <title>Final heat.</title>
-      <link>/2020/07/11/final-heat/</link>
+      <link>http://amritpatel.rbind.io/2020/07/11/final-heat/</link>
       <pubDate>Sat, 11 Jul 2020 00:00:00 +0000</pubDate>
       
-      <guid>/2020/07/11/final-heat/</guid>
+      <guid>http://amritpatel.rbind.io/2020/07/11/final-heat/</guid>
       <description> Here I am compiling a set of heat training data1 to assess whether “violation” of an established heat limited pace2 has a noticeable impact on running performance index as defined in a previous post.
  From runs in Thailand during the summer of 2020.↩
  See Heat limited running pace. post for more details.↩
@@ -35,23 +35,12 @@ There is the whole timing the rope turns in sync with your jumping, which stimul
     
     <item>
       <title>Tough decisions.</title>
-      <link>/2020/06/26/tough-decisions/</link>
+      <link>http://amritpatel.rbind.io/2020/06/26/tough-decisions/</link>
       <pubDate>Fri, 26 Jun 2020 00:00:00 +0000</pubDate>
       
-      <guid>/2020/06/26/tough-decisions/</guid>
+      <guid>http://amritpatel.rbind.io/2020/06/26/tough-decisions/</guid>
       <description>After hearing about the rapid increase in COVID-19 cases in Nepal over the past 2 weeks1, and given that the uptick in cases is very delayed compared to most of the rest of the world, I wanted to see how Nepal’s new cases per day density trajectory stacked up to other countries.
 I figured I would do my own analysis and present the results here for posterity, but I found a lot of great work already done providing open access to not only data, but really good interactive graphs.</description>
-    </item>
-    
-    <item>
-      <title>Hello R Markdown</title>
-      <link>/2015/07/23/hello-r-markdown/</link>
-      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
-      
-      <guid>/2015/07/23/hello-r-markdown/</guid>
-      <description>R Markdown This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
-You can embed an R code chunk like this:
-summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.98 ## 3rd Qu.</description>
     </item>
     
   </channel>
