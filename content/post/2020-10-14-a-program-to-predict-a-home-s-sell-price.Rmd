@@ -24,9 +24,17 @@ use_python("/usr/local/bin/python3", required = TRUE)
 # py_install("hbf")
 ```
 
-`hbf` is a new Python package that allows one to scrape data from Zillow.com with a starting address and a search box. Currently, it is limited to processing only 800 results per call due to result number limitations when issuing an `http` request on Zillow.com.
+`hbf` is a new Python package that (currently) allows one to scrape data from Zillow.com with a starting address and a search box. It is limited to processing only 800 results per call due to result number limitations when issuing an `http` request on Zillow.com.
 
-## Example input file
+Eventually the developers would also like to add home sale price prediction capabilities.
+
+This analysis is a first step in that direction using the R programming language to:
+
+1. Access current `hbf` functionality as it has recently been made available via Python's package installer `pip`.
+2. Determine the potential of both statistical and machine learning models as sale price predictors.
+3. Predict the sale price of a home currently on the market in New Smyrna Beach, Florida.
+
+## Example `hbf` input file
 
 ```{r, comment=''}
 cat(readLines("res.inp"), sep = '\n')
@@ -37,7 +45,7 @@ cat(readLines("res.inp"), sep = '\n')
 ```{python, echo = T, results = "hide"}
 from hbf.getCleanedDF import getDF
 
-wheaton = getDF("res.inp")
+smyrnaSmall = getDF("res.inp")
 ```
 
 ## Example output as R `df`
@@ -45,13 +53,13 @@ wheaton = getDF("res.inp")
 The Python object is now available as a R dataframe via the `reticulate` package!
 
 ```{r, echo = T}
-unlink("hbfDev.log") # delete log file
-py$wheaton
+smyrnaSmall <- janitor::clean_names(py$smyrnaSmall)
+tibble::tibble(smyrnaSmall)
 ```
 
 ## Working with a larger dataset
 
-Searching from the same from the D.C. metro area, fit a linear model.
+Searching from the same starting point in New Smyrna Beach, FL, but within a 3 mile box returning 800 results, fit a linear model.
 
 ```{r}
 library(tidymodels)  # for the parsnip package, along with the rest of tidymodels
@@ -60,10 +68,11 @@ library(tidymodels)  # for the parsnip package, along with the rest of tidymodel
 library(readr)       # for importing data
 library(broom.mixed) # for converting bayesian models to tidy tibbles
 
-# saveRDS(wheatonScrape, file = "wheatonScrape.rds")
-DCscrape <- readRDS(file = "wheatonScrape.rds")
-DCscrape
+#saveRDS(smyrnaLarge, file = "smyrnaLarge.rds")
+smyrnaScrape <- readRDS(file = "smyrnaLarge.rds")
+tibble(smyrnaScrape)
 ```
+
 ## Build and fit a linear regression prediction model using `tidymodels`
 
 From example in [`tidymodels`, "Get Started"](https://www.tidymodels.org/start/models/):
@@ -81,8 +90,8 @@ lm_mod <-
 # 2. Estimate or train using the `fit()` function.
 lm_fit <- 
   lm_mod %>% 
-  fit(`Sell Price` ~ Beds + Baths + `Home Size` + `Year Built` + `Lot Size`,
-      data = DCscrape)
+  fit(sell_price ~ beds + baths + home_size + year_built + lot_size,
+      data = smyrnaScrape)
 
 tidy(lm_fit)
 ```
@@ -92,11 +101,11 @@ tidy(lm_fit)
 New points are built by varying home square footage.
 
 ```{r, echo = T}
-new_points <- expand.grid(Beds = 2,
-                          Baths = 2,
-                          `Home Size` = c(1000, 2000, 3000),
-                          `Year Built` = 1965,
-                          `Lot Size` = 8000
+new_points <- expand.grid(beds = 2,
+                          baths = 1,
+                          home_size = c(800, 1000, 1200, 1500),
+                          year_built = 1985,
+                          lot_size = 8000
                           )
 new_points
 ```
@@ -129,12 +138,13 @@ plot_data <-
   bind_cols(conf_int_pred)
 
 # and plot:
-ggplot(plot_data, aes(x = `Home Size`)) + 
+ggplot(plot_data, aes(x = home_size)) + 
   geom_point(aes(y = .pred)) + 
   geom_errorbar(aes(ymin = .pred_lower, 
                     ymax = .pred_upper),
                 width = .2) + 
-  labs(x = "home size", y = "sell price")
+  labs(x = "home size (square-ft)",
+       y = "sale price ($)")
 ```
 
 ## Fitting a Bayesian model
@@ -147,8 +157,8 @@ First, set the prior distribution to be the default as discussed at [*Prior Dist
 ```{r, echo = T}
 # set the prior distribution
 prior_dist <- 
-  rstanarm::stan_glm(`Sell Price` ~ Beds + Baths + `Home Size` + `Year Built` + `Lot Size`,
-                     data = DCscrape, chains = 1) # using default prior means don't add
+  rstanarm::stan_glm(sell_price ~ beds + baths + home_size + year_built + lot_size,
+                     data = smyrnaScrape, chains = 1) # using default prior means don't add
 
 set.seed(123) # for reproducibiility
 
@@ -164,7 +174,7 @@ bayes_mod <-
 # train the model
 bayes_fit <- 
   bayes_mod %>% 
-  fit(`Sell Price` ~ Beds + Baths + `Home Size` + `Year Built` + `Lot Size`, data = DCscrape)
+  fit(sell_price ~ beds + baths + home_size + year_built + lot_size, data = smyrnaScrape)
 
 print(bayes_fit, digits = 5)
 ```
@@ -179,9 +189,243 @@ bayes_plot_data <-
   bind_cols(predict(bayes_fit, new_data = new_points)) %>% 
   bind_cols(predict(bayes_fit, new_data = new_points, type = "conf_int"))
 
-ggplot(bayes_plot_data, aes(x = `Home Size`)) + 
+ggplot(bayes_plot_data, aes(x = home_size)) + 
   geom_point(aes(y = .pred)) + 
   geom_errorbar(aes(ymin = .pred_lower, ymax = .pred_upper), width = .2) + 
-  labs(x = "home size", y = "sell price") + 
+  labs(x = "home size (square-ft)",
+       y = "sale price ($)") + 
   ggtitle("Bayesian model with default weekly informative prior distribution")
 ```
+## Using the `tidymodels` modeling workflow
+
+Start by loading the data and filtering out really inexpensive and expensive recently sold homes that may skew predictions, then do some pre-processing before applying a machine learning method, including removal of data with missing values.
+
+```{r, echo = T}
+smyrnaScrape <-
+  smyrnaScrape %>%
+  # Remove heating/cooling vars until can figure out how to standardize
+  select(-heating, -cooling, -parking) %>%
+  # Filter out irrelevant "homes"
+  filter(sell_price > 100000, sell_price < 750000) %>%
+  # Exclude missing data
+  na.omit() 
+
+# Convert home type to factor
+smyrnaScrape$home_type <- factor(smyrnaScrape$home_type)
+```
+
+We can see how the average sell price varies by price.
+
+```{r}
+smyrnaScrape %>%
+  group_by(Hmisc::cut2(sell_price, g = 5)) %>%
+  summarise(n = n(), mean_sale = mean(sell_price)) %>%
+  rename(group = starts_with("Hmisc"))
+```
+
+```{r}
+ggplot(smyrnaScrape, aes(sell_price)) + geom_histogram() 
+```
+
+### Data splitting
+
+To get started, let's split this single dataset into two: a *training* set and a *testing* set. We'll keep most of the rows in the original dataset (subset chosen randomly) in the *training* set. The training data will be used to *fit* the model, and the *testing* set will be used to measure model performance.
+
+To do this, we can use the `rsample` package to create an object that contains the information on how to split the data, and then two more rsample functions to create data frames for the training and testing sets:
+
+```{r, echo = T}
+# Fix the random numbers by setting the seed 
+# This enables the analysis to be reproducible when random numbers are used 
+set.seed(555)
+# Put 3/4 of the data into the training set 
+data_split <- initial_split(smyrnaScrape, prop = 3/4)
+
+# Create data frames for the two sets:
+train_data <- training(data_split)
+test_data  <- testing(data_split)
+```
+
+### Create recipe and roles and finalize features
+
+To get started, let's create a recipe for a simple regression model. Before training the model, we can use a recipe to create a few new predictors and conduct some pre-processing required by the model.
+
+Let's initiate a new recipe and add a role to this recipe. We can use the `update_role()` function to let recipes know that `address` and `home_type` are variables with a custom role that we will call "ID" (a role can have any character value). Whereas our formula included all variables in the training set other than `sell_price` as predictors, this tells the recipe to keep `address` and `home_type` but not use them as either outcomes or predictors.
+
+```{r, echo = T}
+smyrna_rec <- 
+  # '.' means use all other vars as predictors
+  recipe(sell_price ~ ., data = train_data) %>% 
+  update_role(address, home_type, new_role = "ID") %>%
+  # Remove columns from the data when the training set data have a single value
+  # I.e., if it is a "zero-variance predictor" that has no information within the column
+  step_zv(all_predictors())
+```
+
+This step of adding roles to a recipe is optional; the purpose of using it here is that `address` and `home_type` can be retained in the data but not included in the model. This can be convenient when, after the model is fit, we want to investigate some poorly predicted value. ID columns will be available and can be used to try to understand what went wrong.
+
+To get the current set of variables and roles, use the `summary()` function.
+
+```{r, echo = T}
+summary(smyrna_rec)
+```
+
+Now we've created a specification of what should be done with the data. How do we use the recipe we made?
+
+### Fit a model with a recipe
+
+Let's first use linear regression to model the flight data similar to what was done initially.
+
+```{r, echo = T}
+lr_mod <- 
+  linear_reg() %>% 
+  set_engine("lm")
+
+smyrna_wflow <- 
+  workflow() %>% 
+  add_model(lr_mod) %>% 
+  add_recipe(smyrna_rec)
+
+smyrna_wflow
+```
+
+Now, there is a single function that can be used to prepare the recipe and train the model from the resulting predictors.
+
+```{r, echo = T}
+smyrna_fit <- 
+  smyrna_wflow %>% 
+  fit(data = train_data)
+```
+
+This object has the finalized recipe and fitted model objects inside. You may want to extract the model or recipe objects from the workflow. To do this, you can use the helper functions `pull_workflow_fit()` and `pull_workflow_prepped_recipe()`. For example, here we pull the fitted model object then use the `broom::tidy()` function to get a tidy tibble of model coefficients.
+
+```{r, echo = T}
+smyrna_fit %>% 
+  pull_workflow_fit() %>% 
+  tidy()
+```
+
+### Use a trained workflow to predict
+
+Our goal was to predict the sale price of a home in New Smyrna Beach, FL. We have just:
+
+1. Built the model (`lr_mod`),
+
+2. Created a pre-processing recipe (`smyrna_rec`),
+
+3. Bundled the model and recipe (`smyrna_wflow`), and
+
+4. Trained our workflow using a single call to `fit()`.
+
+The next step is to use the trained workflow (`smyrna_fit`) to predict with the unseen test data, which we will do with a single call to `predict()`. The `predict()` method applies the recipe to the new data, then passes them to the fitted model.
+
+```{r, echo = T}
+smyrna_pred <- 
+  predict(smyrna_fit, test_data) %>%
+  bind_cols(test_data %>% select(sell_price, beds, baths, home_size))
+
+smyrna_pred
+```
+
+Now that we have a tibble with our predictions, how will we evaluate the performance of our workflow? We would like to calculate a metric that tells how well our model predicted late arrivals, compared to the true status of our outcome variable, `sell_price`.
+
+```{r, echo = T}
+smyrna_pred %>% 
+  rmse(sell_price, .pred)
+```
+
+```{r, fig.height = 3.5, fig.asp = 0.8}
+library(gghighlight)
+
+plt_smyrna_pred <-
+  smyrna_pred %>%
+  pivot_longer(
+    cols = c(".pred", "sell_price"),
+    names_to = "type",
+    values_to = "price"
+  )
+
+ggplot(plt_smyrna_pred, aes(home_size, price, color = type)) +
+  geom_point() +
+  facet_wrap( ~ beds + baths, labeller = label_both, scales = "free") +
+  gghighlight(type == ".pred", calculate_per_facet = TRUE) +
+  labs(title = "Home sale price predictions using a linear regression model",
+       subtitle = "Predictions are highlighted",
+       x = "home size (square-ft)",
+       y = "sale price ($)")
+```
+
+## Moving to machine learning
+
+Next, we will build on what we've learned and create a random forest model by simply defining a new workflow!
+
+```{r, echo = T}
+rf_mod <- 
+  rand_forest(trees = 1000) %>% 
+  set_engine("ranger") %>% 
+  set_mode("regression")
+
+smyrna_rf_wflow <- 
+  workflow() %>% 
+  add_model(rf_mod) %>% 
+  add_recipe(smyrna_rec)
+```
+
+```{r, echo = T}
+set.seed(234)
+smyrna_rf_fit <-
+  smyrna_rf_wflow  %>% 
+  fit(data = train_data)
+
+smyrna_rf_fit
+```
+
+```{r, echo = T}
+smyrna_rf_pred <- 
+  predict(smyrna_rf_fit, test_data) %>%
+  bind_cols(test_data %>% select(sell_price, beds, baths, home_size))
+
+smyrna_rf_pred
+```
+
+```{r, fig.height = 3.5, fig.asp = 0.8}
+plt_smyrna_rf_pred <-
+  smyrna_rf_pred %>%
+  pivot_longer(
+    cols = c(".pred", "sell_price"),
+    names_to = "type",
+    values_to = "price"
+  )
+
+ggplot(plt_smyrna_rf_pred, aes(home_size, price, color = type)) + 
+  geom_point() +
+  facet_wrap( ~ beds + baths, labeller = label_both, scales = "free") +
+  gghighlight(type == ".pred", calculate_per_facet = TRUE) +
+  labs(title = "Home sale price predictions using a random forest model",
+       subtitle = "Predictions are highlighted",
+       x = "home size (square-ft)",
+       y = "sale price ($)")
+```
+
+We can now see that some of the structure in the data is being picked up compared to the linear regression model, which can only represent a line of best fit through the data.
+
+Let's try and predict the sale price of 1160 Fairvilla Dr, New Smyrna Beach, FL 32168 using both models.
+
+```{r}
+new_data = data.frame(address = c("1160 Fairvilla Dr, New Smyrna Beach, FL 32168"),
+                      beds = c(2),
+                      baths = c(1),
+                      home_size = c(816),
+                      home_type = c("Single Family"),
+                      year_built = c(1985),
+                      lot_size = c(816))
+
+bind_cols(predict(smyrna_fit, new_data) %>% rename(lm = .pred),
+          predict(smyrna_rf_fit, new_data)%>% rename(rf = .pred)
+)
+```
+The Zestimate for this property (as of this writing) is \$115,170 with a range of \$105,000 - \$124,000 with a list price of $125,000. Both of our models fit are outside of the Zestimate range, but the sale price estimate from the random forest model is just outside of it. This is really not surprising as we did not go out of our way to add any sophistication to our feature set and we are only working with 436 data points, but it is still good to be close with such little effort!
+
+Of course the real validation point will be the actual sale price :wink:.
+
+### Estimating performance
+

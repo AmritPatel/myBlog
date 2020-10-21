@@ -13,16 +13,23 @@ draft: false
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<p><code>hbf</code> is a new Python package that allows one to scrape data from Zillow.com with a starting address and a search box. Currently, it is limited to processing only 800 results per call due to result number limitations when issuing an <code>http</code> request on Zillow.com.</p>
-<div id="example-input-file" class="section level2">
-<h2>Example input file</h2>
+<p><code>hbf</code> is a new Python package that (currently) allows one to scrape data from Zillow.com with a starting address and a search box. It is limited to processing only 800 results per call due to result number limitations when issuing an <code>http</code> request on Zillow.com.</p>
+<p>Eventually the developers would also like to add home sale price prediction capabilities.</p>
+<p>This analysis is a first step in that direction using the R programming language to:</p>
+<ol style="list-style-type: decimal">
+<li>Access current <code>hbf</code> functionality as it has recently been made available via Python’s package installer <code>pip</code>.</li>
+<li>Determine the potential of both statistical and machine learning models as sale price predictors.</li>
+<li>Predict the sale price of a home currently on the market in New Smyrna Beach, Florida.</li>
+</ol>
+<div id="example-hbf-input-file" class="section level2">
+<h2>Example <code>hbf</code> input file</h2>
 <pre><code>[Address Control]
-Street Number:      11714
-Street Name:        College View Drive
+Street Number:      1160
+Street Name:        Fairvilla Dr, New Smyrna Beach
 Apartment Number:
-City:
-State:              Maryland
-Zip Code:           20902
+City:               New Smyrna Beach
+State:              Florida
+Zip Code:           32168
 
 [Search Control]
 Search Box Half-Width (miles): 0.1
@@ -41,56 +48,48 @@ user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)
 <h2>Example <code>hbf</code> call</h2>
 <pre class="python"><code>from hbf.getCleanedDF import getDF
 
-wheaton = getDF(&quot;res.inp&quot;)</code></pre>
+smyrnaSmall = getDF(&quot;res.inp&quot;)</code></pre>
 </div>
 <div id="example-output-as-r-df" class="section level2">
 <h2>Example output as R <code>df</code></h2>
 <p>The Python object is now available as a R dataframe via the <code>reticulate</code> package!</p>
-<pre class="r"><code>unlink(&quot;hbfDev.log&quot;) # delete log file
-py$wheaton</code></pre>
-<pre><code>##                                        Address Sell Price Beds Baths Home Size
-## 1 11705 College View Dr Silver Spring MD 20902     293000    2     2      1526
-## 2 11714 College View Dr Silver Spring MD 20902     465000    4     3      2843
-## 3        3406 Glorus Pl Silver Spring MD 20902     785000    5     5      5872
-## 4 11703 College View Dr Silver Spring MD 20902     475000    4     2      1982
-## 5        3400 Glorus Pl Silver Spring MD 20902     395000    4     3      1914
-## 6   11714 Veirs Mill Rd Silver Spring MD 20902     383000    6     3      1836
-## 7     3402 Pendleton Dr Silver Spring MD 20902     340000    2     1       882
-##       Home Type Year Built                        Heating Cooling Parking
-## 1 Single Family       1951                     Forced air Central     NaN
-## 2 Single Family       1962 Baseboard, Heat pump, Electric Central     NaN
-## 3 Single Family       2006                     Forced air Central     NaN
-## 4 Single Family       1951                Forced air, Gas Central     NaN
-## 5 Single Family       1953               None, Forced air Central     NaN
-## 6 Single Family       1953                     Forced air Central     NaN
-## 7 Single Family       1951                     Forced air Central     NaN
-##   Lot Size
-## 1     6791
-## 2     8115
-## 3    10890
-## 4     6930
-## 5     7178
-## 6     6812
-## 7     7609</code></pre>
+<pre class="r"><code>smyrnaSmall &lt;- janitor::clean_names(py$smyrnaSmall)
+tibble::tibble(smyrnaSmall)</code></pre>
+<pre><code>## # A tibble: 13 x 11
+##    address sell_price  beds baths home_size home_type year_built heating cooling
+##    &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;   &lt;list&gt; 
+##  1 915 Fa…     125000     2   2         810 Single F…       1986 Forced… &lt;dbl […
+##  2 238 Go…        NaN     3   2        2263 Single F…        NaN Forced… &lt;chr […
+##  3 905 Fa…     100000     2   2         810 Single F…       1986 Forced… &lt;dbl […
+##  4 1150 F…     115000     2   1         810 Single F…       1985 Forced… &lt;dbl […
+##  5 1130 F…     112000     2   2         842 Single F…       1985 Forced… &lt;dbl […
+##  6 907 Fa…     100000     2   2         810 Single F…       1986 Forced… &lt;chr […
+##  7 1128 F…     114000     2   1         810 Single F…       1985 Forced… &lt;dbl […
+##  8 241 Go…     234000     2   3        1757 Single F…       1993 Forced… &lt;chr […
+##  9 1140 F…     100000     2   1        1000 Single F…       1985 Forced… &lt;chr […
+## 10 254 Go…     302000     3   2        2941 Single F…       1996 Forced… &lt;chr […
+## 11 911 Fa…     108931     2   2         994 Townhouse       1986 Forced… &lt;chr […
+## 12 9 Fore…     135000     3   2.5      1850 Single F…       1978 Forced… &lt;dbl […
+## 13 11 For…        NaN     2   2        1242 Single F…       1978 Forced… &lt;dbl […
+## # … with 2 more variables: parking &lt;list&gt;, lot_size &lt;dbl&gt;</code></pre>
 </div>
 <div id="working-with-a-larger-dataset" class="section level2">
 <h2>Working with a larger dataset</h2>
-<p>Searching from the same from the D.C. metro area, fit a linear model.</p>
+<p>Searching from the same starting point in New Smyrna Beach, FL, but within a 3 mile box returning 800 results, fit a linear model.</p>
 <pre><code>## # A tibble: 800 x 11
-##    Address `Sell Price`  Beds Baths `Home Size` `Home Type` `Year Built` Heating
-##    &lt;list&gt;         &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;              &lt;dbl&gt; &lt;list&gt; 
-##  1 &lt;chr […       599000     3     2        1758 Multiple O…         1927 &lt;chr […
-##  2 &lt;chr […       780000     2     2        1081 Condo               1895 &lt;chr […
-##  3 &lt;chr […      1215000     4     3        1929 Single Fam…         1900 &lt;chr […
-##  4 &lt;chr […       128000     2     1        1037 Condo               1975 &lt;chr […
-##  5 &lt;chr […       125000     1     1         894 Condo               1973 &lt;chr […
-##  6 &lt;chr […       419000     3     2        1200 Single Fam…         1953 &lt;chr […
-##  7 &lt;chr […       455500     3     4        1960 Single Fam…         1989 &lt;chr […
-##  8 &lt;chr […       516000     4     3        2774 Single Fam…         1970 &lt;chr […
-##  9 &lt;chr […      1880000     5     5        3978 Single Fam…         2020 &lt;chr […
-## 10 &lt;chr […       610000     2     2        1148 Condo               1925 &lt;chr […
-## # … with 790 more rows, and 3 more variables: Cooling &lt;list&gt;, Parking &lt;list&gt;,
-## #   `Lot Size` &lt;dbl&gt;</code></pre>
+##    address sell_price  beds baths home_size home_type year_built heating cooling
+##    &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;list&gt;  &lt;list&gt; 
+##  1 679 Mi…     285000     3     2      1904 Single F…       1991 &lt;chr [… &lt;chr […
+##  2 24 For…     180000     2     2      1124 Single F…       1978 &lt;chr [… &lt;chr […
+##  3 620 Ba…     300000     2     2      1530 Single F…       1948 &lt;chr [… &lt;chr […
+##  4 91 Hea…     260000     2     2       888 Condo           1986 &lt;chr [… &lt;chr […
+##  5 17 Fai…     307000     3     2      2645 Single F…       1974 &lt;chr [… &lt;chr […
+##  6 563 Ch…     102500     3     1      1214 Single F…       1940 &lt;chr [… &lt;chr […
+##  7 706 Fo…     270000     3     2      1838 Single F…       1987 &lt;chr [… &lt;dbl […
+##  8 101 N …     235000     2     2      1000 Single F…       1973 &lt;chr [… &lt;chr […
+##  9 332 Pa…     180000     3     2      1258 Single F…       2020 &lt;chr [… &lt;chr […
+## 10 695 Mi…     204900     2     2      1355 Single F…       1992 &lt;chr [… &lt;chr […
+## # … with 790 more rows, and 2 more variables: parking &lt;list&gt;, lot_size &lt;dbl&gt;</code></pre>
 </div>
 <div id="build-and-fit-a-linear-regression-prediction-model-using-tidymodels" class="section level2">
 <h2>Build and fit a linear regression prediction model using <code>tidymodels</code></h2>
@@ -107,45 +106,47 @@ lm_mod &lt;-
 # 2. Estimate or train using the `fit()` function.
 lm_fit &lt;- 
   lm_mod %&gt;% 
-  fit(`Sell Price` ~ Beds + Baths + `Home Size` + `Year Built` + `Lot Size`,
-      data = DCscrape)
+  fit(sell_price ~ beds + baths + home_size + year_built + lot_size,
+      data = smyrnaScrape)
 
 tidy(lm_fit)</code></pre>
 <pre><code>## # A tibble: 6 x 5
-##   term             estimate  std.error statistic  p.value
-##   &lt;chr&gt;               &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)  12659419.    906235.        14.0  1.92e-37
-## 2 Beds           -20575.     17614.        -1.17 2.43e- 1
-## 3 Baths          145871.     18100.         8.06 6.18e-15
-## 4 `Home Size`       176.        16.3       10.9  1.10e-24
-## 5 `Year Built`    -6488.       464.       -14.0  1.65e-37
-## 6 `Lot Size`         -0.981      0.395     -2.48 1.33e- 2</code></pre>
+##   term           estimate   std.error statistic  p.value
+##   &lt;chr&gt;             &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept) 730646.     502772.        1.45   1.47e- 1
+## 2 beds           825.      11085.        0.0744 9.41e- 1
+## 3 baths        82947.      12611.        6.58   1.24e-10
+## 4 home_size       62.1         9.73      6.39   3.95e-10
+## 5 year_built    -398.        256.       -1.55   1.21e- 1
+## 6 lot_size         0.0125      0.0254    0.493  6.22e- 1</code></pre>
 </div>
 <div id="create-example-data-for-new-predictions" class="section level2">
 <h2>Create example data for new predictions</h2>
 <p>New points are built by varying home square footage.</p>
-<pre class="r"><code>new_points &lt;- expand.grid(Beds = 2,
-                          Baths = 2,
-                          `Home Size` = c(1000, 2000, 3000),
-                          `Year Built` = 1965,
-                          `Lot Size` = 8000
+<pre class="r"><code>new_points &lt;- expand.grid(beds = 2,
+                          baths = 1,
+                          home_size = c(800, 1000, 1200, 1500),
+                          year_built = 1985,
+                          lot_size = 8000
                           )
 new_points</code></pre>
-<pre><code>##   Beds Baths Home Size Year Built Lot Size
-## 1    2     2      1000       1965     8000
-## 2    2     2      2000       1965     8000
-## 3    2     2      3000       1965     8000</code></pre>
+<pre><code>##   beds baths home_size year_built lot_size
+## 1    2     1       800       1985     8000
+## 2    2     1      1000       1985     8000
+## 3    2     1      1200       1985     8000
+## 4    2     1      1500       1985     8000</code></pre>
 </div>
 <div id="use-the-predict-function-to-find-the-mean-values-of-new-points" class="section level2">
 <h2>use the <code>predict()</code> function to find the mean values of new points</h2>
 <pre class="r"><code>mean_pred &lt;- predict(lm_fit, new_data = new_points)
 mean_pred</code></pre>
-<pre><code>## # A tibble: 3 x 1
+<pre><code>## # A tibble: 4 x 1
 ##     .pred
 ##     &lt;dbl&gt;
-## 1 330516.
-## 2 506976.
-## 3 683437.</code></pre>
+## 1  75694.
+## 2  88117.
+## 3 100541.
+## 4 119176.</code></pre>
 <p>With <code>tidymodels</code>, the types of predicted values are standardized so that we can use the same syntax to get these values across model types using <code>predict()</code>.</p>
 <blockquote>
 <p>When making predictions, the <code>tidymodels</code> convention is to always produce a tibble of results with standardized column names. This makes it easy to combine the original data and the predictions in a usable format:</p>
@@ -154,12 +155,13 @@ mean_pred</code></pre>
                          new_data = new_points, 
                          type = &quot;conf_int&quot;)
 conf_int_pred</code></pre>
-<pre><code>## # A tibble: 3 x 2
+<pre><code>## # A tibble: 4 x 2
 ##   .pred_lower .pred_upper
 ##         &lt;dbl&gt;       &lt;dbl&gt;
-## 1     276473.     384558.
-## 2     445024.     568929.
-## 3     600994.     765881.</code></pre>
+## 1      51409.      99979.
+## 2      64001.     112233.
+## 3      75993.     125089.
+## 4      92930.     145423.</code></pre>
 <p>It is now straightforward to make a plot.</p>
 <pre class="r"><code># Now combine:
 plot_data &lt;- 
@@ -168,12 +170,13 @@ plot_data &lt;-
   bind_cols(conf_int_pred)
 
 # and plot:
-ggplot(plot_data, aes(x = `Home Size`)) + 
+ggplot(plot_data, aes(x = home_size)) + 
   geom_point(aes(y = .pred)) + 
   geom_errorbar(aes(ymin = .pred_lower, 
                     ymax = .pred_upper),
                 width = .2) + 
-  labs(x = &quot;home size&quot;, y = &quot;sell price&quot;)</code></pre>
+  labs(x = &quot;home size (square-ft)&quot;,
+       y = &quot;sale price ($)&quot;)</code></pre>
 <p><img src="/post/2020-10-14-a-program-to-predict-a-home-s-sell-price_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="fitting-a-bayesian-model" class="section level2">
@@ -182,13 +185,13 @@ ggplot(plot_data, aes(x = `Home Size`)) +
 <p>First, set the prior distribution to be the default as discussed at <a href="https://mc-stan.org/rstanarm/articles/priors.html"><em>Prior Distributions for <code>rstanarm</code> Models</em></a>.</p>
 <pre class="r"><code># set the prior distribution
 prior_dist &lt;- 
-  rstanarm::stan_glm(`Sell Price` ~ Beds + Baths + `Home Size` + `Year Built` + `Lot Size`,
-                     data = DCscrape, chains = 1) # using default prior means don&#39;t add</code></pre>
+  rstanarm::stan_glm(sell_price ~ beds + baths + home_size + year_built + lot_size,
+                     data = smyrnaScrape, chains = 1) # using default prior means don&#39;t add</code></pre>
 <pre><code>## 
 ## SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 0.000146 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 1.46 seconds.
+## Chain 1: Gradient evaluation took 0.000115 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 1.15 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -205,9 +208,9 @@ prior_dist &lt;-
 ## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 2.28763 seconds (Warm-up)
-## Chain 1:                0.113201 seconds (Sampling)
-## Chain 1:                2.40083 seconds (Total)
+## Chain 1:  Elapsed Time: 2.00383 seconds (Warm-up)
+## Chain 1:                0.114097 seconds (Sampling)
+## Chain 1:                2.11793 seconds (Total)
 ## Chain 1:</code></pre>
 <pre class="r"><code>set.seed(123) # for reproducibiility
 
@@ -220,42 +223,263 @@ bayes_mod &lt;-
 <pre class="r"><code># train the model
 bayes_fit &lt;- 
   bayes_mod %&gt;% 
-  fit(`Sell Price` ~ Beds + Baths + `Home Size` + `Year Built` + `Lot Size`, data = DCscrape)
+  fit(sell_price ~ beds + baths + home_size + year_built + lot_size, data = smyrnaScrape)
 
 print(bayes_fit, digits = 5)</code></pre>
 <pre><code>## parsnip model object
 ## 
-## Fit time:  1m 1.2s 
+## Fit time:  53.8s 
 ## stan_glm
 ##  family:       gaussian [identity]
-##  formula:      `Sell Price` ~ Beds + Baths + `Home Size` + `Year Built` + `Lot Size`
-##  observations: 485
+##  formula:      sell_price ~ beds + baths + home_size + year_built + lot_size
+##  observations: 493
 ##  predictors:   6
 ## ------
-##              Median       MAD_SD      
-## (Intercept)  749957.00523   9963.81938
-## Beds              0.01222      2.43983
-## Baths            -0.00758      2.48043
-## `Home Size`       5.80689      2.52670
-## `Year Built`      0.00123      2.57621
-## `Lot Size`        1.38428      0.56839
+##             Median       MAD_SD      
+## (Intercept) 215619.60310   6485.64949
+## beds             0.08791      2.39662
+## baths            0.01896      2.52481
+## home_size        8.09597      2.51432
+## year_built       0.09409      2.49585
+## lot_size         0.01536      0.03170
 ## 
 ## Auxiliary parameter(s):
 ##       Median       MAD_SD      
-## sigma 464456.45718  15238.33120
+## sigma 175173.11326   5667.42774
 ## 
 ## ------
 ## * For help interpreting the printed output see ?print.stanreg
 ## * For info on the priors used see ?prior_summary.stanreg</code></pre>
 <pre class="r"><code>tidy(bayes_fit, conf.int = TRUE)</code></pre>
 <pre><code>## # A tibble: 6 x 5
-##   term             estimate std.error   conf.low conf.high
-##   &lt;chr&gt;               &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;
-## 1 (Intercept)  749957.       9964.    733635.    767566.  
-## 2 Beds              0.0122      2.44      -3.95       4.19
-## 3 Baths            -0.00758     2.48      -3.96       4.06
-## 4 `Home Size`       5.81        2.53       1.56       9.81
-## 5 `Year Built`      0.00123     2.58      -4.18       4.26
-## 6 `Lot Size`        1.38        0.568      0.446      2.33</code></pre>
-<p><img src="/post/2020-10-14-a-program-to-predict-a-home-s-sell-price_files/figure-html/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+##   term           estimate std.error    conf.low   conf.high
+##   &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+## 1 (Intercept) 215620.     6486.     205193.     226538.    
+## 2 beds             0.0879    2.40       -4.11        4.12  
+## 3 baths            0.0190    2.52       -4.07        4.11  
+## 4 home_size        8.10      2.51        3.91       12.2   
+## 5 year_built       0.0941    2.50       -3.96        3.97  
+## 6 lot_size         0.0154    0.0317     -0.0350      0.0687</code></pre>
+<p><img src="/post/2020-10-14-a-program-to-predict-a-home-s-sell-price_files/figure-html/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" />
+## Using the <code>tidymodels</code> modeling workflow</p>
+<p>Start by loading the data and filtering out really inexpensive and expensive recently sold homes that may skew predictions, then do some pre-processing before applying a machine learning method, including removal of data with missing values.</p>
+<pre class="r"><code>smyrnaScrape &lt;-
+  smyrnaScrape %&gt;%
+  # Remove heating/cooling vars until can figure out how to standardize
+  select(-heating, -cooling, -parking) %&gt;%
+  # Filter out irrelevant &quot;homes&quot;
+  filter(sell_price &gt; 100000, sell_price &lt; 750000) %&gt;%
+  # Exclude missing data
+  na.omit() 
+
+# Convert home type to factor
+smyrnaScrape$home_type &lt;- factor(smyrnaScrape$home_type)</code></pre>
+<p>We can see how the average sell price varies by price.</p>
+<pre><code>## # A tibble: 5 x 3
+##   group               n mean_sale
+##   &lt;fct&gt;           &lt;int&gt;     &lt;dbl&gt;
+## 1 [101000,150600)    92   130280.
+## 2 [150600,186000)    89   168883.
+## 3 [186000,220000)    81   203232.
+## 4 [220000,284000)    87   248642 
+## 5 [284000,735000]    87   393459.</code></pre>
+<p><img src="/post/2020-10-14-a-program-to-predict-a-home-s-sell-price_files/figure-html/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="data-splitting" class="section level3">
+<h3>Data splitting</h3>
+<p>To get started, let’s split this single dataset into two: a <em>training</em> set and a <em>testing</em> set. We’ll keep most of the rows in the original dataset (subset chosen randomly) in the <em>training</em> set. The training data will be used to <em>fit</em> the model, and the <em>testing</em> set will be used to measure model performance.</p>
+<p>To do this, we can use the <code>rsample</code> package to create an object that contains the information on how to split the data, and then two more rsample functions to create data frames for the training and testing sets:</p>
+<pre class="r"><code># Fix the random numbers by setting the seed 
+# This enables the analysis to be reproducible when random numbers are used 
+set.seed(555)
+# Put 3/4 of the data into the training set 
+data_split &lt;- initial_split(smyrnaScrape, prop = 3/4)
+
+# Create data frames for the two sets:
+train_data &lt;- training(data_split)
+test_data  &lt;- testing(data_split)</code></pre>
+</div>
+<div id="create-recipe-and-roles-and-finalize-features" class="section level3">
+<h3>Create recipe and roles and finalize features</h3>
+<p>To get started, let’s create a recipe for a simple regression model. Before training the model, we can use a recipe to create a few new predictors and conduct some pre-processing required by the model.</p>
+<p>Let’s initiate a new recipe and add a role to this recipe. We can use the <code>update_role()</code> function to let recipes know that <code>address</code> and <code>home_type</code> are variables with a custom role that we will call “ID” (a role can have any character value). Whereas our formula included all variables in the training set other than <code>sell_price</code> as predictors, this tells the recipe to keep <code>address</code> and <code>home_type</code> but not use them as either outcomes or predictors.</p>
+<pre class="r"><code>smyrna_rec &lt;- 
+  # &#39;.&#39; means use all other vars as predictors
+  recipe(sell_price ~ ., data = train_data) %&gt;% 
+  update_role(address, home_type, new_role = &quot;ID&quot;) %&gt;%
+  # Remove columns from the data when the training set data have a single value
+  # I.e., if it is a &quot;zero-variance predictor&quot; that has no information within the column
+  step_zv(all_predictors())</code></pre>
+<p>This step of adding roles to a recipe is optional; the purpose of using it here is that <code>address</code> and <code>home_type</code> can be retained in the data but not included in the model. This can be convenient when, after the model is fit, we want to investigate some poorly predicted value. ID columns will be available and can be used to try to understand what went wrong.</p>
+<p>To get the current set of variables and roles, use the <code>summary()</code> function.</p>
+<pre class="r"><code>summary(smyrna_rec)</code></pre>
+<pre><code>## # A tibble: 8 x 4
+##   variable   type    role      source  
+##   &lt;chr&gt;      &lt;chr&gt;   &lt;chr&gt;     &lt;chr&gt;   
+## 1 address    nominal ID        original
+## 2 beds       numeric predictor original
+## 3 baths      numeric predictor original
+## 4 home_size  numeric predictor original
+## 5 home_type  nominal ID        original
+## 6 year_built numeric predictor original
+## 7 lot_size   numeric predictor original
+## 8 sell_price numeric outcome   original</code></pre>
+<p>Now we’ve created a specification of what should be done with the data. How do we use the recipe we made?</p>
+</div>
+<div id="fit-a-model-with-a-recipe" class="section level3">
+<h3>Fit a model with a recipe</h3>
+<p>Let’s first use linear regression to model the flight data similar to what was done initially.</p>
+<pre class="r"><code>lr_mod &lt;- 
+  linear_reg() %&gt;% 
+  set_engine(&quot;lm&quot;)
+
+smyrna_wflow &lt;- 
+  workflow() %&gt;% 
+  add_model(lr_mod) %&gt;% 
+  add_recipe(smyrna_rec)
+
+smyrna_wflow</code></pre>
+<pre><code>## ══ Workflow ════════════════════════════════════════════════════════════════════
+## Preprocessor: Recipe
+## Model: linear_reg()
+## 
+## ── Preprocessor ────────────────────────────────────────────────────────────────
+## 1 Recipe Step
+## 
+## ● step_zv()
+## 
+## ── Model ───────────────────────────────────────────────────────────────────────
+## Linear Regression Model Specification (regression)
+## 
+## Computational engine: lm</code></pre>
+<p>Now, there is a single function that can be used to prepare the recipe and train the model from the resulting predictors.</p>
+<pre class="r"><code>smyrna_fit &lt;- 
+  smyrna_wflow %&gt;% 
+  fit(data = train_data)</code></pre>
+<p>This object has the finalized recipe and fitted model objects inside. You may want to extract the model or recipe objects from the workflow. To do this, you can use the helper functions <code>pull_workflow_fit()</code> and <code>pull_workflow_prepped_recipe()</code>. For example, here we pull the fitted model object then use the <code>broom::tidy()</code> function to get a tidy tibble of model coefficients.</p>
+<pre class="r"><code>smyrna_fit %&gt;% 
+  pull_workflow_fit() %&gt;% 
+  tidy()</code></pre>
+<pre><code>## # A tibble: 6 x 5
+##   term           estimate   std.error statistic  p.value
+##   &lt;chr&gt;             &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept) -18064.     329766.       -0.0548 9.56e- 1
+## 2 beds         11580.       7271.        1.59   1.12e- 1
+## 3 baths        35877.       9458.        3.79   1.78e- 4
+## 4 home_size       42.3         6.51      6.49   3.23e-10
+## 5 year_built      29.9       168.        0.178  8.59e- 1
+## 6 lot_size         0.0170      0.0132    1.28   2.00e- 1</code></pre>
+</div>
+<div id="use-a-trained-workflow-to-predict" class="section level3">
+<h3>Use a trained workflow to predict</h3>
+<p>Our goal was to predict the sale price of a home in New Smyrna Beach, FL. We have just:</p>
+<ol style="list-style-type: decimal">
+<li><p>Built the model (<code>lr_mod</code>),</p></li>
+<li><p>Created a pre-processing recipe (<code>smyrna_rec</code>),</p></li>
+<li><p>Bundled the model and recipe (<code>smyrna_wflow</code>), and</p></li>
+<li><p>Trained our workflow using a single call to <code>fit()</code>.</p></li>
+</ol>
+<p>The next step is to use the trained workflow (<code>smyrna_fit</code>) to predict with the unseen test data, which we will do with a single call to <code>predict()</code>. The <code>predict()</code> method applies the recipe to the new data, then passes them to the fitted model.</p>
+<pre class="r"><code>smyrna_pred &lt;- 
+  predict(smyrna_fit, test_data) %&gt;%
+  bind_cols(test_data %&gt;% select(sell_price, beds, baths, home_size))
+
+smyrna_pred</code></pre>
+<pre><code>## # A tibble: 109 x 5
+##      .pred sell_price  beds baths home_size
+##      &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;
+##  1 183573.     180000     2     2      1124
+##  2 225640.     270000     3     2      1838
+##  3 202140.     180000     3     2      1258
+##  4 330313.     715000     4     4      2380
+##  5 170477.     125000     2     2       810
+##  6 190588.     218500     2     2      1290
+##  7 198515.     227000     2     2      1468
+##  8 139182.     169900     2     1       963
+##  9 132655.     125900     2     1       804
+## 10 299311.     535000     5     3      2245
+## # … with 99 more rows</code></pre>
+<p>Now that we have a tibble with our predictions, how will we evaluate the performance of our workflow? We would like to calculate a metric that tells how well our model predicted late arrivals, compared to the true status of our outcome variable, <code>sell_price</code>.</p>
+<pre class="r"><code>smyrna_pred %&gt;% 
+  rmse(sell_price, .pred)</code></pre>
+<pre><code>## # A tibble: 1 x 3
+##   .metric .estimator .estimate
+##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+## 1 rmse    standard     105780.</code></pre>
+<p><img src="/post/2020-10-14-a-program-to-predict-a-home-s-sell-price_files/figure-html/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="moving-to-machine-learning" class="section level2">
+<h2>Moving to machine learning</h2>
+<p>Next, we will build on what we’ve learned and create a random forest model by simply defining a new workflow!</p>
+<pre class="r"><code>rf_mod &lt;- 
+  rand_forest(trees = 1000) %&gt;% 
+  set_engine(&quot;ranger&quot;) %&gt;% 
+  set_mode(&quot;regression&quot;)
+
+smyrna_rf_wflow &lt;- 
+  workflow() %&gt;% 
+  add_model(rf_mod) %&gt;% 
+  add_recipe(smyrna_rec)</code></pre>
+<pre class="r"><code>set.seed(234)
+smyrna_rf_fit &lt;-
+  smyrna_rf_wflow  %&gt;% 
+  fit(data = train_data)
+
+smyrna_rf_fit</code></pre>
+<pre><code>## ══ Workflow [trained] ══════════════════════════════════════════════════════════
+## Preprocessor: Recipe
+## Model: rand_forest()
+## 
+## ── Preprocessor ────────────────────────────────────────────────────────────────
+## 1 Recipe Step
+## 
+## ● step_zv()
+## 
+## ── Model ───────────────────────────────────────────────────────────────────────
+## Ranger result
+## 
+## Call:
+##  ranger::ranger(formula = ..y ~ ., data = data, num.trees = ~1000,      num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1)) 
+## 
+## Type:                             Regression 
+## Number of trees:                  1000 
+## Sample size:                      327 
+## Number of independent variables:  5 
+## Mtry:                             2 
+## Target node size:                 5 
+## Variable importance mode:         none 
+## Splitrule:                        variance 
+## OOB prediction error (MSE):       4817952011 
+## R squared (OOB):                  0.472358</code></pre>
+<pre class="r"><code>smyrna_rf_pred &lt;- 
+  predict(smyrna_rf_fit, test_data) %&gt;%
+  bind_cols(test_data %&gt;% select(sell_price, beds, baths, home_size))
+
+smyrna_rf_pred</code></pre>
+<pre><code>## # A tibble: 109 x 5
+##      .pred sell_price  beds baths home_size
+##      &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;
+##  1 152816.     180000     2     2      1124
+##  2 214435.     270000     3     2      1838
+##  3 209350.     180000     3     2      1258
+##  4 348550.     715000     4     4      2380
+##  5 145537.     125000     2     2       810
+##  6 189050.     218500     2     2      1290
+##  7 185739.     227000     2     2      1468
+##  8 180856.     169900     2     1       963
+##  9 181623.     125900     2     1       804
+## 10 348442.     535000     5     3      2245
+## # … with 99 more rows</code></pre>
+<p><img src="/post/2020-10-14-a-program-to-predict-a-home-s-sell-price_files/figure-html/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>We can now see that some of the structure in the data is being picked up compared to the linear regression model, which can only represent a line of best fit through the data.</p>
+<p>Let’s try and predict the sale price of 1160 Fairvilla Dr, New Smyrna Beach, FL 32168 using both models.</p>
+<pre><code>## # A tibble: 1 x 2
+##        lm      rf
+##     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 134824. 126690.</code></pre>
+<p>The Zestimate for this property (as of this writing) is $115,170 with a range of $105,000 - $124,000 with a list price of $125,000. Both of our models fit are outside of the Zestimate range, but the sale price estimate from the random forest model is just outside of it. This is really not surprising as we did not go out of our way to add any sophistication to our feature set and we are only working with 436 data points, but it is still good to be close with such little effort!</p>
+<p>Of course the real validation point will be the actual sale price :wink:.</p>
+<div id="estimating-performance" class="section level3">
+<h3>Estimating performance</h3>
+</div>
 </div>

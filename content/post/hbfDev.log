@@ -1,0 +1,670 @@
+2020-10-21 15:24:37,705 - hbf.getCleanedDF - INFO:
+Started.
+2020-10-21 15:24:38,520 - hbf.rescrape.getBox - INFO:
+The address has been GeoCoded!
+2020-10-21 15:24:38,524 - hbf.rescrape.getBox - INFO:
+Searching within a square area of half-width 0.1 miles.
+2020-10-21 15:24:40,504 - hbf.rescrape.getNumZillowPages - INFO:
+Only 1 page of Zillow search results exist in this search box.
+2020-10-21 15:24:40,507 - hbf.rescrape.getNumZillowResults - INFO:
+13 recently sold homes on Zillow were found within the search box.
+2020-10-21 15:24:40,513 - hbf.rescrape.getAllSoldHomeZillowURLs - INFO:
+https://www.zillow.com/homedetails/915-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069413_zpid/
+https://www.zillow.com/homedetails/238-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069495_zpid/
+https://www.zillow.com/homedetails/905-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069408_zpid/
+https://www.zillow.com/homedetails/1150-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069436_zpid/
+https://www.zillow.com/homedetails/1130-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069426_zpid/
+https://www.zillow.com/homedetails/907-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069409_zpid/
+https://www.zillow.com/homedetails/1128-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069425_zpid/
+https://www.zillow.com/homedetails/241-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069513_zpid/
+https://www.zillow.com/homedetails/1140-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069431_zpid/
+https://www.zillow.com/homedetails/254-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069503_zpid/
+https://www.zillow.com/homedetails/911-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069411_zpid/
+https://www.zillow.com/homedetails/9-Fore-Dr-New-Smyrna-Beach-FL-32168/170979823_zpid/
+https://www.zillow.com/homedetails/11-Fore-Dr-New-Smyrna-Beach-FL-32168/170979822_zpid/
+2020-10-21 15:24:40,513 - hbf.rescrape.getAllSoldHomeZillowURLs - INFO:
+The number of Sold Home Zillow Links scraped from all pages equals
+the Zillow Result Count that was scraped from the initial page.
+2020-10-21 15:25:07,597 - hbf.rescrape.soldHomeDF - INFO:
+                                        Address Sell Price Beds Baths  \
+0    915 Fairvilla Dr New Smyrna Beach FL 32168     125000    2     2   
+1    238 Golf Club Dr New Smyrna Beach FL 32168        n/a    3     2   
+2    905 Fairvilla Dr New Smyrna Beach FL 32168     100000    2     2   
+3   1150 Fairvilla Dr New Smyrna Beach FL 32168     115000    2     1   
+4   1130 Fairvilla Dr New Smyrna Beach FL 32168     112000    2     2   
+5    907 Fairvilla Dr New Smyrna Beach FL 32168     100000    2     2   
+6   1128 Fairvilla Dr New Smyrna Beach FL 32168     114000    2     1   
+7    241 Golf Club Dr New Smyrna Beach FL 32168     234000    2     3   
+8   1140 Fairvilla Dr New Smyrna Beach FL 32168     100000    2     1   
+9    254 Golf Club Dr New Smyrna Beach FL 32168     302000    3     2   
+10   911 Fairvilla Dr New Smyrna Beach FL 32168     108931    2     2   
+11          9 Fore Dr New Smyrna Beach FL 32168     135000    3   2.5   
+12         11 Fore Dr New Smyrna Beach FL 32168               2     2   
+
+    Home Size      Home Type Year Built          Heating         Cooling  \
+0    810 sqft  Single Family       1986       Forced air         No Data   
+1   2263 sqft  Single Family        n/a       Forced air            None   
+2    810 sqft  Single Family       1986       Forced air         No Data   
+3    810 sqft  Single Family       1985       Forced air         No Data   
+4    842 sqft  Single Family       1985       Forced air         No Data   
+5    810 sqft  Single Family       1986       Forced air         Central   
+6    810 sqft  Single Family       1985       Forced air         No Data   
+7   1757 sqft  Single Family       1993  Forced air, Gas  Central, Other   
+8   1000 sqft  Single Family       1985       Forced air           Other   
+9   2941 sqft  Single Family       1996  Forced air, Gas         Central   
+10   994 sqft      Townhouse       1986       Forced air           Other   
+11  1850 sqft  Single Family       1978       Forced air         No Data   
+12  1242 sqft  Single Family       1978       Forced air         No Data   
+
+     Parking    Lot Size  
+0    No Data    816 sqft  
+1   2 spaces         n/a  
+2    No Data    816 sqft  
+3    No Data    816 sqft  
+4    No Data  1.41 Acres  
+5    No Data    816 sqft  
+6    No Data    816 sqft  
+7   2 spaces   7560 sqft  
+8    No Data    816 sqft  
+9   2 spaces   7000 sqft  
+10   No Data    814 sqft  
+11   No Data   3745 sqft  
+12   No Data   4280 sqft  
+2020-10-21 15:25:07,624 - hbf.rescrape.laundry - INFO:
+                                        Address  Sell Price  Beds  Baths  \
+0    915 Fairvilla Dr New Smyrna Beach FL 32168    125000.0   2.0    2.0   
+1    238 Golf Club Dr New Smyrna Beach FL 32168         NaN   3.0    2.0   
+2    905 Fairvilla Dr New Smyrna Beach FL 32168    100000.0   2.0    2.0   
+3   1150 Fairvilla Dr New Smyrna Beach FL 32168    115000.0   2.0    1.0   
+4   1130 Fairvilla Dr New Smyrna Beach FL 32168    112000.0   2.0    2.0   
+5    907 Fairvilla Dr New Smyrna Beach FL 32168    100000.0   2.0    2.0   
+6   1128 Fairvilla Dr New Smyrna Beach FL 32168    114000.0   2.0    1.0   
+7    241 Golf Club Dr New Smyrna Beach FL 32168    234000.0   2.0    3.0   
+8   1140 Fairvilla Dr New Smyrna Beach FL 32168    100000.0   2.0    1.0   
+9    254 Golf Club Dr New Smyrna Beach FL 32168    302000.0   3.0    2.0   
+10   911 Fairvilla Dr New Smyrna Beach FL 32168    108931.0   2.0    2.0   
+11          9 Fore Dr New Smyrna Beach FL 32168    135000.0   3.0    2.5   
+12         11 Fore Dr New Smyrna Beach FL 32168         NaN   2.0    2.0   
+
+    Home Size      Home Type  Year Built          Heating         Cooling  \
+0       810.0  Single Family      1986.0       Forced air             NaN   
+1      2263.0  Single Family         NaN       Forced air            None   
+2       810.0  Single Family      1986.0       Forced air             NaN   
+3       810.0  Single Family      1985.0       Forced air             NaN   
+4       842.0  Single Family      1985.0       Forced air             NaN   
+5       810.0  Single Family      1986.0       Forced air         Central   
+6       810.0  Single Family      1985.0       Forced air             NaN   
+7      1757.0  Single Family      1993.0  Forced air, Gas  Central, Other   
+8      1000.0  Single Family      1985.0       Forced air           Other   
+9      2941.0  Single Family      1996.0  Forced air, Gas         Central   
+10      994.0      Townhouse      1986.0       Forced air           Other   
+11     1850.0  Single Family      1978.0       Forced air             NaN   
+12     1242.0  Single Family      1978.0       Forced air             NaN   
+
+     Parking  Lot Size  
+0        NaN     816.0  
+1   2 spaces       NaN  
+2        NaN     816.0  
+3        NaN     816.0  
+4        NaN   61419.6  
+5        NaN     816.0  
+6        NaN     816.0  
+7   2 spaces    7560.0  
+8        NaN     816.0  
+9   2 spaces    7000.0  
+10       NaN     814.0  
+11       NaN    3745.0  
+12       NaN    4280.0  
+2020-10-21 15:25:07,636 - hbf.rescrape.laundry - INFO:
+Address        object
+Sell Price    float64
+Beds          float64
+Baths         float64
+Home Size     float64
+Home Type      object
+Year Built    float64
+Heating        object
+Cooling        object
+Parking        object
+Lot Size      float64
+dtype: object
+2020-10-21 15:25:07,645 - hbf.getCleanedDF - INFO:
+Finished.
+2020-10-21 15:25:07,645 - hbf.getCleanedDF - INFO:
+--- 29.94343590736389 seconds ---
+2020-10-21 15:57:12,975 - hbf.getCleanedDF - INFO:
+Started.
+2020-10-21 15:57:13,618 - hbf.rescrape.getBox - INFO:
+The address has been GeoCoded!
+2020-10-21 15:57:13,629 - hbf.rescrape.getBox - INFO:
+Searching within a square area of half-width 0.1 miles.
+2020-10-21 15:57:15,665 - hbf.rescrape.getNumZillowPages - INFO:
+Only 1 page of Zillow search results exist in this search box.
+2020-10-21 15:57:15,667 - hbf.rescrape.getNumZillowResults - INFO:
+13 recently sold homes on Zillow were found within the search box.
+2020-10-21 15:57:15,672 - hbf.rescrape.getAllSoldHomeZillowURLs - INFO:
+https://www.zillow.com/homedetails/915-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069413_zpid/
+https://www.zillow.com/homedetails/238-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069495_zpid/
+https://www.zillow.com/homedetails/905-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069408_zpid/
+https://www.zillow.com/homedetails/1150-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069436_zpid/
+https://www.zillow.com/homedetails/1130-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069426_zpid/
+https://www.zillow.com/homedetails/907-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069409_zpid/
+https://www.zillow.com/homedetails/1128-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069425_zpid/
+https://www.zillow.com/homedetails/241-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069513_zpid/
+https://www.zillow.com/homedetails/1140-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069431_zpid/
+https://www.zillow.com/homedetails/254-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069503_zpid/
+https://www.zillow.com/homedetails/911-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069411_zpid/
+https://www.zillow.com/homedetails/9-Fore-Dr-New-Smyrna-Beach-FL-32168/170979823_zpid/
+https://www.zillow.com/homedetails/11-Fore-Dr-New-Smyrna-Beach-FL-32168/170979822_zpid/
+2020-10-21 15:57:15,672 - hbf.rescrape.getAllSoldHomeZillowURLs - INFO:
+The number of Sold Home Zillow Links scraped from all pages equals
+the Zillow Result Count that was scraped from the initial page.
+2020-10-21 15:57:43,030 - hbf.rescrape.soldHomeDF - INFO:
+                                        Address Sell Price Beds Baths  \
+0    915 Fairvilla Dr New Smyrna Beach FL 32168     125000    2     2   
+1    238 Golf Club Dr New Smyrna Beach FL 32168        n/a    3     2   
+2    905 Fairvilla Dr New Smyrna Beach FL 32168     100000    2     2   
+3   1150 Fairvilla Dr New Smyrna Beach FL 32168     115000    2     1   
+4   1130 Fairvilla Dr New Smyrna Beach FL 32168     112000    2     2   
+5    907 Fairvilla Dr New Smyrna Beach FL 32168     100000    2     2   
+6   1128 Fairvilla Dr New Smyrna Beach FL 32168     114000    2     1   
+7    241 Golf Club Dr New Smyrna Beach FL 32168     234000    2     3   
+8   1140 Fairvilla Dr New Smyrna Beach FL 32168     100000    2     1   
+9    254 Golf Club Dr New Smyrna Beach FL 32168     302000    3     2   
+10   911 Fairvilla Dr New Smyrna Beach FL 32168     108931    2     2   
+11          9 Fore Dr New Smyrna Beach FL 32168     135000    3   2.5   
+12         11 Fore Dr New Smyrna Beach FL 32168               2     2   
+
+    Home Size      Home Type Year Built          Heating         Cooling  \
+0    810 sqft  Single Family       1986       Forced air         No Data   
+1   2263 sqft  Single Family        n/a       Forced air            None   
+2    810 sqft  Single Family       1986       Forced air         No Data   
+3    810 sqft  Single Family       1985       Forced air         No Data   
+4    842 sqft  Single Family       1985       Forced air         No Data   
+5    810 sqft  Single Family       1986       Forced air         Central   
+6    810 sqft  Single Family       1985       Forced air         No Data   
+7   1757 sqft  Single Family       1993  Forced air, Gas  Central, Other   
+8   1000 sqft  Single Family       1985       Forced air           Other   
+9   2941 sqft  Single Family       1996  Forced air, Gas         Central   
+10   994 sqft      Townhouse       1986       Forced air           Other   
+11  1850 sqft  Single Family       1978       Forced air         No Data   
+12  1242 sqft  Single Family       1978       Forced air         No Data   
+
+     Parking    Lot Size  
+0    No Data    816 sqft  
+1   2 spaces         n/a  
+2    No Data    816 sqft  
+3    No Data    816 sqft  
+4    No Data  1.41 Acres  
+5    No Data    816 sqft  
+6    No Data    816 sqft  
+7   2 spaces   7560 sqft  
+8    No Data    816 sqft  
+9   2 spaces   7000 sqft  
+10   No Data    814 sqft  
+11   No Data   3745 sqft  
+12   No Data   4280 sqft  
+2020-10-21 15:57:43,057 - hbf.rescrape.laundry - INFO:
+                                        Address  Sell Price  Beds  Baths  \
+0    915 Fairvilla Dr New Smyrna Beach FL 32168    125000.0   2.0    2.0   
+1    238 Golf Club Dr New Smyrna Beach FL 32168         NaN   3.0    2.0   
+2    905 Fairvilla Dr New Smyrna Beach FL 32168    100000.0   2.0    2.0   
+3   1150 Fairvilla Dr New Smyrna Beach FL 32168    115000.0   2.0    1.0   
+4   1130 Fairvilla Dr New Smyrna Beach FL 32168    112000.0   2.0    2.0   
+5    907 Fairvilla Dr New Smyrna Beach FL 32168    100000.0   2.0    2.0   
+6   1128 Fairvilla Dr New Smyrna Beach FL 32168    114000.0   2.0    1.0   
+7    241 Golf Club Dr New Smyrna Beach FL 32168    234000.0   2.0    3.0   
+8   1140 Fairvilla Dr New Smyrna Beach FL 32168    100000.0   2.0    1.0   
+9    254 Golf Club Dr New Smyrna Beach FL 32168    302000.0   3.0    2.0   
+10   911 Fairvilla Dr New Smyrna Beach FL 32168    108931.0   2.0    2.0   
+11          9 Fore Dr New Smyrna Beach FL 32168    135000.0   3.0    2.5   
+12         11 Fore Dr New Smyrna Beach FL 32168         NaN   2.0    2.0   
+
+    Home Size      Home Type  Year Built          Heating         Cooling  \
+0       810.0  Single Family      1986.0       Forced air             NaN   
+1      2263.0  Single Family         NaN       Forced air            None   
+2       810.0  Single Family      1986.0       Forced air             NaN   
+3       810.0  Single Family      1985.0       Forced air             NaN   
+4       842.0  Single Family      1985.0       Forced air             NaN   
+5       810.0  Single Family      1986.0       Forced air         Central   
+6       810.0  Single Family      1985.0       Forced air             NaN   
+7      1757.0  Single Family      1993.0  Forced air, Gas  Central, Other   
+8      1000.0  Single Family      1985.0       Forced air           Other   
+9      2941.0  Single Family      1996.0  Forced air, Gas         Central   
+10      994.0      Townhouse      1986.0       Forced air           Other   
+11     1850.0  Single Family      1978.0       Forced air             NaN   
+12     1242.0  Single Family      1978.0       Forced air             NaN   
+
+     Parking  Lot Size  
+0        NaN     816.0  
+1   2 spaces       NaN  
+2        NaN     816.0  
+3        NaN     816.0  
+4        NaN   61419.6  
+5        NaN     816.0  
+6        NaN     816.0  
+7   2 spaces    7560.0  
+8        NaN     816.0  
+9   2 spaces    7000.0  
+10       NaN     814.0  
+11       NaN    3745.0  
+12       NaN    4280.0  
+2020-10-21 15:57:43,066 - hbf.rescrape.laundry - INFO:
+Address        object
+Sell Price    float64
+Beds          float64
+Baths         float64
+Home Size     float64
+Home Type      object
+Year Built    float64
+Heating        object
+Cooling        object
+Parking        object
+Lot Size      float64
+dtype: object
+2020-10-21 15:57:43,073 - hbf.getCleanedDF - INFO:
+Finished.
+2020-10-21 15:57:43,074 - hbf.getCleanedDF - INFO:
+--- 30.09893298149109 seconds ---
+2020-10-21 16:39:41,007 - hbf.getCleanedDF - INFO:
+Started.
+2020-10-21 16:39:41,765 - hbf.rescrape.getBox - INFO:
+The address has been GeoCoded!
+2020-10-21 16:39:41,769 - hbf.rescrape.getBox - INFO:
+Searching within a square area of half-width 0.1 miles.
+2020-10-21 16:39:43,761 - hbf.rescrape.getNumZillowPages - INFO:
+Only 1 page of Zillow search results exist in this search box.
+2020-10-21 16:39:43,765 - hbf.rescrape.getNumZillowResults - INFO:
+13 recently sold homes on Zillow were found within the search box.
+2020-10-21 16:39:43,776 - hbf.rescrape.getAllSoldHomeZillowURLs - INFO:
+https://www.zillow.com/homedetails/915-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069413_zpid/
+https://www.zillow.com/homedetails/238-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069495_zpid/
+https://www.zillow.com/homedetails/905-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069408_zpid/
+https://www.zillow.com/homedetails/1150-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069436_zpid/
+https://www.zillow.com/homedetails/1130-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069426_zpid/
+https://www.zillow.com/homedetails/907-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069409_zpid/
+https://www.zillow.com/homedetails/1128-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069425_zpid/
+https://www.zillow.com/homedetails/241-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069513_zpid/
+https://www.zillow.com/homedetails/1140-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069431_zpid/
+https://www.zillow.com/homedetails/254-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069503_zpid/
+https://www.zillow.com/homedetails/911-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069411_zpid/
+https://www.zillow.com/homedetails/9-Fore-Dr-New-Smyrna-Beach-FL-32168/170979823_zpid/
+https://www.zillow.com/homedetails/11-Fore-Dr-New-Smyrna-Beach-FL-32168/170979822_zpid/
+2020-10-21 16:39:43,776 - hbf.rescrape.getAllSoldHomeZillowURLs - INFO:
+The number of Sold Home Zillow Links scraped from all pages equals
+the Zillow Result Count that was scraped from the initial page.
+2020-10-21 16:40:21,407 - hbf.rescrape.soldHomeDF - INFO:
+                                        Address Sell Price Beds Baths  \
+0    915 Fairvilla Dr New Smyrna Beach FL 32168     125000    2     2   
+1    238 Golf Club Dr New Smyrna Beach FL 32168        n/a    3     2   
+2    905 Fairvilla Dr New Smyrna Beach FL 32168     100000    2     2   
+3   1150 Fairvilla Dr New Smyrna Beach FL 32168     115000    2     1   
+4   1130 Fairvilla Dr New Smyrna Beach FL 32168     112000    2     2   
+5    907 Fairvilla Dr New Smyrna Beach FL 32168     100000    2     2   
+6   1128 Fairvilla Dr New Smyrna Beach FL 32168     114000    2     1   
+7    241 Golf Club Dr New Smyrna Beach FL 32168     234000    2     3   
+8   1140 Fairvilla Dr New Smyrna Beach FL 32168     100000    2     1   
+9    254 Golf Club Dr New Smyrna Beach FL 32168     302000    3     2   
+10   911 Fairvilla Dr New Smyrna Beach FL 32168     108931    2     2   
+11          9 Fore Dr New Smyrna Beach FL 32168     135000    3   2.5   
+12         11 Fore Dr New Smyrna Beach FL 32168               2     2   
+
+    Home Size      Home Type Year Built          Heating         Cooling  \
+0    810 sqft  Single Family       1986       Forced air         No Data   
+1   2263 sqft  Single Family        n/a       Forced air            None   
+2    810 sqft  Single Family       1986       Forced air         No Data   
+3    810 sqft  Single Family       1985       Forced air         No Data   
+4    842 sqft  Single Family       1985       Forced air         No Data   
+5    810 sqft  Single Family       1986       Forced air         Central   
+6    810 sqft  Single Family       1985       Forced air         No Data   
+7   1757 sqft  Single Family       1993  Forced air, Gas  Central, Other   
+8   1000 sqft  Single Family       1985       Forced air           Other   
+9   2941 sqft  Single Family       1996  Forced air, Gas         Central   
+10   994 sqft      Townhouse       1986       Forced air           Other   
+11  1850 sqft  Single Family       1978       Forced air         No Data   
+12  1242 sqft  Single Family       1978       Forced air         No Data   
+
+     Parking    Lot Size  
+0    No Data    816 sqft  
+1   2 spaces         n/a  
+2    No Data    816 sqft  
+3    No Data    816 sqft  
+4    No Data  1.41 Acres  
+5    No Data    816 sqft  
+6    No Data    816 sqft  
+7   2 spaces   7560 sqft  
+8    No Data    816 sqft  
+9   2 spaces   7000 sqft  
+10   No Data    814 sqft  
+11   No Data   3745 sqft  
+12   No Data   4280 sqft  
+2020-10-21 16:40:21,465 - hbf.rescrape.laundry - INFO:
+                                        Address  Sell Price  Beds  Baths  \
+0    915 Fairvilla Dr New Smyrna Beach FL 32168    125000.0   2.0    2.0   
+1    238 Golf Club Dr New Smyrna Beach FL 32168         NaN   3.0    2.0   
+2    905 Fairvilla Dr New Smyrna Beach FL 32168    100000.0   2.0    2.0   
+3   1150 Fairvilla Dr New Smyrna Beach FL 32168    115000.0   2.0    1.0   
+4   1130 Fairvilla Dr New Smyrna Beach FL 32168    112000.0   2.0    2.0   
+5    907 Fairvilla Dr New Smyrna Beach FL 32168    100000.0   2.0    2.0   
+6   1128 Fairvilla Dr New Smyrna Beach FL 32168    114000.0   2.0    1.0   
+7    241 Golf Club Dr New Smyrna Beach FL 32168    234000.0   2.0    3.0   
+8   1140 Fairvilla Dr New Smyrna Beach FL 32168    100000.0   2.0    1.0   
+9    254 Golf Club Dr New Smyrna Beach FL 32168    302000.0   3.0    2.0   
+10   911 Fairvilla Dr New Smyrna Beach FL 32168    108931.0   2.0    2.0   
+11          9 Fore Dr New Smyrna Beach FL 32168    135000.0   3.0    2.5   
+12         11 Fore Dr New Smyrna Beach FL 32168         NaN   2.0    2.0   
+
+    Home Size      Home Type  Year Built          Heating         Cooling  \
+0       810.0  Single Family      1986.0       Forced air             NaN   
+1      2263.0  Single Family         NaN       Forced air            None   
+2       810.0  Single Family      1986.0       Forced air             NaN   
+3       810.0  Single Family      1985.0       Forced air             NaN   
+4       842.0  Single Family      1985.0       Forced air             NaN   
+5       810.0  Single Family      1986.0       Forced air         Central   
+6       810.0  Single Family      1985.0       Forced air             NaN   
+7      1757.0  Single Family      1993.0  Forced air, Gas  Central, Other   
+8      1000.0  Single Family      1985.0       Forced air           Other   
+9      2941.0  Single Family      1996.0  Forced air, Gas         Central   
+10      994.0      Townhouse      1986.0       Forced air           Other   
+11     1850.0  Single Family      1978.0       Forced air             NaN   
+12     1242.0  Single Family      1978.0       Forced air             NaN   
+
+     Parking  Lot Size  
+0        NaN     816.0  
+1   2 spaces       NaN  
+2        NaN     816.0  
+3        NaN     816.0  
+4        NaN   61419.6  
+5        NaN     816.0  
+6        NaN     816.0  
+7   2 spaces    7560.0  
+8        NaN     816.0  
+9   2 spaces    7000.0  
+10       NaN     814.0  
+11       NaN    3745.0  
+12       NaN    4280.0  
+2020-10-21 16:40:21,484 - hbf.rescrape.laundry - INFO:
+Address        object
+Sell Price    float64
+Beds          float64
+Baths         float64
+Home Size     float64
+Home Type      object
+Year Built    float64
+Heating        object
+Cooling        object
+Parking        object
+Lot Size      float64
+dtype: object
+2020-10-21 16:40:21,502 - hbf.getCleanedDF - INFO:
+Finished.
+2020-10-21 16:40:21,503 - hbf.getCleanedDF - INFO:
+--- 40.496399879455566 seconds ---
+2020-10-21 16:49:49,208 - hbf.getCleanedDF - INFO:
+Started.
+2020-10-21 16:49:49,947 - hbf.rescrape.getBox - INFO:
+The address has been GeoCoded!
+2020-10-21 16:49:49,955 - hbf.rescrape.getBox - INFO:
+Searching within a square area of half-width 0.1 miles.
+2020-10-21 16:49:51,960 - hbf.rescrape.getNumZillowPages - INFO:
+Only 1 page of Zillow search results exist in this search box.
+2020-10-21 16:49:51,967 - hbf.rescrape.getNumZillowResults - INFO:
+13 recently sold homes on Zillow were found within the search box.
+2020-10-21 16:49:51,987 - hbf.rescrape.getAllSoldHomeZillowURLs - INFO:
+https://www.zillow.com/homedetails/915-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069413_zpid/
+https://www.zillow.com/homedetails/238-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069495_zpid/
+https://www.zillow.com/homedetails/905-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069408_zpid/
+https://www.zillow.com/homedetails/1150-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069436_zpid/
+https://www.zillow.com/homedetails/1130-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069426_zpid/
+https://www.zillow.com/homedetails/907-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069409_zpid/
+https://www.zillow.com/homedetails/1128-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069425_zpid/
+https://www.zillow.com/homedetails/241-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069513_zpid/
+https://www.zillow.com/homedetails/1140-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069431_zpid/
+https://www.zillow.com/homedetails/254-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069503_zpid/
+https://www.zillow.com/homedetails/911-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069411_zpid/
+https://www.zillow.com/homedetails/9-Fore-Dr-New-Smyrna-Beach-FL-32168/170979823_zpid/
+https://www.zillow.com/homedetails/11-Fore-Dr-New-Smyrna-Beach-FL-32168/170979822_zpid/
+2020-10-21 16:49:51,987 - hbf.rescrape.getAllSoldHomeZillowURLs - INFO:
+The number of Sold Home Zillow Links scraped from all pages equals
+the Zillow Result Count that was scraped from the initial page.
+2020-10-21 16:50:19,594 - hbf.rescrape.soldHomeDF - INFO:
+                                        Address Sell Price Beds Baths  \
+0    915 Fairvilla Dr New Smyrna Beach FL 32168     125000    2     2   
+1    238 Golf Club Dr New Smyrna Beach FL 32168        n/a    3     2   
+2    905 Fairvilla Dr New Smyrna Beach FL 32168     100000    2     2   
+3   1150 Fairvilla Dr New Smyrna Beach FL 32168     115000    2     1   
+4   1130 Fairvilla Dr New Smyrna Beach FL 32168     112000    2     2   
+5    907 Fairvilla Dr New Smyrna Beach FL 32168     100000    2     2   
+6   1128 Fairvilla Dr New Smyrna Beach FL 32168     114000    2     1   
+7    241 Golf Club Dr New Smyrna Beach FL 32168     234000    2     3   
+8   1140 Fairvilla Dr New Smyrna Beach FL 32168     100000    2     1   
+9    254 Golf Club Dr New Smyrna Beach FL 32168     302000    3     2   
+10   911 Fairvilla Dr New Smyrna Beach FL 32168     108931    2     2   
+11          9 Fore Dr New Smyrna Beach FL 32168     135000    3   2.5   
+12         11 Fore Dr New Smyrna Beach FL 32168               2     2   
+
+    Home Size      Home Type Year Built          Heating         Cooling  \
+0    810 sqft  Single Family       1986       Forced air         No Data   
+1   2263 sqft  Single Family        n/a       Forced air            None   
+2    810 sqft  Single Family       1986       Forced air         No Data   
+3    810 sqft  Single Family       1985       Forced air         No Data   
+4    842 sqft  Single Family       1985       Forced air         No Data   
+5    810 sqft  Single Family       1986       Forced air         Central   
+6    810 sqft  Single Family       1985       Forced air         No Data   
+7   1757 sqft  Single Family       1993  Forced air, Gas  Central, Other   
+8   1000 sqft  Single Family       1985       Forced air           Other   
+9   2941 sqft  Single Family       1996  Forced air, Gas         Central   
+10   994 sqft      Townhouse       1986       Forced air           Other   
+11  1850 sqft  Single Family       1978       Forced air         No Data   
+12  1242 sqft  Single Family       1978       Forced air         No Data   
+
+     Parking    Lot Size  
+0    No Data    816 sqft  
+1   2 spaces         n/a  
+2    No Data    816 sqft  
+3    No Data    816 sqft  
+4    No Data  1.41 Acres  
+5    No Data    816 sqft  
+6    No Data    816 sqft  
+7   2 spaces   7560 sqft  
+8    No Data    816 sqft  
+9   2 spaces   7000 sqft  
+10   No Data    814 sqft  
+11   No Data   3745 sqft  
+12   No Data   4280 sqft  
+2020-10-21 16:50:19,631 - hbf.rescrape.laundry - INFO:
+                                        Address  Sell Price  Beds  Baths  \
+0    915 Fairvilla Dr New Smyrna Beach FL 32168    125000.0   2.0    2.0   
+1    238 Golf Club Dr New Smyrna Beach FL 32168         NaN   3.0    2.0   
+2    905 Fairvilla Dr New Smyrna Beach FL 32168    100000.0   2.0    2.0   
+3   1150 Fairvilla Dr New Smyrna Beach FL 32168    115000.0   2.0    1.0   
+4   1130 Fairvilla Dr New Smyrna Beach FL 32168    112000.0   2.0    2.0   
+5    907 Fairvilla Dr New Smyrna Beach FL 32168    100000.0   2.0    2.0   
+6   1128 Fairvilla Dr New Smyrna Beach FL 32168    114000.0   2.0    1.0   
+7    241 Golf Club Dr New Smyrna Beach FL 32168    234000.0   2.0    3.0   
+8   1140 Fairvilla Dr New Smyrna Beach FL 32168    100000.0   2.0    1.0   
+9    254 Golf Club Dr New Smyrna Beach FL 32168    302000.0   3.0    2.0   
+10   911 Fairvilla Dr New Smyrna Beach FL 32168    108931.0   2.0    2.0   
+11          9 Fore Dr New Smyrna Beach FL 32168    135000.0   3.0    2.5   
+12         11 Fore Dr New Smyrna Beach FL 32168         NaN   2.0    2.0   
+
+    Home Size      Home Type  Year Built          Heating         Cooling  \
+0       810.0  Single Family      1986.0       Forced air             NaN   
+1      2263.0  Single Family         NaN       Forced air            None   
+2       810.0  Single Family      1986.0       Forced air             NaN   
+3       810.0  Single Family      1985.0       Forced air             NaN   
+4       842.0  Single Family      1985.0       Forced air             NaN   
+5       810.0  Single Family      1986.0       Forced air         Central   
+6       810.0  Single Family      1985.0       Forced air             NaN   
+7      1757.0  Single Family      1993.0  Forced air, Gas  Central, Other   
+8      1000.0  Single Family      1985.0       Forced air           Other   
+9      2941.0  Single Family      1996.0  Forced air, Gas         Central   
+10      994.0      Townhouse      1986.0       Forced air           Other   
+11     1850.0  Single Family      1978.0       Forced air             NaN   
+12     1242.0  Single Family      1978.0       Forced air             NaN   
+
+     Parking  Lot Size  
+0        NaN     816.0  
+1   2 spaces       NaN  
+2        NaN     816.0  
+3        NaN     816.0  
+4        NaN   61419.6  
+5        NaN     816.0  
+6        NaN     816.0  
+7   2 spaces    7560.0  
+8        NaN     816.0  
+9   2 spaces    7000.0  
+10       NaN     814.0  
+11       NaN    3745.0  
+12       NaN    4280.0  
+2020-10-21 16:50:19,641 - hbf.rescrape.laundry - INFO:
+Address        object
+Sell Price    float64
+Beds          float64
+Baths         float64
+Home Size     float64
+Home Type      object
+Year Built    float64
+Heating        object
+Cooling        object
+Parking        object
+Lot Size      float64
+dtype: object
+2020-10-21 16:50:19,649 - hbf.getCleanedDF - INFO:
+Finished.
+2020-10-21 16:50:19,649 - hbf.getCleanedDF - INFO:
+--- 30.441686868667603 seconds ---
+2020-10-21 18:46:16,357 - hbf.getCleanedDF - INFO:
+Started.
+2020-10-21 18:46:17,041 - hbf.rescrape.getBox - INFO:
+The address has been GeoCoded!
+2020-10-21 18:46:17,044 - hbf.rescrape.getBox - INFO:
+Searching within a square area of half-width 0.1 miles.
+2020-10-21 18:46:18,892 - hbf.rescrape.getNumZillowPages - INFO:
+Only 1 page of Zillow search results exist in this search box.
+2020-10-21 18:46:18,896 - hbf.rescrape.getNumZillowResults - INFO:
+13 recently sold homes on Zillow were found within the search box.
+2020-10-21 18:46:18,903 - hbf.rescrape.getAllSoldHomeZillowURLs - INFO:
+https://www.zillow.com/homedetails/915-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069413_zpid/
+https://www.zillow.com/homedetails/238-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069495_zpid/
+https://www.zillow.com/homedetails/905-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069408_zpid/
+https://www.zillow.com/homedetails/1150-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069436_zpid/
+https://www.zillow.com/homedetails/1130-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069426_zpid/
+https://www.zillow.com/homedetails/907-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069409_zpid/
+https://www.zillow.com/homedetails/1128-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069425_zpid/
+https://www.zillow.com/homedetails/241-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069513_zpid/
+https://www.zillow.com/homedetails/1140-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069431_zpid/
+https://www.zillow.com/homedetails/254-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069503_zpid/
+https://www.zillow.com/homedetails/911-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069411_zpid/
+https://www.zillow.com/homedetails/9-Fore-Dr-New-Smyrna-Beach-FL-32168/170979823_zpid/
+https://www.zillow.com/homedetails/11-Fore-Dr-New-Smyrna-Beach-FL-32168/170979822_zpid/
+2020-10-21 18:46:18,903 - hbf.rescrape.getAllSoldHomeZillowURLs - INFO:
+The number of Sold Home Zillow Links scraped from all pages equals
+the Zillow Result Count that was scraped from the initial page.
+2020-10-21 18:46:48,222 - hbf.rescrape.soldHomeDF - INFO:
+                                        Address Sell Price Beds Baths  \
+0    915 Fairvilla Dr New Smyrna Beach FL 32168     125000    2     2   
+1    238 Golf Club Dr New Smyrna Beach FL 32168        n/a    3     2   
+2    905 Fairvilla Dr New Smyrna Beach FL 32168     100000    2     2   
+3   1150 Fairvilla Dr New Smyrna Beach FL 32168     115000    2     1   
+4   1130 Fairvilla Dr New Smyrna Beach FL 32168     112000    2     2   
+5    907 Fairvilla Dr New Smyrna Beach FL 32168     100000    2     2   
+6   1128 Fairvilla Dr New Smyrna Beach FL 32168     114000    2     1   
+7    241 Golf Club Dr New Smyrna Beach FL 32168     234000    2     3   
+8   1140 Fairvilla Dr New Smyrna Beach FL 32168     100000    2     1   
+9    254 Golf Club Dr New Smyrna Beach FL 32168     302000    3     2   
+10   911 Fairvilla Dr New Smyrna Beach FL 32168     108931    2     2   
+11          9 Fore Dr New Smyrna Beach FL 32168     135000    3   2.5   
+12         11 Fore Dr New Smyrna Beach FL 32168               2     2   
+
+    Home Size      Home Type Year Built          Heating         Cooling  \
+0    810 sqft  Single Family       1986       Forced air         No Data   
+1   2263 sqft  Single Family        n/a       Forced air            None   
+2    810 sqft  Single Family       1986       Forced air         No Data   
+3    810 sqft  Single Family       1985       Forced air         No Data   
+4    842 sqft  Single Family       1985       Forced air         No Data   
+5    810 sqft  Single Family       1986       Forced air         Central   
+6    810 sqft  Single Family       1985       Forced air         No Data   
+7   1757 sqft  Single Family       1993  Forced air, Gas  Central, Other   
+8   1000 sqft  Single Family       1985       Forced air           Other   
+9   2941 sqft  Single Family       1996  Forced air, Gas         Central   
+10   994 sqft      Townhouse       1986       Forced air           Other   
+11  1850 sqft  Single Family       1978       Forced air         No Data   
+12  1242 sqft  Single Family       1978       Forced air         No Data   
+
+     Parking    Lot Size  
+0    No Data    816 sqft  
+1   2 spaces         n/a  
+2    No Data    816 sqft  
+3    No Data    816 sqft  
+4    No Data  1.41 Acres  
+5    No Data    816 sqft  
+6    No Data    816 sqft  
+7   2 spaces   7560 sqft  
+8    No Data    816 sqft  
+9   2 spaces   7000 sqft  
+10   No Data    814 sqft  
+11   No Data   3745 sqft  
+12   No Data   4280 sqft  
+2020-10-21 18:46:48,264 - hbf.rescrape.laundry - INFO:
+                                        Address  Sell Price  Beds  Baths  \
+0    915 Fairvilla Dr New Smyrna Beach FL 32168    125000.0   2.0    2.0   
+1    238 Golf Club Dr New Smyrna Beach FL 32168         NaN   3.0    2.0   
+2    905 Fairvilla Dr New Smyrna Beach FL 32168    100000.0   2.0    2.0   
+3   1150 Fairvilla Dr New Smyrna Beach FL 32168    115000.0   2.0    1.0   
+4   1130 Fairvilla Dr New Smyrna Beach FL 32168    112000.0   2.0    2.0   
+5    907 Fairvilla Dr New Smyrna Beach FL 32168    100000.0   2.0    2.0   
+6   1128 Fairvilla Dr New Smyrna Beach FL 32168    114000.0   2.0    1.0   
+7    241 Golf Club Dr New Smyrna Beach FL 32168    234000.0   2.0    3.0   
+8   1140 Fairvilla Dr New Smyrna Beach FL 32168    100000.0   2.0    1.0   
+9    254 Golf Club Dr New Smyrna Beach FL 32168    302000.0   3.0    2.0   
+10   911 Fairvilla Dr New Smyrna Beach FL 32168    108931.0   2.0    2.0   
+11          9 Fore Dr New Smyrna Beach FL 32168    135000.0   3.0    2.5   
+12         11 Fore Dr New Smyrna Beach FL 32168         NaN   2.0    2.0   
+
+    Home Size      Home Type  Year Built          Heating         Cooling  \
+0       810.0  Single Family      1986.0       Forced air             NaN   
+1      2263.0  Single Family         NaN       Forced air            None   
+2       810.0  Single Family      1986.0       Forced air             NaN   
+3       810.0  Single Family      1985.0       Forced air             NaN   
+4       842.0  Single Family      1985.0       Forced air             NaN   
+5       810.0  Single Family      1986.0       Forced air         Central   
+6       810.0  Single Family      1985.0       Forced air             NaN   
+7      1757.0  Single Family      1993.0  Forced air, Gas  Central, Other   
+8      1000.0  Single Family      1985.0       Forced air           Other   
+9      2941.0  Single Family      1996.0  Forced air, Gas         Central   
+10      994.0      Townhouse      1986.0       Forced air           Other   
+11     1850.0  Single Family      1978.0       Forced air             NaN   
+12     1242.0  Single Family      1978.0       Forced air             NaN   
+
+     Parking  Lot Size  
+0        NaN     816.0  
+1   2 spaces       NaN  
+2        NaN     816.0  
+3        NaN     816.0  
+4        NaN   61419.6  
+5        NaN     816.0  
+6        NaN     816.0  
+7   2 spaces    7560.0  
+8        NaN     816.0  
+9   2 spaces    7000.0  
+10       NaN     814.0  
+11       NaN    3745.0  
+12       NaN    4280.0  
+2020-10-21 18:46:48,276 - hbf.rescrape.laundry - INFO:
+Address        object
+Sell Price    float64
+Beds          float64
+Baths         float64
+Home Size     float64
+Home Type      object
+Year Built    float64
+Heating        object
+Cooling        object
+Parking        object
+Lot Size      float64
+dtype: object
+2020-10-21 18:46:48,285 - hbf.getCleanedDF - INFO:
+Finished.
+2020-10-21 18:46:48,285 - hbf.getCleanedDF - INFO:
+--- 31.928616046905518 seconds ---

@@ -72,14 +72,73 @@ conjugation %>%
 - To make a noun (or pronoun) plural, use pluralizer `-haru`.
   + If noun ends in `-o`, drop it, and add `-a`, then add `-haru`.
     
+```{r}
+nouns <- read_gsheet(data_loc, "nouns")
+nouns %>%
+  kable() %>%
+  kable_styling(full_width = F, position = "center")
+```
+
 ## Adjectives
 
+### Notes
+
 - If adjective ends in `-o`, drop it, and add `-a`, but don't add `-haru`.
+
+```{r}
+adjectives <- read_gsheet(data_loc, "adjectives")
+adjectives %>%
+  kable() %>%
+  kable_styling(full_width = F, position = "center")
+```
 
 ## Adverbs
 
 - Adverbs are not declined for number.
 
+```{r}
+adverbs <- read_gsheet(data_loc, "adverbs")
+adverbs %>%
+  kable() %>%
+  kable_styling(full_width = F, position = "center")
+```
+
 ## Conjunctions
 
+### Notes
+
 - Conjunctions are not declined for number.
+
+```{r}
+conjunctions <- read_gsheet(data_loc, "conjunctions")
+conjunctions %>%
+  kable() %>%
+  kable_styling(full_width = F, position = "center")
+```
+
+## Flashcard generator
+
+```{r}
+library(glue)
+
+genSentenceNepali <- function() {
+  sentenceNepali <-
+  bind_cols(adjectives %>% select(adj...1 = nepali) %>% slice_sample(),
+          nouns %>% select(noun...2 = nepali) %>% slice_sample(),
+          adjectives %>% select(adj...3 = nepali) %>% slice_sample(),
+          nouns %>% select(noun...4 = nepali) %>% slice_sample(),
+          verbs %>% select(verb = nepaliRoot) %>% slice_sample()
+          )
+}
+
+# flashcard generator
+flashcard <- genSentenceNepali()
+
+# flashcard wrapper
+constructPresentFormal <- function() {
+  flashcard %>% mutate(sentence = glue("{adj...1} {noun...2}lai {adj...3} {noun...4} {verb}chhu.")) 
+}
+
+constructPresentFormal()$sentence
+```
+
