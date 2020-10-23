@@ -127,14 +127,14 @@ tidy(lm_fit)</code></pre>
                           baths = 1,
                           home_size = c(800, 1000, 1200, 1500),
                           year_built = 1985,
-                          lot_size = 8000
+                          lot_size = 1500
                           )
 new_points</code></pre>
 <pre><code>##   beds baths home_size year_built lot_size
-## 1    2     1       800       1985     8000
-## 2    2     1      1000       1985     8000
-## 3    2     1      1200       1985     8000
-## 4    2     1      1500       1985     8000</code></pre>
+## 1    2     1       800       1985     1500
+## 2    2     1      1000       1985     1500
+## 3    2     1      1200       1985     1500
+## 4    2     1      1500       1985     1500</code></pre>
 </div>
 <div id="use-the-predict-function-to-find-the-mean-values-of-new-points" class="section level2">
 <h2>use the <code>predict()</code> function to find the mean values of new points</h2>
@@ -143,10 +143,10 @@ mean_pred</code></pre>
 <pre><code>## # A tibble: 4 x 1
 ##     .pred
 ##     &lt;dbl&gt;
-## 1  75694.
-## 2  88117.
-## 3 100541.
-## 4 119176.</code></pre>
+## 1  75613.
+## 2  88036.
+## 3 100460.
+## 4 119095.</code></pre>
 <p>With <code>tidymodels</code>, the types of predicted values are standardized so that we can use the same syntax to get these values across model types using <code>predict()</code>.</p>
 <blockquote>
 <p>When making predictions, the <code>tidymodels</code> convention is to always produce a tibble of results with standardized column names. This makes it easy to combine the original data and the predictions in a usable format:</p>
@@ -158,10 +158,10 @@ conf_int_pred</code></pre>
 <pre><code>## # A tibble: 4 x 2
 ##   .pred_lower .pred_upper
 ##         &lt;dbl&gt;       &lt;dbl&gt;
-## 1      51409.      99979.
-## 2      64001.     112233.
-## 3      75993.     125089.
-## 4      92930.     145423.</code></pre>
+## 1      51323.      99902.
+## 2      63916.     112156.
+## 3      75908.     125011.
+## 4      92846.     145345.</code></pre>
 <p>It is now straightforward to make a plot.</p>
 <pre class="r"><code># Now combine:
 plot_data &lt;- 
@@ -190,8 +190,8 @@ prior_dist &lt;-
 <pre><code>## 
 ## SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 0.000115 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 1.15 seconds.
+## Chain 1: Gradient evaluation took 0.000125 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 1.25 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -208,9 +208,9 @@ prior_dist &lt;-
 ## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 2.00383 seconds (Warm-up)
-## Chain 1:                0.114097 seconds (Sampling)
-## Chain 1:                2.11793 seconds (Total)
+## Chain 1:  Elapsed Time: 1.3903 seconds (Warm-up)
+## Chain 1:                0.110121 seconds (Sampling)
+## Chain 1:                1.50042 seconds (Total)
 ## Chain 1:</code></pre>
 <pre class="r"><code>set.seed(123) # for reproducibiility
 
@@ -228,7 +228,7 @@ bayes_fit &lt;-
 print(bayes_fit, digits = 5)</code></pre>
 <pre><code>## parsnip model object
 ## 
-## Fit time:  53.8s 
+## Fit time:  1m 0.4s 
 ## stan_glm
 ##  family:       gaussian [identity]
 ##  formula:      sell_price ~ beds + baths + home_size + year_built + lot_size
@@ -473,6 +473,17 @@ smyrna_rf_pred</code></pre>
 <p><img src="/post/2020-10-14-a-program-to-predict-a-home-s-sell-price_files/figure-html/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>We can now see that some of the structure in the data is being picked up compared to the linear regression model, which can only represent a line of best fit through the data.</p>
 <p>Let’s try and predict the sale price of 1160 Fairvilla Dr, New Smyrna Beach, FL 32168 using both models.</p>
+<pre class="r"><code>new_data = data.frame(address = c(&quot;1160 Fairvilla Dr, New Smyrna Beach, FL 32168&quot;),
+                      beds = c(2),
+                      baths = c(1),
+                      home_size = c(816),
+                      home_type = c(&quot;Single Family&quot;),
+                      year_built = c(1985),
+                      lot_size = c(816))
+
+bind_cols(predict(smyrna_fit, new_data) %&gt;% rename(lm = .pred),
+          predict(smyrna_rf_fit, new_data)%&gt;% rename(rf = .pred)
+)</code></pre>
 <pre><code>## # A tibble: 1 x 2
 ##        lm      rf
 ##     &lt;dbl&gt;   &lt;dbl&gt;

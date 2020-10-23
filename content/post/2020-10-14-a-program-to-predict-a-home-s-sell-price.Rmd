@@ -105,7 +105,7 @@ new_points <- expand.grid(beds = 2,
                           baths = 1,
                           home_size = c(800, 1000, 1200, 1500),
                           year_built = 1985,
-                          lot_size = 8000
+                          lot_size = 1500
                           )
 new_points
 ```
@@ -410,7 +410,7 @@ We can now see that some of the structure in the data is being picked up compare
 
 Let's try and predict the sale price of 1160 Fairvilla Dr, New Smyrna Beach, FL 32168 using both models.
 
-```{r}
+```{r, echo = T}
 new_data = data.frame(address = c("1160 Fairvilla Dr, New Smyrna Beach, FL 32168"),
                       beds = c(2),
                       baths = c(1),
