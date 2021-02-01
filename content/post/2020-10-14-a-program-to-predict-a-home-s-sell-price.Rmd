@@ -48,11 +48,12 @@ from hbf.getCleanedDF import getDF
 smyrnaSmall = getDF("res.inp")
 ```
 
-## Example output as R `df`
+## Example output as R dataframe
 
 The Python object is now available as a R dataframe via the `reticulate` package!
 
 ```{r, echo = T}
+unlink("hbfDev.log")
 smyrnaSmall <- janitor::clean_names(py$smyrnaSmall)
 tibble::tibble(smyrnaSmall)
 ```
@@ -196,6 +197,7 @@ ggplot(bayes_plot_data, aes(x = home_size)) +
        y = "sale price ($)") + 
   ggtitle("Bayesian model with default weekly informative prior distribution")
 ```
+
 ## Using the `tidymodels` modeling workflow
 
 Start by loading the data and filtering out really inexpensive and expensive recently sold homes that may skew predictions, then do some pre-processing before applying a machine learning method, including removal of data with missing values.
@@ -231,7 +233,7 @@ ggplot(smyrnaScrape, aes(sell_price)) + geom_histogram()
 
 To get started, let's split this single dataset into two: a *training* set and a *testing* set. We'll keep most of the rows in the original dataset (subset chosen randomly) in the *training* set. The training data will be used to *fit* the model, and the *testing* set will be used to measure model performance.
 
-To do this, we can use the `rsample` package to create an object that contains the information on how to split the data, and then two more rsample functions to create data frames for the training and testing sets:
+To do this, we can use the `rsample` package to create an object that contains the information on how to split the data, and then two more `rsample` functions to create data frames for the training and testing sets:
 
 ```{r, echo = T}
 # Fix the random numbers by setting the seed 
@@ -273,7 +275,7 @@ Now we've created a specification of what should be done with the data. How do w
 
 ### Fit a model with a recipe
 
-Let's first use linear regression to model the flight data similar to what was done initially.
+Let's first use linear regression to model the sold home data similar to what was done initially.
 
 ```{r, echo = T}
 lr_mod <- 
