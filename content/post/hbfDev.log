@@ -1,0 +1,30 @@
+2021-02-01 16:52:05,685 - hbf.hbfmain - INFO:
+Started.
+2021-02-01 16:52:06,378 - hbf.preprocess.buildsearchbox - INFO:
+The address has been GeoCoded!
+2021-02-01 16:52:06,379 - hbf.preprocess.buildsearchbox - INFO:
+The geocoded origin of the address is: Point(29.03916758223118, -80.94493112861447, 0.0)
+2021-02-01 16:52:06,392 - hbf.preprocess.buildsearchbox - INFO:
+Searching within a square area of half-width 0.1 miles.
+2021-02-01 16:52:08,591 - hbf.scrape.scrapepagecount - INFO:
+Only 1 page of Zillow search results exist in this search box.
+2021-02-01 16:52:08,594 - hbf.scrape.scraperesultcount - INFO:
+14 Zillow search results were found within the search box.
+2021-02-01 16:52:08,600 - hbf.scrape.getzillowurls - INFO:
+https://www.zillow.com/homedetails/15-Fore-Dr-New-Smyrna-Beach-FL-32168/170979821_zpid/
+https://www.zillow.com/homedetails/1154-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069438_zpid/
+https://www.zillow.com/homedetails/915-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069413_zpid/
+https://www.zillow.com/homedetails/238-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069495_zpid/
+https://www.zillow.com/homedetails/905-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069408_zpid/
+https://www.zillow.com/homedetails/1150-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069436_zpid/
+https://www.zillow.com/homedetails/1130-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069426_zpid/
+https://www.zillow.com/homedetails/907-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069409_zpid/
+https://www.zillow.com/homedetails/1128-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069425_zpid/
+https://www.zillow.com/homedetails/241-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069513_zpid/
+https://www.zillow.com/homedetails/1140-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069431_zpid/
+https://www.zillow.com/homedetails/254-Golf-Club-Dr-New-Smyrna-Beach-FL-32168/48069503_zpid/
+https://www.zillow.com/homedetails/911-Fairvilla-Dr-New-Smyrna-Beach-FL-32168/48069411_zpid/
+https://www.zillow.com/homedetails/9-Fore-Dr-New-Smyrna-Beach-FL-32168/170979823_zpid/
+2021-02-01 16:52:08,600 - hbf.scrape.getzillowurls - INFO:
+The number of unique home urls scraped from all pages equals 
+the Zillow Result Count that was scraped from the initial page.

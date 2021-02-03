@@ -43,9 +43,9 @@ cat(readLines("res.inp"), sep = '\n')
 ## Example `hbf` call
 
 ```{python, echo = T, results = "hide"}
-from hbf.getCleanedDF import getDF
+from hbf.hbfmain import hbfmain
 
-smyrnaSmall = getDF("res.inp")
+smyrnaSmall = hbfmain("res.inp")
 ```
 
 ## Example output as R dataframe
@@ -54,7 +54,7 @@ The Python object is now available as a R dataframe via the `reticulate` package
 
 ```{r, echo = T}
 unlink("hbfDev.log")
-smyrnaSmall <- janitor::clean_names(py$smyrnaSmall)
+smyrnaSmall <- janitor::clean_names(smyrnaSmall)
 tibble::tibble(smyrnaSmall)
 ```
 
@@ -428,6 +428,3 @@ bind_cols(predict(smyrna_fit, new_data) %>% rename(lm = .pred),
 The Zestimate for this property (as of this writing) is \$115,170 with a range of \$105,000 - \$124,000 with a list price of $125,000. Both of our models fit are outside of the Zestimate range, but the sale price estimate from the random forest model is just outside of it. This is really not surprising as we did not go out of our way to add any sophistication to our feature set and we are only working with 436 data points, but it is still good to be close with such little effort!
 
 Of course the real validation point will be the actual sale price :wink:.
-
-### Estimating performance
-
